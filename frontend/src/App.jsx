@@ -16,7 +16,7 @@ import './App.css';
 
 // ==================== API SETUP ====================
 const API = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: 'https://earnapp-n5b2.onrender.com',
   timeout: 10000
 });
 
