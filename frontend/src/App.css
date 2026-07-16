@@ -1202,3 +1202,61 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================
+   ADD THIS TO YOUR EXISTING App.css FILE
+   Admin Access Button Styles
+   ============================================ */
+
+/* Admin Access Button */
+.admin-access-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.btn-admin-access {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #16A34A, #D4AF37);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
+}
+
+.btn-admin-access:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn-admin-access:active {
+  transform: translateY(0);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .admin-access-button {
+    top: 10px;
+    right: 10px;
+  }
+
+  .btn-admin-access {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}

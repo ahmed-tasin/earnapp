@@ -8,9 +8,6 @@ import WalletTab from './components/WalletTab';
 import ProfileTab from './components/ProfileTab';
 import { LoginPage, RegisterPage } from './components/AuthPages';
 
-// Import Admin
-import AdminPanel from './admin/AdminPanel';
-
 // Import Styles
 import './App.css';
 
@@ -34,7 +31,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [loading, setLoading] = useState(false);
   const [isAuthPage, setIsAuthPage] = useState('login');
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -58,13 +54,6 @@ export default function App() {
     setActiveTab('home');
   };
 
-  // ADMIN PANEL
-  if (isAdmin) {
-    return (
-      <AdminPanel onLogout={() => setIsAdmin(false)} />
-    );
-  }
-
   // AUTH PAGES
   if (!currentUser) {
     return isAuthPage === 'login' ? (
@@ -85,17 +74,6 @@ export default function App() {
   // MAIN APP
   return (
     <div className="app-container">
-      {/* ADMIN BUTTON */}
-      <div className="admin-access-button">
-        <button 
-          className="btn-admin-access"
-          onClick={() => setIsAdmin(true)}
-          title="Access Admin Panel"
-        >
-          🔐 Admin
-        </button>
-      </div>
-
       {/* CONTENT AREA */}
       <div className="content-area">
         {activeTab === 'home' && <HomeTab user={currentUser} setUser={setCurrentUser} />}
@@ -155,3 +133,25 @@ function LoadingOverlay() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+// Admin Panel Route
+import AdminPanel from './admin/AdminPanel';
+
+// In App function, add before return:
+const [isAdmin, setIsAdmin] = useState(false);
+
+// Add admin route:
+if (isAdmin) {
+  return <AdminPanel />;
+}
+
+// Add admin access button somewhere (for testing):
+<button onClick={() => setIsAdmin(true)}>🔐 Admin</button>
