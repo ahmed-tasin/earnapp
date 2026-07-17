@@ -1,24 +1,20 @@
-// ============================================
-// EARNING PLATFORM - MAIN SERVER
-// ============================================
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-require('dotenv').config();
+
 dotenv.config();
 
 
 
 
-//cors
+
+// ==================== MIDDLEWARE ====================
 
 
 const app = express();
 
-// ✅ CORS সক্ষম করুন
 app.use(cors({
   origin: [
     'http://localhost:3000',
@@ -38,13 +34,11 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 
 
-// ==================== MIDDLEWARE ====================
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://earnapp-frontend.onrender.com',
-  credentials: true
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+
+
+
+
 
 //add dns server to avoid DNS resolution issues
 const dns = require("node:dns/promises");
