@@ -7,26 +7,43 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-
+require('dotenv').config();
 dotenv.config();
 
 
-//added for \\
-const app = express();
+//added for
 
 const cors = require('cors');
 
+
+//cors
+
+
+const app = express();
+
+// ✅ CORS সক্ষম করুন
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
+  origin: [
+    'http://localhost:3000',
+    'https://earnapp-frontend.onrender.com',
+    process.env.FRONTEND_URL
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
+
+// ✅ Body parser
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 
 
 
 // ==================== MIDDLEWARE ====================
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://earnapp-n5b2.onrender.com',
+  origin: process.env.FRONTEND_URL || 'https://earnapp-frontend.onrender.com',
   credentials: true
 }));
 app.use(express.json());

@@ -11,7 +11,7 @@ import AdminReports from './admin-components/AdminReports';
 import AdminSettings from './admin-components/AdminSettings';
 
 const API = axios.create({
-  baseURL: 'https://earnapp-n5b2.onrender.com',
+  baseURL: 'https://earnapp-frontend.onrender.com',
   timeout: 10000
 });
 

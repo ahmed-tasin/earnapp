@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://earnapp-n5b2.onrender.com',
+  baseURL: 'https://earnapp-frontend.onrender.com',
   timeout: 10000
 });
 
