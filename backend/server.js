@@ -11,9 +11,6 @@ require('dotenv').config();
 dotenv.config();
 
 
-//added for
-
-const cors = require('cors');
 
 
 //cors
