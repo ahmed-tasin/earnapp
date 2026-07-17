@@ -11,7 +11,7 @@ import AdminReports from './admin-components/AdminReports';
 import AdminSettings from './admin-components/AdminSettings';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: 'https://earnapp-n5b2.onrender.com',
   timeout: 10000
 });
 
