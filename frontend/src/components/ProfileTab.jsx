@@ -1,13 +1,6 @@
 import React from 'react';
 
 
-
-
-
-
-
-
-
 export default function ProfileTab({ user, logout }) {
   return (
     <div className="tab-content profile-tab">
