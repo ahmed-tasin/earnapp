@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
-
-// Import Components
-import HomeTab from './components/HomeTab';
-import TeamTab from './components/TeamTab';
-import WalletTab from './components/WalletTab';
-import ProfileTab from './components/ProfileTab';
-import { LoginPage, RegisterPage } from './components/AuthPages';
-
-// Import Admin
-import AdminPanel from './admin/AdminPanel';
-
-// Import Styles
+import AppRoutes from './routes/AppRoutes';
 import './App.css';
 
 // ==================== API SETUP ====================
 const API = axios.create({
-  baseURL: 'https://earnapp-n5b2.onrender.com',
+  baseURL: 'https://earnapp-n5b2.onrender.com',  // ✅ Your backend URL
   timeout: 10000
 });
 
@@ -31,10 +21,7 @@ API.interceptors.request.use((config) => {
 // ==================== MAIN APP ====================
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('home');
-  const [loading, setLoading] = useState(false);
-  const [isAuthPage, setIsAuthPage] = useState('login');
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkAuth();
@@ -50,108 +37,30 @@ export default function App() {
         localStorage.removeItem('token');
       }
     }
+    setLoading(false);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setCurrentUser(null);
-    setActiveTab('home');
   };
 
-  // ADMIN PANEL
-  if (isAdmin) {
+  if (loading) {
     return (
-      <AdminPanel onLogout={() => setIsAdmin(false)} />
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
     );
   }
 
-  // AUTH PAGES
-  if (!currentUser) {
-    return isAuthPage === 'login' ? (
-      <LoginPage 
-        setCurrentUser={setCurrentUser} 
-        setIsAuthPage={setIsAuthPage}
-        setLoading={setLoading}
+  return (
+    <Router>
+      <AppRoutes 
+        currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
+        logout={logout}
       />
-    ) : (
-      <RegisterPage 
-        setCurrentUser={setCurrentUser} 
-        setIsAuthPage={setIsAuthPage}
-        setLoading={setLoading}
-      />
-    );
-  }
-
-  // MAIN APP
-  return (
-    <div className="app-container">
-      {/* ADMIN BUTTON */}
-      <div className="admin-access-button">
-        <button 
-          className="btn-admin-access"
-          onClick={() => setIsAdmin(true)}
-          title="Access Admin Panel"
-        >
-          🔐 Admin
-        </button>
-      </div>
-
-      {/* CONTENT AREA */}
-      <div className="content-area">
-        {activeTab === 'home' && <HomeTab user={currentUser} setUser={setCurrentUser} />}
-        {activeTab === 'team' && <TeamTab user={currentUser} />}
-        {activeTab === 'wallet' && <WalletTab user={currentUser} setUser={setCurrentUser} />}
-        {activeTab === 'profile' && <ProfileTab user={currentUser} logout={logout} />}
-      </div>
-
-      {/* BOTTOM NAVIGATION */}
-      <nav className="bottom-nav">
-        <NavItem 
-          icon="🏠" 
-          label="Home" 
-          active={activeTab === 'home'}
-          onClick={() => setActiveTab('home')}
-        />
-        <NavItem 
-          icon="👥" 
-          label="Team" 
-          active={activeTab === 'team'}
-          onClick={() => setActiveTab('team')}
-        />
-        <NavItem 
-          icon="💳" 
-          label="Wallet" 
-          active={activeTab === 'wallet'}
-          onClick={() => setActiveTab('wallet')}
-        />
-        <NavItem 
-          icon="👤" 
-          label="Profile" 
-          active={activeTab === 'profile'}
-          onClick={() => setActiveTab('profile')}
-        />
-      </nav>
-
-      {loading && <LoadingOverlay />}
-    </div>
-  );
-}
-
-// ==================== NAV ITEM ====================
-function NavItem({ icon, label, active, onClick }) {
-  return (
-    <button className={`nav-item ${active ? 'active' : ''}`} onClick={onClick}>
-      <span className="nav-icon">{icon}</span>
-      <span className="nav-label">{label}</span>
-    </button>
-  );
-}
-
-// ==================== LOADING OVERLAY ====================
-function LoadingOverlay() {
-  return (
-    <div className="loading-overlay">
-      <div className="spinner"></div>
-    </div>
+    </Router>
   );
 }

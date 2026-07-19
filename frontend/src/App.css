@@ -1212,51 +1212,61 @@ body {
 
 
 
-
-/* ============================================
-   ADD THIS TO YOUR EXISTING App.css FILE
-   Admin Access Button Styles
-   ============================================ */
-
-/* Admin Access Button */
-.admin-access-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
+/* Admin Section */
+.admin-section {
+  padding: 20px;
+  background: linear-gradient(135deg, #16A34A, #14A135);
+  border-radius: 8px;
+  margin: 20px 0;
 }
 
-.btn-admin-access {
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #16A34A, #D4AF37);
-  color: white;
+.btn-admin {
+  width: 100%;
+  padding: 14px;
+  background: white;
+  color: #16A34A;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
-  font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.3s;
 }
 
-.btn-admin-access:hover {
+.btn-admin:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.btn-admin-access:active {
-  transform: translateY(0);
+.admin-badge {
+  display: inline-block;
+  background: #16A34A;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 8px;
 }
 
-/* Mobile responsive */
-@media (max-width: 640px) {
-  .admin-access-button {
-    top: 10px;
-    right: 10px;
-  }
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 16px;
+}
 
-  .btn-admin-access {
-    padding: 8px 12px;
-    font-size: 12px;
-  }
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(22, 163, 74, 0.2);
+  border-top: 4px solid #16A34A;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
