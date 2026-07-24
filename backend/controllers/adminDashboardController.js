@@ -3,6 +3,8 @@ const adminDashboardService = require("../services/adminDashboardService");
 const getUserDetails = require("../services/adminDashboardService").getUserDetails;
 const getUsers = require("../services/adminDashboardService").getUsers;
 
+const Investment = require("../models/Investment");
+
 
 exports.getAdminDashboard = asyncHandler(async (req, res) => {
 
@@ -105,4 +107,9 @@ exports.updateUser = asyncHandler(async (req, res) => {
     });
 });
 
-
+exports.getAllInvestments = async () => {
+  return await Investment.find()
+    .populate("userId", "username phone")
+    .populate("packageId", "name")
+    .sort({ createdAt: -1 });
+};

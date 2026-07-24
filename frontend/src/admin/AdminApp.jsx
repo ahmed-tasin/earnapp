@@ -1,45 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import AdminLogin from './AdminLogin';
-import AdminDashboard from './AdminDashboard';
-import './admin-styles.css';
+import React from "react";
+import {
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
-const AdminApp = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+import AdminLogin from "./pages/AdminLogin";
+import Dashboard from "./pages/Dashboard";
+import Deposits from "./pages/Deposits";
+import Withdraws from "./pages/Withdraws";
+import Users from "./pages/Users";
+import Packages from "./pages/Packages";
+import Investments from "./pages/Investments";
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-      setIsLoggedIn(true);
-    }
-    setLoading(false);
-  }, []);
+import ProtectedRoute from "./components/ProtectedRoute";
 
-  const handleLoginSuccess = (token) => {
-    localStorage.setItem('adminToken', token);
-    setIsLoggedIn(true);
-  };
+import "./admin.css";
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
-    setIsLoggedIn(false);
-  };
+function AdminApp() {
+  const token = localStorage.getItem("adminToken");
 
-  if (loading) {
-    return (
-      <div className="loading-spinner">
-        <div className="spinner"></div>
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  return (
+    <Routes>
+      <Route
+        path="login"
+        element={
+          token
+            ? <Navigate to="/admin/dashboard" replace />
+            : <AdminLogin />
+        }
+      />
 
-  return isLoggedIn ? (
-    <AdminDashboard onLogout={handleLogout} />
-  ) : (
-    <AdminLogin onLoginSuccess={handleLoginSuccess} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="deposits" element={<Deposits />} />
+        <Route path="withdraws" element={<Withdraws />} />
+        <Route path="users" element={<Users />} />
+        <Route path="packages" element={<Packages />} />
+        <Route path="investments" element={<Investments />} />
+      </Route>
+
+      <Route
+        index
+        element={
+          <Navigate
+            to={token ? "dashboard" : "login"}
+            replace
+          />
+        }
+      />
+
+      <Route
+  path="investments"
+  element={<Investments />}
+/>
+
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to={token ? "/admin/dashboard" : "/admin/login"}
+            replace
+          />
+        }
+      />
+    </Routes>
   );
-};
+}
 
 export default AdminApp;

@@ -5,6 +5,7 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 const asyncHandler = require("../utils/asyncHandler");
 const walletService = require("../services/walletService");
 const profitService = require("../services/profitService");
+const adminController = require("../controllers/adminDashboardController");
 
 const {
   getAdminDashboard,
@@ -13,6 +14,7 @@ const {
   suspendUser,
   activateUser,
   updateUser,
+  getAllInvestments
 } = require("../controllers/adminDashboardController");
 
 
@@ -165,6 +167,31 @@ router.get(
     });
   }),
 );
+
+
+router.get(
+  "/dashboard",
+  authMiddleware,
+  adminMiddleware,
+  asyncHandler(async (req, res) => {
+    const stats =
+      await walletService.getDashboardStats();
+
+    res.json({
+      success: true,
+      stats,
+    });
+  })
+);
+
+
+router.get(
+  "/investments",
+  authMiddleware,
+  adminMiddleware,
+  adminController.getAllInvestments
+);
+
 
 
 module.exports = router;

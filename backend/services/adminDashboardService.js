@@ -530,3 +530,19 @@ exports.updateUser = async (userId, updateData, adminId) => {
 
     return User.findById(userId).select("-password -__v");
 };
+
+
+exports.getAllInvestments = async () => {
+  return Investment.find()
+    .populate(
+      "userId",
+      "username email phone"
+    )
+    .populate(
+      "packageId",
+      "name amount dailyReturn totalDays"
+    )
+    .sort({
+      createdAt: -1,
+    });
+};

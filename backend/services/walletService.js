@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
 const notificationService = require("./notificationService");
-
+const Investment = require("../models/Investment");
 
 // ================= DEPOSIT REQUEST =================
 
@@ -758,4 +758,29 @@ exports.getAdminWithdraws = async () => {
     .sort({ createdAt: -1 });
 
   return withdraws;
+};
+
+exports.getDashboardStats = async () => {
+  const [totalUsers, pendingDeposits, pendingWithdraws, activeInvestments] =
+    await Promise.all([
+      User.countDocuments({}),
+      Transaction.countDocuments({
+        type: "deposit",
+        status: "pending",
+      }),
+      Transaction.countDocuments({
+        type: "withdraw",
+        status: "pending",
+      }),
+      Investment.countDocuments({
+        status: "active",
+      }),
+    ]);
+
+  return {
+    totalUsers,
+    pendingDeposits,
+    pendingWithdraws,
+    activeInvestments,
+  };
 };
