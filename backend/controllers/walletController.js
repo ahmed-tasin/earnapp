@@ -141,3 +141,15 @@ exports.getAllTransactions = asyncHandler(async (req, res) => {
 
 });
 
+
+
+
+exports.getWallet = asyncHandler(async (req, res) => {
+  const wallet = await walletService.getWallet(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    wallet,
+  });
+});
+

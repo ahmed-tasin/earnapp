@@ -69,7 +69,7 @@ function Packages() {
 
       if (token) {
         requests.push(
-          axios.get(`${API_URL}/wallet`, {
+          axios.get(`${API_URL}/dashboard`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -91,11 +91,10 @@ function Packages() {
 
       if (walletResponse?.status === "fulfilled") {
         const walletData =
-          walletResponse.value.data?.wallet ||
-          walletResponse.value.data?.data?.wallet ||
-          walletResponse.value.data?.data ||
-          walletResponse.value.data ||
-          {};
+  walletResponse.value.data?.dashboard ||
+  walletResponse.value.data?.data?.dashboard ||
+  walletResponse.value.data?.wallet ||
+  {};
 
         setWalletBalance(Number(walletData.balance) || 0);
       }

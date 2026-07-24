@@ -784,3 +784,18 @@ exports.getDashboardStats = async () => {
     activeInvestments,
   };
 };
+
+
+exports.getWallet = async (userId) => {
+  const wallet = await User.findById(userId).select(
+    "balance totalDeposit totalWithdraw totalEarning referralCommissionEarned"
+  );
+
+  if (!wallet) {
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return wallet;
+};

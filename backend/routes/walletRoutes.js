@@ -11,6 +11,7 @@ const {
 const walletController = require("../controllers/walletController");
 
 const {
+    getWallet,
     deposit,
     approveDeposit,
     withdraw,
@@ -21,6 +22,8 @@ const {
 } = require("../controllers/walletController");
 
 // ================= DEPOSIT =================
+
+router.get("/", authMiddleware, getWallet);
 
 // User Deposit Request
 router.post(

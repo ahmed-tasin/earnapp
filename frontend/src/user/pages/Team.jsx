@@ -36,7 +36,7 @@ function Team() {
         throw new Error("Please login to view your team");
       }
 
-      const response = await axios.get(`${API_URL}/referral`, {
+      const response = await axios.get(`${API_URL}/referral/info`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

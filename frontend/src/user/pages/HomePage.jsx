@@ -89,7 +89,7 @@ function HomePage() {
         }
 
         const response = await axios.get(
-          `${API_URL}/user/dashboard`,
+          `${API_URL}/dashboard`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -98,9 +98,10 @@ function HomePage() {
         );
 
         const responseData =
-          response.data?.data ||
-          response.data ||
-          {};
+  response.data?.dashboard ||
+  response.data?.data?.dashboard ||
+  response.data?.data ||
+  {};
 
         setDashboard({
           user: {

@@ -46,7 +46,7 @@ function Wallet() {
         throw new Error("Please login to view your wallet");
       }
 
-      const response = await axios.get(`${API_URL}/wallet`, {
+      const response = await axios.get(`${API_URL}/dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -74,19 +74,23 @@ function Wallet() {
       */
 
       const walletData =
-        response.data?.wallet ||
-        response.data?.data?.wallet ||
-        response.data?.data ||
-        {};
+  response.data?.dashboard ||
+  response.data?.data?.dashboard ||
+  response.data?.wallet ||
+  response.data?.data?.wallet ||
+  {};
 
       setWallet({
-        balance: walletData.balance ?? 0,
-        totalDeposit: walletData.totalDeposit ?? 0,
-        totalWithdraw: walletData.totalWithdraw ?? 0,
-        totalEarning: walletData.totalEarning ?? 0,
-        referralCommissionEarned:
-          walletData.referralCommissionEarned ?? 0,
-      });
+  balance: walletData.balance ?? 0,
+  totalDeposit: walletData.totalDeposit ?? 0,
+  totalWithdraw: walletData.totalWithdraw ?? 0,
+  totalEarning: walletData.totalEarning ?? 0,
+
+  referralCommissionEarned:
+    walletData.referralCommissionEarned ??
+    walletData.referralCommission ??
+    0,
+});
     } catch (error) {
       console.error(
         "Wallet fetch error:",
