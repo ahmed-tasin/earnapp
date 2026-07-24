@@ -1,5 +1,8 @@
 const User = require("../models/User");
 const ReferralCommission = require("../models/ReferralCommission");
+const referralService = require("../services/referralService");
+const asyncHandler = require("../utils/asyncHandler");
+
 
 exports.getReferralInfo = async (req, res) => {
 
@@ -45,3 +48,44 @@ exports.getReferralInfo = async (req, res) => {
     }
 
 };
+
+
+
+
+// ================= REFERRAL HISTORY =================
+
+exports.getReferralHistory = asyncHandler(async (req, res) => {
+
+    const result =
+        await referralService.getReferralHistory(
+            req.user.id
+        );
+
+    res.json({
+
+        success: true,
+
+        ...result
+
+    });
+
+});
+
+
+// ================= REFERRAL SUMMARY =================
+
+exports.getReferralSummary = asyncHandler(async (req, res) => {
+
+    const summary = await referralService.getReferralSummary(
+        req.user.id
+    );
+
+    res.json({
+
+        success: true,
+
+        summary
+
+    });
+
+});

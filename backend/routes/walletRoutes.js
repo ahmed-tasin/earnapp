@@ -4,6 +4,11 @@ const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
+const { depositValidator, withdrawValidator } = require("../validators/walletValidator");
+const {
+  validateWithdraw,
+} = require("../validators/withdrawValidator");
+const walletController = require("../controllers/walletController");
 
 const {
     deposit,
@@ -21,6 +26,7 @@ const {
 router.post(
     "/deposit",
     authMiddleware,
+    depositValidator,
     deposit
 );
 
@@ -36,9 +42,10 @@ router.put(
 
 // User Withdraw Request
 router.post(
-    "/withdraw",
-    authMiddleware,
-    withdraw
+  "/withdraw",
+  authMiddleware,
+  validateWithdraw,
+  walletController.withdraw,
 );
 
 // Admin Approve Withdraw

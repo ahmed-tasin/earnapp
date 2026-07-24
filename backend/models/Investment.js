@@ -1,47 +1,65 @@
 const mongoose = require("mongoose");
 
-const investmentSchema = new mongoose.Schema({
-
-    userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+const investmentSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
 
-    packageId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Package"
+    packageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Package",
     },
 
-    investmentAmount:Number,
+    investmentAmount: Number,
 
-    dailyReturn:Number,
+    dailyReturn: Number,
 
-    totalDays:Number,
+    totalDays: Number,
 
-    remainingDays:Number,
+    remainingDays: Number,
 
-    startDate:Date,
+    startDate: Date,
 
-    endDate:Date,
+    endDate: Date,
 
-    totalEarned:{
-        type:Number,
-        default:0
+    totalEarned: {
+      type: Number,
+      default: 0,
     },
 
     lastProfitDate: {
-    type: Date,
-    default: null
+      type: Date,
+      default: null,
     },
 
-    status:{
-        type:String,
-        enum:["active","completed","cancelled"],
-        default:"active"
-    }
+    totalEarned: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
 
-},{
-    timestamps:true
-});
+    remainingDays: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
 
-module.exports = mongoose.model("Investment",investmentSchema);
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "completed", "cancelled"],
+      default: "active",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+module.exports = mongoose.model("Investment", investmentSchema);

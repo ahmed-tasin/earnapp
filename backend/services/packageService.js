@@ -2,7 +2,9 @@ const Package = require("../models/Package");
 const Investment = require("../models/Investment");
 const User = require("../models/User");
 const ReferralCommission = require("../models/ReferralCommission");
+const referralService = require("./referralService");
 const mongoose = require("mongoose");
+const notificationService = require("./notificationService");
 
 // ================= GET PACKAGES =================
 
@@ -88,33 +90,21 @@ exports.buyPackage = async (userId, packageId) => {
 
         }], { session });
 
-        if (user.referredBy) {
+      await referralService.payReferralCommission(
+    user._id,
+    pkg.amount,
+    session
+);
 
-            const referrer = await User.findById(user.referredBy)
-                .session(session);
+// Create a notification for the user
 
-            if (referrer) {
+        await notificationService.createNotification(
+           user._id,
+            "Package Purchased",
+            `You successfully purchased the ${pkg.name} package for ৳${pkg.amount}.`,
+            "package"
+         );
 
-                const commission = pkg.amount * 0.10;
-
-                referrer.balance += commission;
-                referrer.referralCommissionEarned += commission;
-
-                await referrer.save({ session });
-
-                await ReferralCommission.create([{
-
-                    fromUser: referrer._id,
-                    toUser: user._id,
-                    commission,
-                    level: 1,
-                    transactionAmount: pkg.amount
-
-                }], { session });
-
-            }
-
-        }
 
         await session.commitTransaction();
 
@@ -139,3 +129,4 @@ exports.buyPackage = async (userId, packageId) => {
     }
 
 };
+

@@ -139,6 +139,14 @@ exports.login = async (data) => {
         user.password
     );
 
+    if (user.status === "blocked") {
+    const error = new Error(
+        "Your account has been suspended. Please contact support."
+    );
+    error.statusCode = 403;
+    throw error;
+    }
+
     if (!match) {
         throw new Error("Invalid password");
     }

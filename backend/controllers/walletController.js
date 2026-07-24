@@ -36,20 +36,23 @@ exports.approveDeposit = asyncHandler(async (req, res) => {
 
 // ================= WITHDRAW REQUEST =================
 
-exports.withdraw = asyncHandler(async (req, res) => {
-
-    const transaction = await walletService.withdraw(
-        req.user.id,
-        req.body
-    );
+exports.withdraw = asyncHandler(
+  async (req, res) => {
+    const result =
+      await walletService.withdraw(
+        req.user._id || req.user.id,
+        req.body,
+      );
 
     res.status(201).json({
-        success: true,
-        message: "Withdraw request submitted",
-        transaction
+      success: true,
+      message:
+        "Withdraw request submitted successfully",
+      transaction: result.transaction,
+      wallet: result.wallet,
     });
-
-});
+  },
+);
 
 // ================= APPROVE WITHDRAW =================
 

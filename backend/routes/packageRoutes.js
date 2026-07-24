@@ -4,6 +4,7 @@ const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
+const { createPackageValidator } = require("../validators/packageValidator");
 
 const {
 
@@ -21,6 +22,7 @@ router.post(
     "/create",
     authMiddleware,
     adminMiddleware,
+    createPackageValidator,
     createPackage
 );
 
