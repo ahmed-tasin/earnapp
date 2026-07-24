@@ -1,0 +1,449 @@
+/* ===========================
+   Deposit Page
+=========================== */
+
+.deposit-page {
+  min-height: 100vh;
+  background: #f4f7f6;
+  padding: 25px 15px 100px;
+}
+
+.deposit-container {
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+}
+
+/* ===========================
+   Header
+=========================== */
+
+.deposit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.deposit-header-label {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.deposit-header h1 {
+  color: #0d5b43;
+  font-size: 30px;
+}
+
+.deposit-back-link {
+  text-decoration: none;
+  color: #0d5b43;
+  font-weight: 600;
+}
+
+/* ===========================
+   Info Card
+=========================== */
+
+.deposit-info-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+.deposit-info-icon {
+  width: 55px;
+  height: 55px;
+
+  border-radius: 15px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 26px;
+
+  background: #e7f8ef;
+}
+
+.deposit-info-card h2 {
+  color: #0d5b43;
+  margin-bottom: 5px;
+}
+
+.deposit-info-card p {
+  color: #666;
+  line-height: 1.5;
+}
+
+/* ===========================
+   Message
+=========================== */
+
+.deposit-message {
+  padding: 14px;
+
+  border-radius: 10px;
+
+  margin-bottom: 20px;
+
+  text-align: center;
+
+  font-weight: 600;
+}
+
+.deposit-message.success {
+  background: #e8f8ef;
+  color: #198754;
+}
+
+.deposit-message.error {
+  background: #ffe8e8;
+  color: #dc3545;
+}
+
+/* ===========================
+   Form
+=========================== */
+
+.deposit-form {
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.deposit-form-group {
+  margin-bottom: 20px;
+}
+
+.deposit-form-group label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-weight: 600;
+
+  color: #333;
+}
+
+.deposit-form-group input {
+  width: 100%;
+
+  padding: 14px;
+
+  border: 2px solid #e2e2e2;
+
+  border-radius: 12px;
+
+  outline: none;
+
+  transition: .3s;
+
+  font-size: 15px;
+}
+
+.deposit-form-group input:focus {
+  border-color: #0d5b43;
+
+  box-shadow: 0 0 0 4px rgba(13,91,67,.12);
+}
+
+/* ===========================
+   Amount Input
+=========================== */
+
+.deposit-input-wrapper {
+  position: relative;
+}
+
+.deposit-input-wrapper span {
+  position: absolute;
+
+  left: 16px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #0d5b43;
+
+  font-weight: bold;
+
+  font-size: 18px;
+}
+
+.deposit-input-wrapper input {
+  padding-left: 40px;
+}
+
+/* ===========================
+   Payment Method
+=========================== */
+
+.deposit-method-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3,1fr);
+
+  gap: 12px;
+}
+
+.deposit-method {
+  cursor: pointer;
+
+  border: 2px solid #e4e4e4;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  text-align: center;
+
+  transition: .3s;
+
+  background: white;
+}
+
+.deposit-method input {
+  display: none;
+}
+
+.deposit-method-name {
+  font-weight: bold;
+
+  color: #555;
+}
+
+.deposit-method.active {
+  border-color: #0d5b43;
+
+  background: #eefaf4;
+}
+
+.deposit-method.active .deposit-method-name {
+  color: #0d5b43;
+}
+
+/* ===========================
+   Payment Account
+=========================== */
+
+.deposit-account-card {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  background: linear-gradient(135deg,#0d5b43,#0b7b57);
+
+  color: white;
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  margin-bottom: 20px;
+}
+
+.deposit-account-card p {
+  opacity: .8;
+  margin-bottom: 5px;
+}
+
+.deposit-account-card h3 {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.deposit-account-card span {
+  font-size: 13px;
+}
+
+.deposit-copy-button {
+  border: none;
+
+  background: white;
+
+  color: #0d5b43;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+.deposit-copy-button:hover {
+  background: #f5f5f5;
+}
+
+/* ===========================
+   Notice
+=========================== */
+
+.deposit-notice {
+  display: flex;
+
+  gap: 10px;
+
+  align-items: flex-start;
+
+  background: #fff7df;
+
+  border-left: 5px solid #d9a92e;
+
+  padding: 15px;
+
+  border-radius: 10px;
+
+  margin-bottom: 20px;
+}
+
+.deposit-notice span {
+  font-size: 22px;
+}
+
+.deposit-notice p {
+  color: #555;
+
+  line-height: 1.6;
+}
+
+/* ===========================
+   Button
+=========================== */
+
+.deposit-submit-button {
+  width: 100%;
+
+  border: none;
+
+  padding: 15px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  color: white;
+
+  background: linear-gradient(135deg,#0d5b43,#0b7b57);
+
+  transition: .3s;
+}
+
+.deposit-submit-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 10px 25px rgba(13,91,67,.25);
+}
+
+.deposit-submit-button:disabled {
+  opacity: .7;
+
+  cursor: not-allowed;
+}
+
+/* ===========================
+   History Link
+=========================== */
+
+.deposit-history-link {
+  text-align: center;
+
+  margin-top: 20px;
+}
+
+.deposit-history-link a {
+  color: #0d5b43;
+
+  font-weight: bold;
+
+  text-decoration: none;
+}
+
+.deposit-history-link a:hover {
+  text-decoration: underline;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width:768px){
+
+.deposit-method-grid{
+grid-template-columns:1fr;
+}
+
+.deposit-account-card{
+flex-direction:column;
+align-items:flex-start;
+gap:15px;
+}
+
+.deposit-copy-button{
+width:100%;
+}
+
+.deposit-header{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+.deposit-form{
+padding:20px;
+}
+
+}
+
+@media (max-width:480px){
+
+.deposit-page{
+padding:20px 12px 90px;
+}
+
+.deposit-header h1{
+font-size:26px;
+}
+
+.deposit-account-card h3{
+font-size:22px;
+}
+
+.deposit-form{
+padding:18px;
+}
+
+.deposit-form-group input{
+padding:13px;
+}
+
+.deposit-submit-button{
+padding:14px;
+}
+
+}

@@ -1,0 +1,508 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding-bottom: 80px;
+}
+
+.user-home-page {
+  min-height: 100vh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 18px 16px 90px;
+  background: #f4f7f5;
+  color: #163b2d;
+}
+
+.user-home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.user-header-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-header-profile h1 {
+  margin: 2px 0 0;
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.user-welcome-text {
+  color: #718078;
+  font-size: 13px;
+}
+
+.user-avatar-placeholder,
+.user-avatar-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.user-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    #0c6b4b,
+    #d9ad46
+  );
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.user-avatar-image {
+  object-fit: cover;
+  border: 2px solid #d9ad46;
+}
+
+.notification-button {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: white;
+  font-size: 19px;
+  cursor: pointer;
+  box-shadow: 0 7px 20px
+    rgba(13, 69, 49, 0.08);
+}
+
+.notification-count {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #e84545;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.user-home-message {
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff3d5;
+  color: #72510d;
+  font-size: 13px;
+}
+
+.wallet-balance-card {
+  padding: 22px 18px 17px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    #075d41,
+    #0a7853
+  );
+  color: white;
+  box-shadow: 0 14px 35px
+    rgba(4, 84, 57, 0.22);
+}
+
+.wallet-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wallet-card-top span {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+}
+
+.wallet-card-top h2 {
+  margin: 6px 0 0;
+  font-size: 30px;
+}
+
+.wallet-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.14
+  );
+  color: #f4d67d;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.wallet-card-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.wallet-card-actions button {
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.12
+  );
+  color: white;
+  cursor: pointer;
+}
+
+.wallet-card-actions button span {
+  color: #f5d777;
+  font-size: 18px;
+}
+
+.home-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 17px;
+}
+
+.home-stat-card {
+  min-height: 86px;
+  padding: 15px 13px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 7px 20px
+    rgba(18, 59, 44, 0.06);
+}
+
+.home-stat-card.clickable {
+  cursor: pointer;
+}
+
+.stat-card-icon {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #edf7f2;
+  font-size: 18px;
+}
+
+.home-stat-card div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.home-stat-card small {
+  color: #75827b;
+  font-size: 11px;
+}
+
+.home-stat-card strong {
+  overflow: hidden;
+  color: #173e30;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.daily-checkin-card {
+  margin-top: 17px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 18px;
+  background: linear-gradient(
+    110deg,
+    #fff6da,
+    #fffdf5
+  );
+  border: 1px solid #f2de9b;
+}
+
+.daily-checkin-card > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkin-icon {
+  font-size: 31px;
+}
+
+.daily-checkin-card h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.daily-checkin-card p {
+  margin: 0;
+  color: #7d7150;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.daily-checkin-card button {
+  flex-shrink: 0;
+  padding: 9px 13px;
+  border: none;
+  border-radius: 10px;
+  background: #d1a133;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.daily-checkin-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.home-section {
+  margin-top: 24px;
+}
+
+.home-section-heading {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-section-heading h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.home-section-heading p {
+  margin: 4px 0 0;
+  color: #819087;
+  font-size: 11px;
+}
+
+.home-section-heading button {
+  border: none;
+  background: transparent;
+  color: #08704e;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.active-investment-card {
+  padding: 17px;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 7px 20px
+    rgba(18, 59, 44, 0.06);
+}
+
+.investment-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.investment-card-header small,
+.investment-details-grid small {
+  color: #7e8d85;
+  font-size: 11px;
+}
+
+.investment-card-header h3 {
+  margin: 4px 0 0;
+  font-size: 16px;
+}
+
+.investment-status {
+  height: fit-content;
+  padding: 5px 9px;
+  border-radius: 9px;
+  background: #e4f7ec;
+  color: #167342;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.investment-status.completed {
+  background: #e8efff;
+  color: #345fc4;
+}
+
+.investment-status.cancelled {
+  background: #ffe8e8;
+  color: #b63838;
+}
+
+.investment-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 17px;
+  padding-top: 15px;
+  border-top: 1px solid #eef2ef;
+}
+
+.investment-details-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.investment-details-grid strong {
+  font-size: 13px;
+}
+
+.no-investment-card {
+  padding: 25px 15px;
+  text-align: center;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 7px 20px
+    rgba(18, 59, 44, 0.06);
+}
+
+.no-investment-card span {
+  font-size: 37px;
+}
+
+.no-investment-card h3 {
+  margin: 10px 0 5px;
+  font-size: 16px;
+}
+
+.no-investment-card p {
+  margin: 0;
+  color: #7c8982;
+  font-size: 12px;
+}
+
+.no-investment-card button {
+  margin-top: 14px;
+  padding: 10px 17px;
+  border: none;
+  border-radius: 10px;
+  background: #08704e;
+  color: white;
+  cursor: pointer;
+}
+
+.quick-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+}
+
+.quick-action-grid button {
+  min-height: 80px;
+  padding: 11px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: none;
+  border-radius: 15px;
+  background: white;
+  color: #173e30;
+  cursor: pointer;
+  box-shadow: 0 7px 20px
+    rgba(18, 59, 44, 0.06);
+}
+
+.quick-action-grid span {
+  font-size: 23px;
+}
+
+.quick-action-grid small {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.user-page-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f4f7f5;
+  color: #557066;
+}
+
+.user-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #dbe8e1;
+  border-top-color: #08704e;
+  border-radius: 50%;
+  animation: user-spin 0.8s linear
+    infinite;
+}
+
+@keyframes user-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bottom-navigation-space {
+  height: 20px;
+}
+
+@media (max-width: 380px) {
+  .user-home-page {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .wallet-card-top h2 {
+    font-size: 25px;
+  }
+
+  .daily-checkin-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .daily-checkin-card button {
+    width: 100%;
+  }
+
+  .investment-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

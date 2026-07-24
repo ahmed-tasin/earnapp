@@ -61,9 +61,16 @@ const [formData, setFormData] = useState({
       }
 
       localStorage.setItem(
-        "adminToken",
-        token
-      );
+  "adminToken",
+  token
+);
+
+localStorage.setItem(
+  "adminUser",
+  JSON.stringify(user)
+);
+
+navigate("/admin/dashboard");
 
       if (user) {
         localStorage.setItem(

@@ -4,14 +4,14 @@ import {
   Outlet,
 } from "react-router-dom";
 
-function ProtectedRoute() {
+function UserProtectedRoute() {
   const token =
-    localStorage.getItem("adminToken");
+    localStorage.getItem("userToken");
 
   if (!token) {
     return (
       <Navigate
-        to="/admin/login"
+        to="/login"
         replace
       />
     );
@@ -20,4 +20,7 @@ function ProtectedRoute() {
   return <Outlet />;
 }
 
-export default ProtectedRoute;
+
+
+
+export default UserProtectedRoute;

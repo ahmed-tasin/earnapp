@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 import AdminApp from "./admin/AdminApp";
-import MainApp from "./MainApp";
+import UserApp from "./user/UserApp";
 
 function App() {
   return (
@@ -20,17 +20,12 @@ function App() {
 
         <Route
           path="/*"
-          element={<MainApp />}
+          element={<UserApp />}
         />
 
         <Route
           path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
+          element={<Navigate to="/" replace />}
         />
       </Routes>
     </BrowserRouter>

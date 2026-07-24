@@ -1,0 +1,738 @@
+/* ===========================
+   Team Page
+=========================== */
+
+.team-page {
+  min-height: 100vh;
+  padding: 24px 15px 100px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(212, 169, 56, 0.12),
+      transparent 30%
+    ),
+    #f4f7f6;
+  color: #1f2937;
+}
+
+.team-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===========================
+   Header
+=========================== */
+
+.team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.team-header-label {
+  margin: 0 0 4px;
+  color: #7b8581;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.team-header h1 {
+  margin: 0;
+  color: #0d5b43;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.team-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
+  background: #0d5b43;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(13, 91, 67, 0.2);
+  transition: 0.25s ease;
+}
+
+.team-refresh-button:hover {
+  transform: translateY(-2px);
+  background: #0b7b57;
+}
+
+.team-refresh-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.team-refresh-icon {
+  display: inline-block;
+  font-size: 18px;
+}
+
+.team-refresh-icon.rotating {
+  animation: team-spin 0.8s linear infinite;
+}
+
+@keyframes team-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================
+   Copy Message
+=========================== */
+
+.team-copy-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  z-index: 1000;
+  transform: translateX(-50%);
+  padding: 11px 17px;
+  border-radius: 10px;
+  background: #142f26;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ===========================
+   Error Card
+=========================== */
+
+.team-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 17px;
+  border: 1px solid #f0c6c6;
+  border-left: 5px solid #dc3545;
+  border-radius: 13px;
+  background: #fff1f1;
+}
+
+.team-error strong {
+  color: #bd2d3b;
+  font-size: 15px;
+}
+
+.team-error p {
+  margin: 5px 0 0;
+  color: #725b5e;
+  font-size: 13px;
+}
+
+.team-error button {
+  min-height: 39px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #dc3545;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ===========================
+   Referral Card
+=========================== */
+
+.team-referral-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  margin-bottom: 22px;
+  padding: 27px;
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(212, 169, 56, 0.19),
+      transparent 54%
+    ),
+    linear-gradient(135deg, #0b4d39, #0d7454);
+  color: #ffffff;
+  box-shadow: 0 15px 35px rgba(13, 91, 67, 0.25);
+}
+
+.team-referral-card::after {
+  content: "";
+  position: absolute;
+  right: -70px;
+  bottom: -90px;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.team-referral-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+}
+
+.team-referral-content > p {
+  margin: 0 0 7px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.team-referral-code-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 16px;
+}
+
+.team-referral-code-row h2 {
+  margin: 0;
+  color: #f3cf69;
+  font-size: 29px;
+  letter-spacing: 1.4px;
+  word-break: break-word;
+}
+
+.team-referral-code-row button,
+.team-referral-link button {
+  flex-shrink: 0;
+  padding: 8px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.team-referral-code-row button:hover,
+.team-referral-link button:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.team-referral-code-row button:disabled,
+.team-referral-link button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.team-referral-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  max-width: 620px;
+  margin-bottom: 16px;
+  padding: 10px 11px 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.team-referral-link span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.83);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-share-button {
+  min-height: 43px;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #d4a938, #f1cb67);
+  color: #173c30;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 9px 20px rgba(0, 0, 0, 0.15);
+  transition: 0.25s ease;
+}
+
+.team-share-button:hover {
+  transform: translateY(-2px);
+}
+
+.team-share-button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.team-referral-icon {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 105px;
+  height: 105px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 48px;
+  backdrop-filter: blur(7px);
+}
+
+/* ===========================
+   Summary Cards
+=========================== */
+
+.team-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.team-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e5ebe7;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(14, 63, 46, 0.07);
+}
+
+.team-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #edf8f3;
+  color: #0d5b43;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.team-summary-card p {
+  margin: 0 0 5px;
+  color: #77817d;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.team-summary-card h3 {
+  margin: 0;
+  color: #0d5b43;
+  font-size: 21px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+/* ===========================
+   Members Section
+=========================== */
+
+.team-members-section {
+  margin-bottom: 22px;
+}
+
+.team-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 14px;
+}
+
+.team-section-heading p {
+  margin: 0 0 3px;
+  color: #8a938f;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.team-section-heading h2 {
+  margin: 0;
+  color: #173c30;
+  font-size: 22px;
+}
+
+.team-section-heading > span {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #eaf6f1;
+  color: #0d5b43;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ===========================
+   Member List
+=========================== */
+
+.team-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.team-member-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 17px;
+  border: 1px solid #e5ebe7;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 7px 21px rgba(14, 63, 46, 0.065);
+  transition: 0.25s ease;
+}
+
+.team-member-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 11px 27px rgba(14, 63, 46, 0.1);
+}
+
+.team-member-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0d5b43, #13916a);
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.team-member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-member-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.team-member-title-row h3 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #26342f;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-info > p {
+  margin: 0 0 4px;
+  overflow: hidden;
+  color: #727c78;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-info > span {
+  color: #959d99;
+  font-size: 12px;
+}
+
+.team-member-status {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.team-member-status.status-active,
+.team-member-status.status-approved {
+  background: #e7f8ee;
+  color: #198754;
+}
+
+.team-member-status.status-inactive,
+.team-member-status.status-suspended {
+  background: #fff0df;
+  color: #c06b10;
+}
+
+.team-member-status.status-blocked {
+  background: #ffe9e9;
+  color: #cf3442;
+}
+
+.team-member-earning {
+  min-width: 115px;
+  text-align: right;
+}
+
+.team-member-earning span {
+  display: block;
+  margin-bottom: 4px;
+  color: #8a938f;
+  font-size: 11px;
+}
+
+.team-member-earning strong {
+  color: #0d5b43;
+  font-size: 16px;
+}
+
+/* ===========================
+   Empty State
+=========================== */
+
+.team-empty-state {
+  padding: 43px 22px;
+  border: 1px solid #e5ebe7;
+  border-radius: 19px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(14, 63, 46, 0.07);
+}
+
+.team-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #eaf6f1;
+  font-size: 32px;
+}
+
+.team-empty-state h3 {
+  margin: 0 0 8px;
+  color: #0d5b43;
+  font-size: 20px;
+}
+
+.team-empty-state p {
+  max-width: 420px;
+  margin: 0 auto 18px;
+  color: #747e7a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.team-empty-state button {
+  min-height: 42px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 11px;
+  background: #0d5b43;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.team-empty-state button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   Information Card
+=========================== */
+
+.team-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #efd98f;
+  border-left: 5px solid #d4a938;
+  border-radius: 13px;
+  background: #fff8e3;
+}
+
+.team-info-card > div {
+  flex-shrink: 0;
+  font-size: 22px;
+}
+
+.team-info-card p {
+  margin: 0;
+  color: #675f47;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ===========================
+   Loading
+=========================== */
+
+.team-loading {
+  display: flex;
+  min-height: 70vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-spinner {
+  width: 45px;
+  height: 45px;
+  margin-bottom: 14px;
+  border: 4px solid #d8eae2;
+  border-top-color: #0d5b43;
+  border-radius: 50%;
+  animation: team-spin 0.8s linear infinite;
+}
+
+.team-loading p {
+  margin: 0;
+  color: #67726d;
+  font-size: 14px;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width: 800px) {
+  .team-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .team-page {
+    padding: 19px 13px 94px;
+  }
+
+  .team-header {
+    align-items: flex-start;
+  }
+
+  .team-header h1 {
+    font-size: 26px;
+  }
+
+  .team-refresh-button {
+    padding: 9px 12px;
+  }
+
+  .team-referral-card {
+    align-items: flex-start;
+    padding: 21px;
+  }
+
+  .team-referral-code-row h2 {
+    font-size: 24px;
+  }
+
+  .team-referral-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 21px;
+    font-size: 34px;
+  }
+
+  .team-member-card {
+    align-items: flex-start;
+  }
+
+  .team-member-earning {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-header {
+    flex-direction: column;
+  }
+
+  .team-error {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .team-referral-card {
+    flex-direction: column;
+  }
+
+  .team-referral-icon {
+    display: none;
+  }
+
+  .team-referral-code-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .team-referral-link {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .team-referral-link span {
+    width: 100%;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .team-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .team-member-card {
+    flex-wrap: wrap;
+  }
+
+  .team-member-info {
+    min-width: calc(100% - 70px);
+  }
+
+  .team-member-earning {
+    width: 100%;
+    padding-top: 11px;
+    border-top: 1px solid #edf0ee;
+    text-align: left;
+  }
+}

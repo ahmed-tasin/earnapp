@@ -1,0 +1,176 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f7f6;
+}
+
+.user-register-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 15px;
+  background: linear-gradient(135deg, #0d5b43, #0b7b57);
+}
+
+.user-register-card {
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 35px 30px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.register-logo {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d5b43, #c79c28);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.user-register-card h1 {
+  text-align: center;
+  color: #0d5b43;
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.register-subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.register-message {
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.register-message.success {
+  background: #e8f8ef;
+  color: #198754;
+}
+
+.register-message.error {
+  background: #ffe8e8;
+  color: #dc3545;
+}
+
+.register-form-group {
+  margin-bottom: 18px;
+}
+
+.register-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.register-form-group label span {
+  color: #888;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.register-form-group input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #e3e3e3;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.register-form-group input:focus {
+  border-color: #0d5b43;
+  box-shadow: 0 0 0 4px rgba(13, 91, 67, 0.12);
+}
+
+.register-form-group input::placeholder {
+  color: #aaa;
+}
+
+.register-submit-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0d5b43, #0b7b57);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.register-submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(13, 91, 67, 0.25);
+}
+
+.register-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.register-login-link {
+  text-align: center;
+  margin-top: 22px;
+  color: #666;
+  font-size: 14px;
+}
+
+.register-login-link a {
+  color: #c79c28;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .user-register-card {
+    padding: 28px 22px;
+    border-radius: 18px;
+  }
+
+  .user-register-card h1 {
+    font-size: 26px;
+  }
+
+  .register-logo {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .register-form-group input {
+    padding: 13px;
+  }
+
+  .register-submit-button {
+    padding: 14px;
+  }
+}
