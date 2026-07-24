@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Navigate,
   Outlet,
@@ -24,89 +23,38 @@ import Profile from "./pages/Profile";
 
 function UserLayout() {
   return (
-    <>
-      <Outlet />
+    <div className="user-layout">
+      <main className="user-layout-content">
+        <Outlet />
+      </main>
+
       <BottomNavigation />
-    </>
+    </div>
   );
 }
 
 function UserApp() {
   return (
     <Routes>
-      <Route
-        path="login"
-        element={<UserLogin />}
-      />
-
-      <Route
-        path="register"
-        element={<Register />}
-      />
+      <Route path="login" element={<UserLogin />} />
+      <Route path="register" element={<Register />} />
 
       <Route element={<UserProtectedRoute />}>
         <Route element={<UserLayout />}>
-          <Route
-            index
-            element={<HomePage />}
-          />
-
-          <Route
-            path="home"
-            element={<HomePage />}
-          />
-
-          <Route
-            path="wallet"
-            element={<Wallet />}
-          />
-
-          <Route
-            path="packages"
-            element={<Packages />}
-          />
-
-          <Route
-            path="deposit"
-            element={<Deposit />}
-          />
-
-          <Route
-            path="withdraw"
-            element={<Withdraw />}
-          />
-
-          <Route
-            path="transactions"
-            element={<Transactions />}
-          />
-
-          <Route
-            path="team"
-            element={<Team />}
-          />
-
-          <Route
-            path="notifications"
-            element={<Notifications />}
-          />
-
-          <Route
-            path="profile"
-            element={<Profile />}
-          />
+          <Route index element={<HomePage />} />
+          <Route path="home" element={<HomePage />} />
+          <Route path="packages" element={<Packages />} />
+          <Route path="wallet" element={<Wallet />} />
+          <Route path="deposit" element={<Deposit />} />
+          <Route path="withdraw" element={<Withdraw />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="team" element={<Team />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Route>
 
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to="/"
-            replace
-          />
-        }
-      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
