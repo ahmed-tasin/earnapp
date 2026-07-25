@@ -102,11 +102,11 @@ function Deposit() {
       }
 
       const depositData = {
-        amount: Number(formData.amount),
-        method: formData.method,
-        senderNumber: formData.senderNumber.trim(),
-        transactionId: formData.transactionId.trim(),
-      };
+  amount: Number(formData.amount),
+  paymentMethod: formData.method,
+  senderNumber: formData.senderNumber.trim(),
+  trxId: formData.transactionId.trim(),
+};
 
       const response = await axios.post(
         `${API_URL}/wallet/deposit`,

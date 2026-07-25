@@ -255,13 +255,13 @@ exports.suspendUser = async (userId, adminId) => {
         throw error;
     }
 
-    if (user.status === "blocked") {
+    if (user.status === "suspended") {
         const error = new Error("User is already suspended");
         error.statusCode = 400;
         throw error;
     }
 
-    user.status = "blocked";
+    user.status = "suspended";
     await user.save();
 
     await notificationService.createNotification(

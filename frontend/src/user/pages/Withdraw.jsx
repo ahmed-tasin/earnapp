@@ -83,10 +83,10 @@ function Withdraw() {
       }
 
       const withdrawData = {
-        amount: Number(formData.amount),
-        method: formData.method,
-        accountNumber: formData.accountNumber.trim(),
-      };
+  amount: Number(formData.amount),
+  paymentMethod: formData.method,
+  accountNumber: formData.accountNumber.trim(),
+};
 
       const response = await axios.post(
         `${API_URL}/wallet/withdraw`,
