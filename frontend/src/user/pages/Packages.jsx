@@ -201,7 +201,7 @@ function Packages() {
       setBuyingPackageId(packageId);
 
       const response = await axios.post(
-        `${API_URL}/investments/buy`,
+        `${API_URL}/packages/buy`,
         {
           packageId,
         },

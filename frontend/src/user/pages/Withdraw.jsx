@@ -89,7 +89,7 @@ function Withdraw() {
       };
 
       const response = await axios.post(
-        `${API_URL}/withdraw`,
+        `${API_URL}/wallet/withdraw`,
         withdrawData,
         {
           headers: {

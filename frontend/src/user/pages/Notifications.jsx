@@ -98,7 +98,7 @@ function Notifications() {
     try {
       const token = localStorage.getItem("userToken");
 
-      await axios.patch(
+      await axios.put(
         `${API_URL}/notifications/${id}/read`,
         {},
         {
@@ -128,7 +128,7 @@ function Notifications() {
     try {
       const token = localStorage.getItem("userToken");
 
-      await axios.patch(
+      await axios.put(
         `${API_URL}/notifications/read-all`,
         {},
         {

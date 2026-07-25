@@ -109,7 +109,7 @@ function Deposit() {
       };
 
       const response = await axios.post(
-        `${API_URL}/deposit`,
+        `${API_URL}/wallet/deposit`,
         depositData,
         {
           headers: {
