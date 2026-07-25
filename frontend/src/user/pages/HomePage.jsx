@@ -463,7 +463,7 @@ function HomePage() {
           <button
             type="button"
             onClick={() =>
-              navigate("/investments")
+              navigate("/packages")
             }
           >
             View all
@@ -608,7 +608,7 @@ function HomePage() {
           <button
             type="button"
             onClick={() =>
-              navigate("/referral")
+              navigate("/team")
             }
           >
             <span>🔗</span>
