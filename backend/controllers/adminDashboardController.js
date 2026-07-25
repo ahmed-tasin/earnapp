@@ -107,9 +107,13 @@ exports.updateUser = asyncHandler(async (req, res) => {
     });
 });
 
-exports.getAllInvestments = async () => {
-  return await Investment.find()
-    .populate("userId", "username phone")
-    .populate("packageId", "name")
-    .sort({ createdAt: -1 });
-};
+exports.getAllInvestments = asyncHandler(async (req, res) => {
+  const investments =
+    await adminDashboardService.getAllInvestments();
+
+  res.status(200).json({
+    success: true,
+    total: investments.length,
+    investments,
+  });
+});

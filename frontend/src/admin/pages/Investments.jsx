@@ -49,58 +49,54 @@ function Investments() {
     [navigate]
   );
 
-  const loadInvestments = (async () => {
-    try {
-      setLoading(true);
-      setMessage("");
+const loadInvestments = useCallback(async () => {
+  try {
+    setLoading(true);
+    setMessage("");
 
-      const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("adminToken");
 
-      if (!token) {
-        navigate("/admin/login", {
-          replace: true,
-        });
-
-        return;
-      }
-
-      const response = await axios.get(
-        `${API_URL}/admin/investments`,
-        
-        getAuthConfig()
-      );
-
-      const investmentList =
-        response.data?.investments ||
-        response.data?.data?.investments ||
-        response.data?.data ||
-        [];
-
-      setInvestments(
-        Array.isArray(investmentList)
-          ? investmentList
-          : []
-      );
-    } catch (error) {
-      console.error(
-        "Investments load error:",
-        error
-      );
-
-      handleAuthError(error);
-
-      setMessage(
-        error.response?.data?.message ||
-          "Investments load failed"
-      );
-    } finally {
-      setLoading(false);
+    if (!token) {
+      navigate("/admin/login", {
+        replace: true,
+      });
+      return;
     }
-  }, [
-    getAuthConfig,
-    handleAuthError,
-    navigate,
-  ]);
+
+    const response = await axios.get(
+      `${API_URL}/admin/investments`,
+      getAuthConfig()
+    );
+
+    const investmentList =
+      response.data?.investments ||
+      response.data?.data?.investments ||
+      response.data?.data ||
+      [];
+
+    setInvestments(
+      Array.isArray(investmentList)
+        ? investmentList
+        : []
+    );
+  } catch (error) {
+    console.error(
+      "Investments load error:",
+      error.response?.data || error.message
+    );
+
+    handleAuthError(error);
+
+    setMessage(
+      error.response?.data?.message ||
+      "Investments load failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+}, [getAuthConfig, handleAuthError, navigate]);
+
+
 
   useEffect(() => {
     loadInvestments();

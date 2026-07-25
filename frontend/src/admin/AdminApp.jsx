@@ -50,10 +50,7 @@ function AdminApp() {
         }
       />
 
-      <Route
-  path="investments"
-  element={<Investments />}
-/>
+
 
       <Route
         path="*"
