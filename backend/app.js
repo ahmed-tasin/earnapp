@@ -16,7 +16,10 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
-
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://earnapp-frontend.onrender.com",
+];
 
 
 const errorMiddleware = require("./middleware/errorMiddleware");
@@ -27,11 +30,33 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.FRONTEND_URL],
+    origin: function (origin, callback) {
+      // Postman/server requests may not contain an origin
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-  }),
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+
+    optionsSuccessStatus: 204,
+  })
 );
 
 const limiter = rateLimit({
