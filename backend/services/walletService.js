@@ -291,9 +291,9 @@ exports.withdraw = async (userId, data) => {
     throw error;
   }
 
-  if (user.status === "blocked") {
+  if (user.status === "suspended") {
     const error = new Error(
-      "Your account is blocked",
+      "Your account is suspended",
     );
 
     error.statusCode = 403;

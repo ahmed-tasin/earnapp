@@ -139,7 +139,7 @@ exports.login = async (data) => {
         user.password
     );
 
-    if (user.status === "blocked") {
+    if (user.status === "suspended") {
     const error = new Error(
         "Your account has been suspended. Please contact support."
     );

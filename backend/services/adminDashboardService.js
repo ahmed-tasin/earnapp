@@ -374,10 +374,10 @@ exports.updateUser = async (userId, updateData, adminId) => {
     // Validate status
     if (
         updates.status &&
-        !["active", "blocked"].includes(updates.status)
+        !["active", "suspended"].includes(updates.status)
     ) {
         const error = new Error(
-            "Status must be either active or blocked"
+            "Status must be either active or suspended"
         );
         error.statusCode = 400;
         throw error;
@@ -398,10 +398,10 @@ exports.updateUser = async (userId, updateData, adminId) => {
     // Admin cannot block own account
     if (
         userId.toString() === adminId.toString() &&
-        updates.status === "blocked"
+        updates.status === "suspended"
     ) {
         const error = new Error(
-            "You cannot block your own account"
+            "You cannot suspend your own account"
         );
         error.statusCode = 400;
         throw error;
