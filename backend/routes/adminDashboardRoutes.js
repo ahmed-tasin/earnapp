@@ -169,20 +169,7 @@ router.get(
 );
 
 
-router.get(
-  "/dashboard",
-  authMiddleware,
-  adminMiddleware,
-  asyncHandler(async (req, res) => {
-    const stats =
-      await walletService.getDashboardStats();
 
-    res.json({
-      success: true,
-      stats,
-    });
-  })
-);
 
 
 router.get(
