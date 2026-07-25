@@ -9,7 +9,7 @@ import "../styles/Register.css";
 
 const API_URL =
   process.env.REACT_APP_API_URL ||
-  "http://localhost:5000/api";
+  "https://earnapp-n5b2.onrender.com/api";
 
 function Register() {
   const navigate = useNavigate();
