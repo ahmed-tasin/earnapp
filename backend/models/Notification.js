@@ -23,14 +23,15 @@ const notificationSchema = new mongoose.Schema({
 
     type: {
         type: String,
-        enum: [
-            "deposit",
-            "withdraw",
-            "profit",
-            "referral",
-            "package",
-            "system"
-        ],
+       enum: [
+  "deposit",
+  "withdraw",
+  "profit",
+  "referral",
+  "package",
+  "checkin",
+  "system"
+],
         default: "system"
     },
 
