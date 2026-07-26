@@ -20,6 +20,7 @@ import Transactions from "./pages/Transactions";
 import Team from "./pages/Team";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
+import CheckIn from "./pages/CheckIn";
 
 function UserLayout() {
   return (
@@ -51,6 +52,7 @@ function UserApp() {
           <Route path="team" element={<Team />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="checkin" element={<CheckIn />} />
         </Route>
       </Route>
 

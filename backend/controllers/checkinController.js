@@ -1,87 +1,51 @@
-const Checkin = require("../models/Checkin");
-const User = require("../models/User");
+const checkinService = require("../services/checkinService");
 
-exports.dailyCheckin = async (req, res) => {
-    try {
+const getCheckin = async (req, res, next) => {
+  try {
+    const result = await checkinService.getCheckinStatus(req.user.id);
 
-        const userId = req.user.id;
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-        const today = new Date();
+const dailyCheckin = async (req, res, next) => {
+  try {
+    const result = await checkinService.performDailyCheckin(
+      req.user.id
+    );
 
-        today.setHours(0, 0, 0, 0);
+    res.status(200).json({
+      success: true,
+      message: "Daily check-in successful",
+      ...result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-        const tomorrow = new Date(today);
+const getCheckinHistory = async (req, res, next) => {
+  try {
+    const history = await checkinService.getCheckinHistory(
+      req.user.id
+    );
 
-        tomorrow.setDate(tomorrow.getDate() + 1);
+    res.status(200).json({
+      success: true,
+      history,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-        const existing = await Checkin.findOne({
-            userId,
-            checkinDate: {
-                $gte: today,
-                $lt: tomorrow
-            }
-        });
-
-        if (existing) {
-            return res.status(400).json({
-                success: false,
-                message: "Already checked in today"
-            });
-        }
-
-        const last = await Checkin.findOne({
-            userId
-        }).sort({ createdAt: -1 });
-
-        let streak = 1;
-
-        if (last) {
-
-            const yesterday = new Date();
-
-            yesterday.setDate(yesterday.getDate() - 1);
-
-            yesterday.setHours(0, 0, 0, 0);
-
-            const lastDate = new Date(last.checkinDate);
-
-            lastDate.setHours(0, 0, 0, 0);
-
-            if (lastDate.getTime() === yesterday.getTime()) {
-                streak = last.streak + 1;
-            }
-
-        }
-
-        const reward = streak >= 7 ? 15 : 10;
-
-        await Checkin.create({
-            userId,
-            checkinDate: new Date(),
-            rewardAmount: reward,
-            streak
-        });
-
-        const user = await User.findById(userId);
-
-        user.balance += reward;
-        user.totalEarning += reward;
-
-        await user.save();
-
-        res.json({
-            success: true,
-            reward,
-            streak,
-            balance: user.balance
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-
-    }
+module.exports = {
+  getCheckin,
+  dailyCheckin,
+  getCheckinHistory,
 };

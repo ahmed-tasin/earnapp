@@ -1,13 +1,19 @@
 const express = require("express");
 
-const router = express.Router();
+const {
+  getCheckin,
+  dailyCheckin,
+  getCheckinHistory,
+} = require("../controllers/checkinController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
-const {
-    dailyCheckin
-} = require("../controllers/checkinController");
+const router = express.Router();
 
+
+
+router.get("/", authMiddleware, getCheckin);
 router.post("/", authMiddleware, dailyCheckin);
+router.get("/history", authMiddleware, getCheckinHistory);
 
 module.exports = router;
