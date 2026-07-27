@@ -10,15 +10,50 @@ const notificationService = require("./notificationService");
 
 exports.getPackages = async () => {
 
-    return await Package.find({
+    const packages = await Package.find({
         status: "active"
     });
 
+    await Promise.all(
+        packages.map(async (pkg) => {
+            let shouldSave = false;
+
+            if (!pkg.saleEndsAt) {
+                pkg.saleEndsAt = new Date(
+                    Date.now() +
+                    (Number(pkg.totalDays) || 0) *
+                    24 *
+                    60 *
+                    60 *
+                    1000
+                );
+                shouldSave = true;
+            }
+
+            if (pkg.totalUnits === undefined) {
+                pkg.totalUnits = 100;
+                shouldSave = true;
+            }
+
+            if (pkg.soldUnits === undefined) {
+                pkg.soldUnits = 0;
+                shouldSave = true;
+            }
+
+            if (shouldSave) {
+                await pkg.save();
+            }
+        })
+    );
+
+    return packages;
 };
 
 // ================= CREATE PACKAGE =================
 
 exports.createPackage = async (data) => {
+
+    const totalDays = Number(data.totalDays) || 0;
 
     return await Package.create({
 
@@ -28,7 +63,21 @@ exports.createPackage = async (data) => {
 
         dailyReturn: data.dailyReturn,
 
-        totalDays: data.totalDays,
+        totalDays,
+
+        totalUnits: Math.max(
+            1,
+            Number(data.totalUnits) || 100
+        ),
+
+        soldUnits: 0,
+
+        saleEndsAt:
+            data.saleEndsAt ||
+            new Date(
+                Date.now() +
+                totalDays * 24 * 60 * 60 * 1000
+            ),
 
         status: "active"
 
@@ -56,12 +105,19 @@ exports.buyPackage = async (userId, packageId) => {
         if (!pkg || pkg.status !== "active")
             throw new Error("Package not found");
 
+        if (pkg.soldUnits >= pkg.totalUnits)
+            throw new Error("Package is sold out");
+
         if (user.balance < pkg.amount)
             throw new Error("Insufficient balance");
 
         user.balance -= pkg.amount;
 
         await user.save({ session });
+
+        pkg.soldUnits += 1;
+
+        await pkg.save({ session });
 
         const investment = await Investment.create([{
 
@@ -129,4 +185,3 @@ exports.buyPackage = async (userId, packageId) => {
     }
 
 };
-

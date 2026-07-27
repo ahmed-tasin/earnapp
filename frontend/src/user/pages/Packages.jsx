@@ -7,6 +7,26 @@ import "../styles/Packages.css";
 const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
+const PACKAGE_IMAGES = {
+  starter: "/images/packages/starter-package.png",
+  bronze: "/images/packages/bronze-package.png",
+  silver: "/images/packages/silver-package.png",
+  gold: "/images/packages/gold-package.png",
+  diamond: "/images/packages/diamond-package.png",
+};
+
+const getPackageImage = (packageName = "") => {
+  const normalizedName = packageName.toLowerCase();
+
+  const packageType = Object.keys(PACKAGE_IMAGES).find((type) =>
+    normalizedName.includes(type),
+  );
+
+  return packageType
+    ? PACKAGE_IMAGES[packageType]
+    : "/images/packages/starter-package.png";
+};
+
 function Packages() {
   const navigate = useNavigate();
 
@@ -16,14 +36,14 @@ function Packages() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [buyingPackageId, setBuyingPackageId] = useState("");
+  const [currentTime, setCurrentTime] = useState(Date.now());
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
   const getToken = () =>
-    localStorage.getItem("userToken") ||
-    localStorage.getItem("token");
+    localStorage.getItem("userToken") || localStorage.getItem("token");
 
   const showMessage = (text, type = "success") => {
     setMessage(text);
@@ -36,6 +56,10 @@ function Packages() {
   };
 
   const normalizePackages = (responseData) => {
+    if (Array.isArray(responseData)) {
+      return responseData;
+    }
+
     const packageList =
       responseData?.packages ||
       responseData?.data?.packages ||
@@ -73,7 +97,7 @@ function Packages() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          })
+          }),
         );
       }
 
@@ -91,23 +115,20 @@ function Packages() {
 
       if (walletResponse?.status === "fulfilled") {
         const walletData =
-  walletResponse.value.data?.dashboard ||
-  walletResponse.value.data?.data?.dashboard ||
-  walletResponse.value.data?.wallet ||
-  {};
+          walletResponse.value.data?.dashboard ||
+          walletResponse.value.data?.data?.dashboard ||
+          walletResponse.value.data?.wallet ||
+          {};
 
         setWalletBalance(Number(walletData.balance) || 0);
       }
     } catch (err) {
-      console.error(
-        "Packages fetch error:",
-        err.response?.data || err.message
-      );
+      console.error("Packages fetch error:", err.response?.data || err.message);
 
       setError(
         err.response?.data?.message ||
           err.message ||
-          "Failed to load investment packages"
+          "Failed to load investment packages",
       );
     } finally {
       setLoading(false);
@@ -118,6 +139,14 @@ function Packages() {
   useEffect(() => {
     fetchPackages();
   }, [fetchPackages]);
+
+  useEffect(() => {
+    const timerId = window.setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(timerId);
+  }, []);
 
   const activePackages = useMemo(() => {
     return packages.filter((item) => {
@@ -163,6 +192,48 @@ function Packages() {
     return dailyReturn * totalDays;
   };
 
+  const getCountdown = (packageItem) => {
+    const explicitEndDate = packageItem.saleEndsAt || packageItem.expiresAt;
+
+    const createdAt = new Date(packageItem.createdAt || currentTime).getTime();
+
+    const fallbackEndDate =
+      createdAt + (Number(packageItem.totalDays) || 0) * 24 * 60 * 60 * 1000;
+
+    const endTime = explicitEndDate
+      ? new Date(explicitEndDate).getTime()
+      : fallbackEndDate;
+
+    const remainingMilliseconds = Math.max(0, endTime - currentTime);
+
+    const totalSeconds = Math.floor(remainingMilliseconds / 1000);
+
+    return {
+      days: Math.floor(totalSeconds / 86400),
+      hours: Math.floor((totalSeconds % 86400) / 3600),
+      minutes: Math.floor((totalSeconds % 3600) / 60),
+      seconds: totalSeconds % 60,
+    };
+  };
+
+  const getPurchaseProgress = (packageItem) => {
+    const totalUnits = Math.max(1, Number(packageItem.totalUnits) || 100);
+
+    const soldUnits = Math.min(
+      totalUnits,
+      Math.max(
+        0,
+        Number(packageItem.soldUnits ?? packageItem.purchasedUnits) || 0,
+      ),
+    );
+
+    return {
+      totalUnits,
+      soldUnits,
+      percentage: Math.round((soldUnits / totalUnits) * 100),
+    };
+  };
+
   const handleBuyPackage = async (packageItem) => {
     const packageId = packageItem._id || packageItem.id;
     const packageAmount = Number(packageItem.amount) || 0;
@@ -182,15 +253,15 @@ function Packages() {
     if (walletBalance < packageAmount) {
       showMessage(
         "Insufficient wallet balance. Please deposit first.",
-        "error"
+        "error",
       );
       return;
     }
 
     const confirmed = window.confirm(
       `Buy ${packageItem.name || "this package"} for ৳${formatMoney(
-        packageAmount
-      )}?`
+        packageAmount,
+      )}?`,
     );
 
     if (!confirmed) {
@@ -210,7 +281,7 @@ function Packages() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const updatedBalance =
@@ -222,24 +293,37 @@ function Packages() {
         setWalletBalance(Number(updatedBalance) || 0);
       } else {
         setWalletBalance((previousBalance) =>
-          Math.max(0, previousBalance - packageAmount)
+          Math.max(0, previousBalance - packageAmount),
         );
       }
 
+      setPackages((previousPackages) =>
+        previousPackages.map((item) => {
+          const itemId = item._id || item.id;
+
+          if (itemId !== packageId) {
+            return item;
+          }
+
+          return {
+            ...item,
+            soldUnits: (Number(item.soldUnits) || 0) + 1,
+          };
+        }),
+      );
+
       showMessage(
-        response.data?.message ||
-          "Investment package purchased successfully"
+        response.data?.message || "Investment package purchased successfully",
       );
     } catch (err) {
       console.error(
         "Package purchase error:",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
 
       showMessage(
-        err.response?.data?.message ||
-          "Failed to purchase package",
-        "error"
+        err.response?.data?.message || "Failed to purchase package",
+        "error",
       );
     } finally {
       setBuyingPackageId("");
@@ -262,9 +346,7 @@ function Packages() {
       <div className="packages-container">
         <header className="packages-header">
           <div>
-            <p className="packages-header-label">
-              Investment plans
-            </p>
+            <p className="packages-header-label">Investment plans</p>
 
             <h1>Packages</h1>
           </div>
@@ -290,10 +372,7 @@ function Packages() {
         </header>
 
         {message && (
-          <div
-            className={`packages-message ${messageType}`}
-            role="alert"
-          >
+          <div className={`packages-message ${messageType}`} role="alert">
             {message}
           </div>
         )}
@@ -321,9 +400,7 @@ function Packages() {
 
             <h2>৳{formatMoney(walletBalance)}</h2>
 
-            <p>
-              Your package amount will be deducted from this balance.
-            </p>
+            <p>Your package amount will be deducted from this balance.</p>
           </div>
 
           <Link to="/deposit" className="packages-deposit-link">
@@ -347,8 +424,8 @@ function Packages() {
             <h2>No Packages Available</h2>
 
             <p>
-              There are currently no active investment packages.
-              Please check again later.
+              There are currently no active investment packages. Please check
+              again later.
             </p>
 
             <button
@@ -362,40 +439,34 @@ function Packages() {
         ) : (
           <section className="packages-grid">
             {activePackages.map((packageItem, index) => {
-              const packageId =
-                packageItem._id || packageItem.id || index;
+              const packageId = packageItem._id || packageItem.id || index;
 
-              const name =
-                packageItem.name || `Package ${index + 1}`;
+              const name = packageItem.name || `Package ${index + 1}`;
 
               const amount = Number(packageItem.amount) || 0;
-              const dailyReturn =
-                Number(packageItem.dailyReturn) || 0;
-              const totalDays =
-                Number(packageItem.totalDays) || 0;
+              const dailyReturn = Number(packageItem.dailyReturn) || 0;
+              const totalDays = Number(packageItem.totalDays) || 0;
 
-              const totalProfit =
-                calculateTotalProfit(packageItem);
+              const totalProfit = calculateTotalProfit(packageItem);
 
-              const totalReturn =
-                calculateTotalReturn(packageItem);
+              const totalReturn = calculateTotalReturn(packageItem);
 
               const canAfford = walletBalance >= amount;
               const isBuying = buyingPackageId === packageId;
+              const countdown = getCountdown(packageItem);
+              const purchaseProgress = getPurchaseProgress(packageItem);
+              const isSoldOut =
+                purchaseProgress.soldUnits >= purchaseProgress.totalUnits;
 
               return (
                 <article
                   key={packageId}
                   className={
-                    index === 1
-                      ? "package-card featured"
-                      : "package-card"
+                    index === 1 ? "package-card featured" : "package-card"
                   }
                 >
                   {index === 1 && (
-                    <span className="package-featured-badge">
-                      Popular
-                    </span>
+                    <span className="package-featured-badge">Popular</span>
                   )}
 
                   <div className="package-card-header">
@@ -405,6 +476,14 @@ function Packages() {
                       <p>Investment package</p>
                       <h3>{name}</h3>
                     </div>
+                  </div>
+
+                  <div className="package-image-wrapper">
+                    <img
+                      src={getPackageImage(name)}
+                      alt={`${name} investment package`}
+                      className="package-image"
+                    />
                   </div>
 
                   <div className="package-price">
@@ -419,12 +498,56 @@ function Packages() {
                     </p>
                   )}
 
+                  <div className="package-countdown">
+                    <span className="package-countdown-title">
+                      Package closes in
+                    </span>
+
+                    <div className="package-countdown-grid">
+                      {[
+                        ["Day", countdown.days],
+                        ["Hour", countdown.hours],
+                        ["Minute", countdown.minutes],
+                        ["Second", countdown.seconds],
+                      ].map(([label, value]) => (
+                        <div key={label}>
+                          <strong>{String(value).padStart(2, "0")}</strong>
+                          <span>{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="package-purchase-progress">
+                    <div className="package-progress-heading">
+                      <span>{purchaseProgress.percentage}% purchased</span>
+
+                      <strong>
+                        {purchaseProgress.soldUnits}/
+                        {purchaseProgress.totalUnits} units
+                      </strong>
+                    </div>
+
+                    <div
+                      className="package-progress-track"
+                      role="progressbar"
+                      aria-label={`${name} purchase progress`}
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow={purchaseProgress.percentage}
+                    >
+                      <span
+                        style={{
+                          width: `${purchaseProgress.percentage}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
                   <div className="package-benefits">
                     <div className="package-benefit-row">
                       <span>Daily Return</span>
-                      <strong>
-                        ৳{formatMoney(dailyReturn)}
-                      </strong>
+                      <strong>৳{formatMoney(dailyReturn)}</strong>
                     </div>
 
                     <div className="package-benefit-row">
@@ -434,48 +557,38 @@ function Packages() {
 
                     <div className="package-benefit-row">
                       <span>Total Profit</span>
-                      <strong>
-                        ৳{formatMoney(totalProfit)}
-                      </strong>
+                      <strong>৳{formatMoney(totalProfit)}</strong>
                     </div>
 
                     <div className="package-benefit-row total">
                       <span>Expected Total Return</span>
-                      <strong>
-                        ৳{formatMoney(totalReturn)}
-                      </strong>
+                      <strong>৳{formatMoney(totalReturn)}</strong>
                     </div>
                   </div>
 
                   <button
                     type="button"
                     className={
-                      canAfford
+                      canAfford && !isSoldOut
                         ? "package-buy-button"
                         : "package-buy-button insufficient"
                     }
-                    onClick={() =>
-                      handleBuyPackage(packageItem)
-                    }
-                    disabled={isBuying}
+                    onClick={() => handleBuyPackage(packageItem)}
+                    disabled={isBuying || isSoldOut}
                   >
-                    {isBuying
-                      ? "Processing..."
-                      : canAfford
-                        ? "Buy Package"
-                        : "Insufficient Balance"}
+                    {isSoldOut
+                      ? "Sold Out"
+                      : isBuying
+                        ? "Processing..."
+                        : canAfford
+                          ? "Buy Package"
+                          : "Insufficient Balance"}
                   </button>
 
                   {!canAfford && (
-                    <Link
-                      to="/deposit"
-                      className="package-add-balance-link"
-                    >
+                    <Link to="/deposit" className="package-add-balance-link">
                       Deposit ৳
-                      {formatMoney(
-                        Math.max(0, amount - walletBalance)
-                      )}{" "}
-                      more
+                      {formatMoney(Math.max(0, amount - walletBalance))} more
                     </Link>
                   )}
                 </article>
@@ -491,9 +604,9 @@ function Packages() {
             <h3>Investment Information</h3>
 
             <p>
-              Review the package amount, daily return and duration
-              carefully before purchasing. Once purchased, the
-              investment amount may not be refundable.
+              Review the package amount, daily return and duration carefully
+              before purchasing. Once purchased, the investment amount may not
+              be refundable.
             </p>
           </div>
         </section>

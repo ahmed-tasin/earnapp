@@ -308,6 +308,98 @@
 }
 
 /* ===========================
+   Countdown & Purchase Progress
+=========================== */
+
+.package-countdown{
+    margin:18px 0 14px;
+    padding:15px;
+    border:1px solid rgba(212,169,56,.42);
+    border-radius:14px;
+    background:#f8fbf9;
+}
+
+.package-countdown-title{
+    display:block;
+    margin-bottom:10px;
+    color:#6f7975;
+    font-size:12px;
+    font-weight:700;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.package-countdown-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.package-countdown-grid div{
+    min-width:0;
+    padding:9px 3px;
+    border-radius:10px;
+    background:#0d5b43;
+    color:#fff;
+    text-align:center;
+}
+
+.package-countdown-grid strong,
+.package-countdown-grid span{
+    display:block;
+}
+
+.package-countdown-grid strong{
+    color:#f2cf67;
+    font-size:18px;
+}
+
+.package-countdown-grid span{
+    margin-top:3px;
+    font-size:9px;
+}
+
+.package-purchase-progress{
+    margin-bottom:20px;
+}
+
+.package-progress-heading{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:8px;
+    color:#66716d;
+    font-size:12px;
+}
+
+.package-progress-heading strong{
+    color:#173c30;
+}
+
+.package-progress-track{
+    height:12px;
+    overflow:hidden;
+    border:1px solid #d9e3de;
+    border-radius:999px;
+    background:#edf2ef;
+}
+
+.package-progress-track span{
+    display:block;
+    width:0;
+    height:100%;
+    border-radius:inherit;
+    background:
+      repeating-linear-gradient(
+        135deg,
+        #d4a938 0 9px,
+        #edca69 9px 18px
+      );
+    transition:width .4s ease;
+}
+
+/* ===========================
    Benefits
 =========================== */
 
@@ -530,4 +622,23 @@
     flex-direction:column;
 }
 
+}
+
+
+
+.package-image-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 169, 56, 0.45);
+  border-radius: 16px;
+  background: #edf8f3;
+}
+
+.package-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }

@@ -20,6 +20,11 @@ exports.createPackageValidator = [
         .isInt({ gt: 0 })
         .withMessage("Total days must be greater than 0"),
 
+    body("totalUnits")
+        .optional()
+        .isInt({ gt: 0 })
+        .withMessage("Total units must be greater than 0"),
+
     (req, res, next) => {
 
         const errors = validationResult(req);

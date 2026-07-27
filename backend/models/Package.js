@@ -10,6 +10,22 @@ const packageSchema = new mongoose.Schema({
 
     totalDays:Number,
 
+    totalUnits: {
+        type: Number,
+        min: 1,
+        default: 100
+    },
+
+    soldUnits: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+
+    saleEndsAt: {
+        type: Date
+    },
+
     status:{
         type:String,
         enum:["active","inactive"],
