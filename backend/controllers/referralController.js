@@ -3,89 +3,62 @@ const ReferralCommission = require("../models/ReferralCommission");
 const referralService = require("../services/referralService");
 const asyncHandler = require("../utils/asyncHandler");
 
-
 exports.getReferralInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
 
-    try {
+    const commissions = await ReferralCommission.find({
+      fromUser: req.user.id,
+    })
+      .sort({ createdAt: -1 })
+      .limit(20);
 
-        const user = await User.findById(req.user.id);
+    res.json({
+      success: true,
 
-        const commissions = await ReferralCommission.find({
-            fromUser: req.user.id
-        })
-            .sort({ createdAt: -1 })
-            .limit(20);
+      referralCode: user.referralCode,
 
-        res.json({
+      referralLink: `${(
+        process.env.FRONTEND_URL || "http://localhost:3000"
+      ).replace(/\/$/, "")}/register?ref=${encodeURIComponent(
+        user.referralCode,
+      )}`,
 
-            success: true,
+      totalCommission: user.referralCommissionEarned,
 
-            referralCode: user.referralCode,
+      totalReferrals: user.directReferrals.length,
 
-            referralLink:
-                `${process.env.FRONTEND_URL}/?ref=${user.referralCode}`,
+      commissions,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
 
-            totalCommission:
-                user.referralCommissionEarned,
-
-            totalReferrals:
-                user.directReferrals.length,
-
-            commissions
-
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-
-            success: false,
-
-            message: err.message
-
-        });
-
-    }
-
+      message: err.message,
+    });
+  }
 };
-
-
-
 
 // ================= REFERRAL HISTORY =================
 
 exports.getReferralHistory = asyncHandler(async (req, res) => {
+  const result = await referralService.getReferralHistory(req.user.id);
 
-    const result =
-        await referralService.getReferralHistory(
-            req.user.id
-        );
+  res.json({
+    success: true,
 
-    res.json({
-
-        success: true,
-
-        ...result
-
-    });
-
+    ...result,
+  });
 });
-
 
 // ================= REFERRAL SUMMARY =================
 
 exports.getReferralSummary = asyncHandler(async (req, res) => {
+  const summary = await referralService.getReferralSummary(req.user.id);
 
-    const summary = await referralService.getReferralSummary(
-        req.user.id
-    );
+  res.json({
+    success: true,
 
-    res.json({
-
-        success: true,
-
-        summary
-
-    });
-
+    summary,
+  });
 });

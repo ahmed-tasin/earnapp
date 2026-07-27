@@ -66,14 +66,9 @@ function Team() {
       const data = response.data?.data || response.data || {};
 
       const referrals =
-        data.directReferrals ||
-        data.referrals ||
-        data.team ||
-        [];
+        data.directReferrals || data.referrals || data.team || [];
 
-      const savedUser = JSON.parse(
-        localStorage.getItem("user") || "{}"
-      );
+      const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
       const referralCode =
         data.referralCode ||
@@ -81,21 +76,18 @@ function Team() {
         savedUser.referralCode ||
         "";
 
-      const referralLink =
-        data.referralLink ||
-        `${window.location.origin}/register?ref=${referralCode}`;
+      const referralLink = referralCode
+        ? `${window.location.origin}/register?ref=${encodeURIComponent(
+            referralCode,
+          )}`
+        : "";
 
       setTeamData({
         referralCode,
         referralLink,
-        directReferrals: Array.isArray(referrals)
-          ? referrals
-          : [],
+        directReferrals: Array.isArray(referrals) ? referrals : [],
         totalTeam:
-          data.totalTeam ??
-          data.totalReferrals ??
-          referrals.length ??
-          0,
+          data.totalTeam ?? data.totalReferrals ?? referrals.length ?? 0,
         totalCommission:
           data.totalCommission ??
           data.referralCommissionEarned ??
@@ -103,15 +95,12 @@ function Team() {
           0,
       });
     } catch (error) {
-      console.error(
-        "Team fetch error:",
-        error.response?.data || error.message
-      );
+      console.error("Team fetch error:", error.response?.data || error.message);
 
       setError(
         error.response?.data?.message ||
           error.message ||
-          "Failed to load team information"
+          "Failed to load team information",
       );
     } finally {
       setLoading(false);
@@ -223,9 +212,7 @@ function Team() {
           >
             <span
               className={
-                refreshing
-                  ? "team-refresh-icon rotating"
-                  : "team-refresh-icon"
+                refreshing ? "team-refresh-icon rotating" : "team-refresh-icon"
               }
             >
               ↻
@@ -235,11 +222,7 @@ function Team() {
           </button>
         </header>
 
-        {copyMessage && (
-          <div className="team-copy-message">
-            {copyMessage}
-          </div>
-        )}
+        {copyMessage && <div className="team-copy-message">{copyMessage}</div>}
 
         {error && (
           <div className="team-error" role="alert">
@@ -267,9 +250,7 @@ function Team() {
 
               <button
                 type="button"
-                onClick={() =>
-                  copyText(teamData.referralCode, "Referral code")
-                }
+                onClick={() => copyText(teamData.referralCode, "Referral code")}
                 disabled={!teamData.referralCode}
               >
                 Copy
@@ -281,9 +262,7 @@ function Team() {
 
               <button
                 type="button"
-                onClick={() =>
-                  copyText(teamData.referralLink, "Referral link")
-                }
+                onClick={() => copyText(teamData.referralLink, "Referral link")}
                 disabled={!teamData.referralLink}
               >
                 Copy Link
@@ -300,9 +279,7 @@ function Team() {
             </button>
           </div>
 
-          <div className="team-referral-icon">
-            👥
-          </div>
+          <div className="team-referral-icon">👥</div>
         </section>
 
         <section className="team-summary-grid">
@@ -360,8 +337,7 @@ function Team() {
               <h3>No team members yet</h3>
 
               <p>
-                Share your referral link and invite people to join your
-                team.
+                Share your referral link and invite people to join your team.
               </p>
 
               <button
@@ -375,25 +351,16 @@ function Team() {
           ) : (
             <div className="team-members-list">
               {teamData.directReferrals.map((member, index) => {
-                const memberId =
-                  member._id ||
-                  member.id ||
-                  `member-${index}`;
+                const memberId = member._id || member.id || `member-${index}`;
 
-                const memberName =
-                  member.name ||
-                  member.username ||
-                  "User";
+                const memberName = member.name || member.username || "User";
 
                 const memberStatus = String(
-                  member.status || "active"
+                  member.status || "active",
                 ).toLowerCase();
 
                 return (
-                  <article
-                    key={memberId}
-                    className="team-member-card"
-                  >
+                  <article key={memberId} className="team-member-card">
                     <div className="team-member-avatar">
                       {memberName.charAt(0).toUpperCase()}
                     </div>
@@ -409,17 +376,10 @@ function Team() {
                         </span>
                       </div>
 
-                      <p>
-                        {member.phone ||
-                          "Contact not available"}
-                      </p>
+                      <p>{member.phone || "Contact not available"}</p>
 
                       <span>
-                        Joined{" "}
-                        {formatDate(
-                          member.createdAt ||
-                            member.joinedAt
-                        )}
+                        Joined {formatDate(member.createdAt || member.joinedAt)}
                       </span>
                     </div>
 
@@ -429,9 +389,7 @@ function Team() {
                       <strong>
                         ৳
                         {formatAmount(
-                          member.commission ||
-                            member.referralCommission ||
-                            0
+                          member.commission || member.referralCommission || 0,
                         )}
                       </strong>
                     </div>
