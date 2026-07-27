@@ -315,6 +315,14 @@ function HomePage() {
 
   return (
     <div className="user-home-page">
+
+       <section className="home-hero-banner">
+    <img
+      src="/images/home/home-banner.png"
+      alt="Nvidia Finance"
+    />
+  </section>
+  
       <header className="user-home-header">
         <div className="user-header-profile">
           {dashboard.user.profilePicture ? (
