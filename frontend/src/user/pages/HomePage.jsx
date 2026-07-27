@@ -21,6 +21,9 @@ const PACKAGE_IMAGES = {
   diamond: "/images/packages/diamond-package.png",
 };
 
+
+
+
 const getPackageImage = (packageName = "") => {
   const normalizedName = packageName.toLowerCase();
   const packageType = Object.keys(PACKAGE_IMAGES).find(
@@ -73,6 +76,11 @@ function HomePage() {
       localStorage.getItem("userToken")
     );
   };
+
+
+
+
+  
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
@@ -250,13 +258,7 @@ function HomePage() {
     ).toLocaleString("en-BD");
   };
 
-  const getInitial = () => {
-    return (
-      dashboard.user?.name
-        ?.charAt(0)
-        ?.toUpperCase() || "U"
-    );
-  };
+
 
   const getPackageCountdown = (packageItem) => {
     const endTime = packageItem.saleEndsAt
@@ -313,6 +315,34 @@ function HomePage() {
     );
   }
 
+
+const siteStartTime = new Date(
+  "2026-07-27T00:00:00+06:00"
+).getTime();
+
+
+
+
+const totalSeconds = Math.floor(
+  Math.max(0, currentTime - siteStartTime) / 1000
+);
+
+const siteRunningTime = {
+  days: Math.floor(totalSeconds / 86400),
+
+  hours: Math.floor(
+    (totalSeconds % 86400) / 3600
+  ),
+
+  minutes: Math.floor(
+    (totalSeconds % 3600) / 60
+  ),
+
+  seconds: totalSeconds % 60,
+};
+
+
+
   return (
     <div className="user-home-page">
 
@@ -322,56 +352,32 @@ function HomePage() {
       alt="Nvidia Finance"
     />
   </section>
+
+
+  <section className="site-running-timer">
+  <h2>সাইট চলছে</h2>
+
+  <div className="site-running-timer-grid">
+    {[
+      ["Day", siteRunningTime.days],
+      ["Hour", siteRunningTime.hours],
+      ["Minute", siteRunningTime.minutes],
+      ["Second", siteRunningTime.seconds],
+    ].map(([label, value]) => (
+      <div key={label}>
+        <strong>
+          {String(value).padStart(2, "0")}
+        </strong>
+
+        <span>{label}</span>
+      </div>
+    ))}
+  </div>
+</section>
+
+
   
-      <header className="user-home-header">
-        <div className="user-header-profile">
-          {dashboard.user.profilePicture ? (
-            <img
-              src={
-                dashboard.user
-                  .profilePicture
-              }
-              alt="Profile"
-              className="user-avatar-image"
-            />
-          ) : (
-            <div className="user-avatar-placeholder">
-              {getInitial()}
-            </div>
-          )}
 
-          <div>
-            <span className="user-welcome-text">
-              Welcome back
-            </span>
-
-            <h1>
-              {dashboard.user.name}
-            </h1>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="notification-button"
-          onClick={() =>
-            navigate("/notifications")
-          }
-          aria-label="Notifications"
-        >
-          🔔
-
-          {dashboard.notifications.length >
-            0 && (
-            <span className="notification-count">
-              {
-                dashboard.notifications
-                  .length
-              }
-            </span>
-          )}
-        </button>
-      </header>
 
       {message && (
         <div className="user-home-message">

@@ -32,6 +32,79 @@ body {
 }
 
 
+
+.site-running-timer {
+  width: 100%;
+  max-width: 520px;
+  margin: -4px auto 20px;
+  padding: 14px;
+  border: 1px solid rgba(217, 173, 70, 0.38);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(13, 69, 49, 0.08);
+}
+
+.site-running-timer h2 {
+  margin: 0 0 11px;
+  color: #0c6b4b;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.site-running-timer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+
+.site-running-timer-grid div {
+  min-width: 0;
+  padding: 9px 3px;
+  border-radius: 9px;
+  background: linear-gradient(
+    145deg,
+    #063d2d,
+    #07583f
+  );
+  text-align: center;
+}
+
+.site-running-timer-grid strong,
+.site-running-timer-grid span {
+  display: block;
+}
+
+.site-running-timer-grid strong {
+  color: #f1ce69;
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+.site-running-timer-grid span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 9px;
+}
+
+@media (max-width: 380px) {
+  .site-running-timer {
+    padding: 11px;
+  }
+
+  .site-running-timer-grid {
+    gap: 5px;
+  }
+
+  .site-running-timer-grid strong {
+    font-size: 15px;
+  }
+
+  .site-running-timer-grid span {
+    font-size: 8px;
+  }
+}
+
 .user-home-page {
   min-height: 100vh;
   max-width: 760px;
@@ -49,78 +122,16 @@ body {
   margin-bottom: 20px;
 }
 
-.user-header-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 
-.user-header-profile h1 {
-  margin: 2px 0 0;
-  font-size: 21px;
-  line-height: 1.2;
-}
 
-.user-welcome-text {
-  color: #718078;
-  font-size: 13px;
-}
 
-.user-avatar-placeholder,
-.user-avatar-image {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-}
 
-.user-avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    #0c6b4b,
-    #d9ad46
-  );
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
-}
 
-.user-avatar-image {
-  object-fit: cover;
-  border: 2px solid #d9ad46;
-}
 
-.notification-button {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 14px;
-  background: white;
-  font-size: 19px;
-  cursor: pointer;
-  box-shadow: 0 7px 20px
-    rgba(13, 69, 49, 0.08);
-}
 
-.notification-count {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #e84545;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-}
+
+
+
 
 .user-home-message {
   margin-bottom: 15px;
