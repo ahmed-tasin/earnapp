@@ -192,7 +192,7 @@ function Packages() {
             id="name"
             type="text"
             name="name"
-            placeholder="Starter Package"
+            placeholder="platinum Package"
             value={formData.name}
             onChange={handleChange}
             required

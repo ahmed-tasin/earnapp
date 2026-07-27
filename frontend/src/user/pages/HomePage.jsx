@@ -13,6 +13,25 @@ const API_URL =
   process.env.REACT_APP_API_URL ||
   "https://earnapp-n5b2.onrender.com/api";
 
+const PACKAGE_IMAGES = {
+  bronze: "/images/packages/bronze-package.png",
+  silver: "/images/packages/silver-package.png",
+  gold: "/images/packages/gold-package.png",
+  platinum: "/images/packages/platinum-package.png",
+  diamond: "/images/packages/diamond-package.png",
+};
+
+const getPackageImage = (packageName = "") => {
+  const normalizedName = packageName.toLowerCase();
+  const packageType = Object.keys(PACKAGE_IMAGES).find(
+    (type) => normalizedName.includes(type)
+  );
+
+  return packageType
+    ? PACKAGE_IMAGES[packageType]
+    : PACKAGE_IMAGES.platinum;
+};
+
 const defaultDashboard = {
   user: {
     name: "User",
@@ -39,8 +58,11 @@ function HomePage() {
   const [loading, setLoading] =
     useState(true);
 
-  const [checkinLoading, setCheckinLoading] =
-    useState(false);
+  const [homePackages, setHomePackages] =
+    useState([]);
+
+  const [currentTime, setCurrentTime] =
+    useState(Date.now());
 
   const [message, setMessage] =
     useState("");
@@ -50,16 +72,6 @@ function HomePage() {
       localStorage.getItem("token") ||
       localStorage.getItem("userToken")
     );
-  };
-
-  const getAuthConfig = () => {
-    const token = getToken();
-
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
   };
 
   const handleLogout = useCallback(() => {
@@ -185,38 +197,52 @@ function HomePage() {
     loadDashboard();
   }, [loadDashboard]);
 
-  const handleDailyCheckin = async () => {
-    try {
-      setCheckinLoading(true);
-      setMessage("");
+  useEffect(() => {
+    const loadPackages = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/packages`
+        );
 
-      const response = await axios.post(
-        `${API_URL}/checkin`,
-        {},
-        getAuthConfig()
-      );
+        const responseData = response.data;
+        const packageList = Array.isArray(responseData)
+          ? responseData
+          : responseData?.packages ||
+            responseData?.data?.packages ||
+            responseData?.data ||
+            [];
 
-      setMessage(
-        response.data?.message ||
-          "Daily check-in successful"
-      );
+        setHomePackages(
+          (Array.isArray(packageList)
+            ? packageList
+            : []
+          )
+            .filter(
+              (item) =>
+                String(
+                  item.status || "active"
+                ).toLowerCase() === "active"
+            )
+            .slice(0, 5)
+        );
+      } catch (error) {
+        console.error(
+          "Home packages load error:",
+          error.response?.data || error.message
+        );
+      }
+    };
 
-      await loadDashboard();
-    } catch (error) {
-      console.error(
-        "Check-in error:",
-        error.response?.data ||
-          error.message
-      );
+    loadPackages();
+  }, []);
 
-      setMessage(
-        error.response?.data?.message ||
-          "Daily check-in failed"
-      );
-    } finally {
-      setCheckinLoading(false);
-    }
-  };
+  useEffect(() => {
+    const timerId = window.setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(timerId);
+  }, []);
 
   const formatMoney = (amount) => {
     return Number(
@@ -230,6 +256,51 @@ function HomePage() {
         ?.charAt(0)
         ?.toUpperCase() || "U"
     );
+  };
+
+  const getPackageCountdown = (packageItem) => {
+    const endTime = packageItem.saleEndsAt
+      ? new Date(packageItem.saleEndsAt).getTime()
+      : new Date(packageItem.createdAt).getTime() +
+        (Number(packageItem.totalDays) || 0) *
+          86400000;
+
+    const totalSeconds = Math.floor(
+      Math.max(0, endTime - currentTime) / 1000
+    );
+
+    return {
+      days: Math.floor(totalSeconds / 86400),
+      hours: Math.floor(
+        (totalSeconds % 86400) / 3600
+      ),
+      minutes: Math.floor(
+        (totalSeconds % 3600) / 60
+      ),
+      seconds: totalSeconds % 60,
+    };
+  };
+
+  const getPackageProgress = (packageItem) => {
+    const totalUnits = Math.max(
+      1,
+      Number(packageItem.totalUnits) || 100
+    );
+    const soldUnits = Math.min(
+      totalUnits,
+      Math.max(
+        0,
+        Number(packageItem.soldUnits) || 0
+      )
+    );
+
+    return {
+      totalUnits,
+      soldUnits,
+      percentage: Math.round(
+        (soldUnits / totalUnits) * 100
+      ),
+    };
   };
 
   if (loading) {
@@ -449,12 +520,9 @@ function HomePage() {
 
         <button
           type="button"
-          onClick={handleDailyCheckin}
-          disabled={checkinLoading}
+          onClick={() => navigate("/checkin")}
         >
-          {checkinLoading
-            ? "Checking..."
-            : "Check In"}
+          Check In
         </button>
       </section>
 
@@ -634,6 +702,145 @@ function HomePage() {
           </button>
         </div>
       </section>
+
+      {homePackages.length > 0 && (
+        <section className="home-section">
+          <div className="home-section-heading">
+            <div>
+              <h2>Investment Packages</h2>
+              <p>Scroll to explore available packages</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate("/packages")}
+            >
+              View all
+            </button>
+          </div>
+
+          <div className="home-packages-list">
+            {homePackages.map((packageItem, index) => {
+              const packageId =
+                packageItem._id ||
+                packageItem.id ||
+                index;
+              const name =
+                packageItem.name ||
+                `Package ${index + 1}`;
+              const amount =
+                Number(packageItem.amount) || 0;
+              const dailyReturn =
+                Number(packageItem.dailyReturn) || 0;
+              const totalDays =
+                Number(packageItem.totalDays) || 0;
+              const totalProfit =
+                dailyReturn * totalDays;
+              const countdown =
+                getPackageCountdown(packageItem);
+              const progress =
+                getPackageProgress(packageItem);
+
+              return (
+                <article
+                  key={packageId}
+                  className="home-package-card"
+                >
+                  <h3>{name}</h3>
+
+                  <div className="home-package-image">
+                    <img
+                      src={getPackageImage(name)}
+                      alt={`${name} package`}
+                    />
+                  </div>
+
+                  <div className="home-package-countdown">
+                    {[
+                      ["Day", countdown.days],
+                      ["Hour", countdown.hours],
+                      ["Minute", countdown.minutes],
+                      ["Second", countdown.seconds],
+                    ].map(([label, value]) => (
+                      <div key={label}>
+                        <strong>
+                          {String(value).padStart(
+                            2,
+                            "0"
+                          )}
+                        </strong>
+                        <span>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="home-package-progress-copy">
+                    <span>
+                      {progress.percentage}% purchased
+                    </span>
+                    <strong>
+                      {progress.soldUnits}/
+                      {progress.totalUnits} units
+                    </strong>
+                  </div>
+
+                  <div className="home-package-progress">
+                    <span
+                      style={{
+                        width: `${progress.percentage}%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="home-package-metrics">
+                    <div>
+                      <strong>
+                        ৳{formatMoney(amount)}
+                      </strong>
+                      <span>Unit Price</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        ৳{formatMoney(dailyReturn)}
+                      </strong>
+                      <span>Daily Profit</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        ৳{formatMoney(totalProfit)}
+                      </strong>
+                      <span>Total Profit</span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {Math.max(
+                          0,
+                          progress.totalUnits -
+                            progress.soldUnits
+                        )}
+                      </strong>
+                      <span>Units Left</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="home-package-buy"
+                    onClick={() =>
+                      navigate("/packages")
+                    }
+                  >
+                    Buy Now
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <div className="bottom-navigation-space" />
     </div>

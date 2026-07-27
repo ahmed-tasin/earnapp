@@ -8,7 +8,7 @@ const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
 const PACKAGE_IMAGES = {
-  starter: "/images/packages/starter-package.png",
+  platinum: "/images/packages/platinum-package.png",
   bronze: "/images/packages/bronze-package.png",
   silver: "/images/packages/silver-package.png",
   gold: "/images/packages/gold-package.png",
@@ -24,7 +24,7 @@ const getPackageImage = (packageName = "") => {
 
   return packageType
     ? PACKAGE_IMAGES[packageType]
-    : "/images/packages/starter-package.png";
+    : "/images/packages/platinum-package.png";
 };
 
 function Packages() {
