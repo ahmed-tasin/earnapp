@@ -1,16 +1,24 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const normalizePhone = require("../utils/normalizePhone");
 
 // ================= GENERATE REFERRAL CODE =================
 
-const generateReferralCode = () => {
+const generateReferralCode = async () => {
+    let referralCode;
+    let exists;
 
-    return `REF${Date.now()}${Math.random()
-        .toString(36)
-        .substring(2, 7)
-        .toUpperCase()}`;
+    do {
+        referralCode = Math.random()
+            .toString(36)
+            .substring(2, 8)
+            .toUpperCase();
 
+        exists = await User.exists({ referralCode });
+    } while (exists);
+
+    return referralCode;
 };
 
 // ================= REGISTER =================
@@ -18,28 +26,20 @@ const generateReferralCode = () => {
 exports.register = async (data) => {
 
     const {
-        username,
-        email,
+        name,
         password,
-        phone,
         referralCode
     } = data;
 
+    const phone = normalizePhone(data.phone);
     const existingUser = await User.findOne({
-        $or: [
-            { email },
-            { username }
-        ]
+        phone: { $in: normalizePhone.variants(phone) }
     });
 
     if (existingUser) {
-
-        throw new Error(
-            existingUser.email === email
-                ? "Email already exists"
-                : "Username already exists"
-        );
-
+        const error = new Error("Phone number already registered");
+        error.statusCode = 409;
+        throw error;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,16 +49,25 @@ exports.register = async (data) => {
     if (referralCode) {
 
         const referrer = await User.findOne({
-            referralCode
+            referralCode: referralCode.trim().toUpperCase()
         });
 
-        if (referrer) {
-            referredBy = referrer._id;
+        if (!referrer) {
+            const error = new Error("Invalid referral code");
+            error.statusCode = 400;
+            throw error;
         }
 
+        referredBy = referrer._id;
     }
 
+    // Keep these internal values for compatibility with existing database indexes.
+    const username = phone;
+    const email = `${phone}@users.earnapp.local`;
+
     const newUser = await User.create({
+
+        name: name.trim(),
 
         username,
 
@@ -68,7 +77,7 @@ exports.register = async (data) => {
 
         phone,
 
-        referralCode: generateReferralCode(),
+        referralCode: await generateReferralCode(),
 
         referredBy,
 
@@ -122,16 +131,19 @@ exports.register = async (data) => {
 exports.login = async (data) => {
 
     const {
-        email,
         password
     } = data;
 
+    const phone = normalizePhone(data.phone);
+
     const user = await User.findOne({
-        email
+        phone: { $in: normalizePhone.variants(phone) }
     }).select("+password");
 
     if (!user) {
-        throw new Error("User not found");
+        const error = new Error("Invalid phone number or password");
+        error.statusCode = 401;
+        throw error;
     }
 
     const match = await bcrypt.compare(
@@ -139,20 +151,18 @@ exports.login = async (data) => {
         user.password
     );
 
-    if (user.status === "suspended") {
-    const error = new Error(
-        "Your account has been suspended. Please contact support."
-    );
-    error.statusCode = 403;
-    throw error;
-    }
-
     if (!match) {
-        throw new Error("Invalid password");
+        const error = new Error("Invalid phone number or password");
+        error.statusCode = 401;
+        throw error;
     }
 
     if (user.status !== "active") {
-        throw new Error("Account suspended");
+        const error = new Error(
+            "Your account has been suspended. Please contact support."
+        );
+        error.statusCode = 403;
+        throw error;
     }
 
     user.lastLogin = new Date();

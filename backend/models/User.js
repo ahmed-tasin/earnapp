@@ -1,93 +1,107 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
-{
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
+  {
+    name: {
+      type: String,
+      trim: true,
+      maxlength: 50,
     },
 
+    // পুরোনো database index compatibility-এর জন্য রাখা হয়েছে
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+
+    // পুরোনো database index compatibility-এর জন্য রাখা হয়েছে
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
 
     password: {
-        type: String,
-        required: true,
-        select: false
+      type: String,
+      required: true,
+      select: false,
     },
 
-    phone: String,
+    phone: {
+      type: String,
+      trim: true,
+      index: true,
+    },
 
     referralCode: {
-        type: String,
-        unique: true
+      type: String,
+      unique: true,
     },
 
     referredBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        default: null
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
 
-    directReferrals: [{
+    directReferrals: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
+        ref: "User",
+      },
+    ],
 
     balance: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
 
     totalDeposit: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
 
     totalWithdraw: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
 
     totalEarning: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
 
     referralCommissionEarned: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
 
     status: {
-        type: String,
-        enum: ["active","suspended"],
-        default: "active"
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
     },
 
-    role:{
-        type:String,
-        enum:["user","admin"],
-        default:"user"
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
 
-    kycVerified:{
-        type:Boolean,
-        default:false
+    kycVerified: {
+      type: Boolean,
+      default: false,
     },
 
-    lastLogin:Date
+    lastLogin: Date,
+  },
+  {
+    timestamps: true,
+  }
+);
 
-},
-{
-    timestamps:true
-});
-
-module.exports = mongoose.model("User",userSchema);
+module.exports = mongoose.model("User", userSchema);

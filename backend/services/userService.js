@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const normalizePhone = require("../utils/normalizePhone");
 
 // ================= GET PROFILE =================
 
@@ -19,7 +20,8 @@ exports.getProfile = async (userId) => {
 
 exports.updateProfile = async (userId, data) => {
 
-    const { username, phone } = data;
+    const { name } = data;
+    const phone = data.phone ? normalizePhone(data.phone) : "";
 
     const user = await User.findById(userId);
 
@@ -27,8 +29,32 @@ exports.updateProfile = async (userId, data) => {
         throw new Error("User not found");
     }
 
-    if (username) user.username = username;
-    if (phone) user.phone = phone;
+    if (name) {
+        const normalizedName = name.trim();
+
+        if (normalizedName.length < 2 || normalizedName.length > 50) {
+            throw new Error("Name must be 2-50 characters");
+        }
+
+        user.name = normalizedName;
+    }
+
+    if (phone) {
+        if (!/^01[3-9]\d{8}$/.test(phone)) {
+            throw new Error("Enter a valid Bangladesh phone number");
+        }
+
+        const existingUser = await User.findOne({
+            _id: { $ne: userId },
+            phone: { $in: normalizePhone.variants(phone) }
+        });
+
+        if (existingUser) {
+            throw new Error("Phone number already registered");
+        }
+
+        user.phone = phone;
+    }
 
     await user.save();
 
