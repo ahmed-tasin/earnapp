@@ -10,7 +10,7 @@ function AdminLogin() {
   const navigate = useNavigate();
 
 const [formData, setFormData] = useState({
-  email: "",
+  phone: "",
   password: "",
 });
 
@@ -65,13 +65,6 @@ const [formData, setFormData] = useState({
   token
 );
 
-localStorage.setItem(
-  "adminUser",
-  JSON.stringify(user)
-);
-
-navigate("/admin/dashboard");
-
       if (user) {
         localStorage.setItem(
           "adminUser",
@@ -112,17 +105,19 @@ navigate("/admin/dashboard");
 
         <form onSubmit={handleSubmit}>
           <div className="admin-form-group">
-            <label htmlFor="email">
-              Email
+            <label htmlFor="phone">
+              Phone Number
             </label>
 
             <input
-              id="email"
-              type="text"
-              name="email"
-              placeholder="email@example.com"
-              value={formData.email}
+              id="phone"
+              type="tel"
+              name="phone"
+              placeholder="01XXXXXXXXX"
+              value={formData.phone}
               onChange={handleChange}
+              autoComplete="tel"
+              maxLength={15}
               required
             />
           </div>

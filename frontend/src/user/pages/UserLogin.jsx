@@ -16,7 +16,7 @@ function UserLogin() {
 
   const [formData, setFormData] =
     useState({
-      email: "",
+      phone: "",
       password: "",
     });
 
@@ -114,14 +114,16 @@ function UserLogin() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <label>Email</label>
+          <label>Phone Number</label>
 
           <input
-            type="email"
-            name="email"
-            value={formData.email}
+            type="tel"
+            name="phone"
+            value={formData.phone}
             onChange={handleChange}
-            placeholder="Enter email"
+            placeholder="01XXXXXXXXX"
+            autoComplete="tel"
+            maxLength={15}
             required
           />
 

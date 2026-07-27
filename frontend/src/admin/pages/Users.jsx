@@ -67,8 +67,8 @@ function Users() {
     const keyword = search.toLowerCase();
 
     return (
+      user.name?.toLowerCase().includes(keyword) ||
       user.username?.toLowerCase().includes(keyword) ||
-      user.email?.toLowerCase().includes(keyword) ||
       user.phone?.toLowerCase().includes(keyword)
     );
   });
@@ -94,7 +94,7 @@ function Users() {
         <input
           type="text"
           className="admin-search-input"
-          placeholder="Search by username, email or phone"
+          placeholder="Search by name or phone"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -119,8 +119,7 @@ function Users() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Username</th>
-                <th>Email</th>
+                <th>Name</th>
                 <th>Phone</th>
                 <th>Balance</th>
                 <th>Total Deposit</th>
@@ -134,9 +133,7 @@ function Users() {
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user._id}>
-                  <td>{user.username || "-"}</td>
-
-                  <td>{user.email || "-"}</td>
+                  <td>{user.name || user.username || "-"}</td>
 
                   <td>{user.phone || "-"}</td>
 

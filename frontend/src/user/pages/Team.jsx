@@ -381,8 +381,8 @@ function Team() {
                   `member-${index}`;
 
                 const memberName =
-                  member.username ||
                   member.name ||
+                  member.username ||
                   "User";
 
                 const memberStatus = String(
@@ -411,7 +411,6 @@ function Team() {
 
                       <p>
                         {member.phone ||
-                          member.email ||
                           "Contact not available"}
                       </p>
 

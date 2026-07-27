@@ -8,8 +8,7 @@ const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
 const initialProfile = {
-  username: "",
-  email: "",
+  name: "",
   phone: "",
   referralCode: "",
   role: "user",
@@ -24,8 +23,7 @@ function Profile() {
 
   const [profile, setProfile] = useState(initialProfile);
   const [editForm, setEditForm] = useState({
-    username: "",
-    email: "",
+    name: "",
     phone: "",
   });
 
@@ -112,8 +110,7 @@ function Profile() {
         {};
 
       const normalizedProfile = {
-        username: userData.username || userData.name || "",
-        email: userData.email || "",
+        name: userData.name || userData.username || "",
         phone: userData.phone || "",
         referralCode: userData.referralCode || "",
         role: userData.role || "user",
@@ -130,8 +127,7 @@ function Profile() {
       setProfile(normalizedProfile);
 
       setEditForm({
-        username: normalizedProfile.username,
-        email: normalizedProfile.email,
+        name: normalizedProfile.name,
         phone: normalizedProfile.phone,
       });
 
@@ -182,27 +178,20 @@ function Profile() {
   };
 
   const validateProfile = () => {
-    if (!editForm.username.trim()) {
-      return "Username is required";
-    }
-
-    if (!editForm.email.trim()) {
-      return "Email is required";
-    }
-
     if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-        editForm.email.trim()
-      )
+      editForm.name.trim().length < 2 ||
+      editForm.name.trim().length > 50
     ) {
-      return "Enter a valid email address";
+      return "Name must be 2-50 characters";
     }
 
     if (
       editForm.phone &&
-      !/^01\d{9}$/.test(editForm.phone.trim())
+      !/^(?:\+?880|0)?1[3-9]\d{8}$/.test(
+        editForm.phone.trim().replace(/[\s-]/g, "")
+      )
     ) {
-      return "Enter a valid 11-digit phone number";
+      return "Enter a valid Bangladesh phone number";
     }
 
     return "";
@@ -224,8 +213,7 @@ function Profile() {
       const token = getToken();
 
       const payload = {
-        username: editForm.username.trim(),
-        email: editForm.email.trim(),
+        name: editForm.name.trim(),
         phone: editForm.phone.trim(),
       };
 
@@ -248,11 +236,7 @@ function Profile() {
       setProfile((previous) => ({
         ...previous,
         ...updatedUser,
-        username:
-          updatedUser.username ||
-          updatedUser.name ||
-          payload.username,
-        email: updatedUser.email || payload.email,
+        name: updatedUser.name || payload.name,
         phone: updatedUser.phone || payload.phone,
       }));
 
@@ -374,8 +358,7 @@ function Profile() {
 
   const cancelEdit = () => {
     setEditForm({
-      username: profile.username,
-      email: profile.email,
+      name: profile.name,
       phone: profile.phone,
     });
 
@@ -421,7 +404,7 @@ function Profile() {
   };
 
   const profileInitial =
-    profile.username?.charAt(0)?.toUpperCase() || "U";
+    profile.name?.charAt(0)?.toUpperCase() || "U";
 
   if (loading) {
     return (
@@ -497,7 +480,7 @@ function Profile() {
             {profile.profilePicture ? (
               <img
                 src={profile.profilePicture}
-                alt={profile.username || "Profile"}
+                alt={profile.name || "Profile"}
                 className="profile-avatar-image"
               />
             ) : (
@@ -517,7 +500,7 @@ function Profile() {
 
           <div className="profile-overview-content">
             <div className="profile-name-row">
-              <h2>{profile.username || "User"}</h2>
+              <h2>{profile.name || "User"}</h2>
 
               <span
                 className={`profile-status status-${String(
@@ -528,7 +511,7 @@ function Profile() {
               </span>
             </div>
 
-            <p>{profile.email || "Email not available"}</p>
+            <p>{profile.phone || "Phone not available"}</p>
 
             <div className="profile-badges">
               <span className="profile-role-badge">
@@ -563,8 +546,8 @@ function Profile() {
 
         <section className="profile-details-grid">
           <article className="profile-detail-card">
-            <span>Username</span>
-            <strong>{profile.username || "Not available"}</strong>
+            <span>Name</span>
+            <strong>{profile.name || "Not available"}</strong>
           </article>
 
           <article className="profile-detail-card">
@@ -597,29 +580,17 @@ function Profile() {
             <form onSubmit={updateProfile}>
               <div className="profile-form-grid">
                 <div className="profile-form-group">
-                  <label htmlFor="username">Username</label>
+                  <label htmlFor="name">Name</label>
 
                   <input
-                    id="username"
+                    id="name"
                     type="text"
-                    name="username"
-                    value={editForm.username}
+                    name="name"
+                    value={editForm.name}
                     onChange={handleEditChange}
-                    placeholder="Enter username"
-                    required
-                  />
-                </div>
-
-                <div className="profile-form-group">
-                  <label htmlFor="email">Email Address</label>
-
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={editForm.email}
-                    onChange={handleEditChange}
-                    placeholder="Enter email"
+                    placeholder="Enter your name"
+                    minLength={2}
+                    maxLength={50}
                     required
                   />
                 </div>
@@ -634,7 +605,8 @@ function Profile() {
                     value={editForm.phone}
                     onChange={handleEditChange}
                     placeholder="01XXXXXXXXX"
-                    maxLength={11}
+                    maxLength={15}
+                    required
                   />
                 </div>
               </div>

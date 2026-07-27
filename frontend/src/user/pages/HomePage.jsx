@@ -15,7 +15,7 @@ const API_URL =
 
 const defaultDashboard = {
   user: {
-    username: "User",
+    name: "User",
     profilePicture: "",
   },
 
@@ -103,11 +103,19 @@ function HomePage() {
   response.data?.data ||
   {};
 
+        const storedUser = JSON.parse(
+          localStorage.getItem("user") || "{}"
+        );
+
         setDashboard({
           user: {
-            username:
+            name:
+              responseData.user?.name ||
+              responseData.name ||
+              storedUser.name ||
               responseData.user?.username ||
               responseData.username ||
+              storedUser.username ||
               "User",
 
             profilePicture:
@@ -218,7 +226,7 @@ function HomePage() {
 
   const getInitial = () => {
     return (
-      dashboard.user?.username
+      dashboard.user?.name
         ?.charAt(0)
         ?.toUpperCase() || "U"
     );
@@ -259,7 +267,7 @@ function HomePage() {
             </span>
 
             <h1>
-              {dashboard.user.username}
+              {dashboard.user.name}
             </h1>
           </div>
         </div>

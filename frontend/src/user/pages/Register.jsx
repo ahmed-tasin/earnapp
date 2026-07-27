@@ -13,15 +13,19 @@ const API_URL =
 
 function Register() {
   const navigate = useNavigate();
+  const referralCodeFromUrl =
+    new URLSearchParams(window.location.search)
+      .get("ref")
+      ?.trim()
+      .toUpperCase() || "";
 
   const [formData, setFormData] =
     useState({
-      username: "",
-      email: "",
+      name: "",
       phone: "",
       password: "",
       confirmPassword: "",
-      referralCode: "",
+      referralCode: referralCodeFromUrl,
     });
 
   const [loading, setLoading] =
@@ -39,7 +43,10 @@ function Register() {
 
     setFormData((previous) => ({
       ...previous,
-      [name]: value,
+      [name]:
+        name === "referralCode"
+          ? value.toUpperCase()
+          : value,
     }));
   };
 
@@ -76,18 +83,14 @@ function Register() {
       setLoading(true);
 
       const registerData = {
-        username:
-          formData.username.trim(),
-
-        email:
-          formData.email
-            .trim()
-            .toLowerCase(),
+        name: formData.name.trim(),
 
         phone:
           formData.phone.trim(),
 
         password: formData.password,
+        confirmPassword:
+          formData.confirmPassword,
       };
 
       if (
@@ -157,35 +160,20 @@ function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="register-form-group">
-            <label htmlFor="username">
-              Username
+            <label htmlFor="name">
+              Name
             </label>
 
             <input
-              id="username"
+              id="name"
               type="text"
-              name="username"
-              placeholder="Enter username"
-              value={formData.username}
+              name="name"
+              placeholder="Enter your name"
+              value={formData.name}
               onChange={handleChange}
-              autoComplete="username"
-              required
-            />
-          </div>
-
-          <div className="register-form-group">
-            <label htmlFor="email">
-              Email
-            </label>
-
-            <input
-              id="email"
-              type="email"
-              name="email"
-              placeholder="email@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              autoComplete="email"
+              autoComplete="name"
+              minLength={2}
+              maxLength={50}
               required
             />
           </div>
@@ -202,6 +190,7 @@ function Register() {
               placeholder="01XXXXXXXXX"
               value={formData.phone}
               onChange={handleChange}
+              maxLength={15}
               autoComplete="tel"
               required
             />
@@ -260,6 +249,8 @@ function Register() {
                 formData.referralCode
               }
               onChange={handleChange}
+              maxLength={64}
+              style={{ textTransform: "uppercase" }}
             />
           </div>
 
