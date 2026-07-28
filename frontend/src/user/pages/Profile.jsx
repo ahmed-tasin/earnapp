@@ -16,6 +16,58 @@ const initialProfile = {
   kycVerified: false,
   profilePicture: "",
   createdAt: "",
+  totalEarning: 0,
+  previousEarning: 0,
+};
+
+const Icon = ({ name }) => {
+  const paths = {
+    back: <path d="m15 18-6-6 6-6M9 12h12" />,
+    settings: (
+      <>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.08V21h-4v-.08A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.08-.4H3v-4h.08A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.08V3h4v.08A1.7 1.7 0 0 0 15.4 4a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 8.4a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.08.4H21v4h-.08A1.7 1.7 0 0 0 19.4 15Z" />
+      </>
+    ),
+    invite: (
+      <>
+        <circle cx="9" cy="7" r="3" />
+        <path d="M3.5 20v-2.5A4.5 4.5 0 0 1 8 13h2a4.5 4.5 0 0 1 4.5 4.5V20M18 8v6M15 11h6" />
+      </>
+    ),
+    deposit: (
+      <>
+        <rect x="4" y="3" width="16" height="18" rx="3" />
+        <path d="M12 8v8M8 12h8" />
+      </>
+    ),
+    card: (
+      <>
+        <rect x="2.5" y="5" width="19" height="14" rx="3" />
+        <path d="M2.5 10h19M6 15h3M12 15h3" />
+      </>
+    ),
+    checkin: <path d="m4 6 2 2 3-4M4 12l2 2 3-4M4 18l2 2 3-4M12 7h8M12 13h8M12 19h8" />,
+    history: (
+      <>
+        <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+        <path d="M3 3v5h5M12 7v5l3 2" />
+      </>
+    ),
+    team: (
+      <>
+        <circle cx="8" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path d="M2.5 20v-2.5A4.5 4.5 0 0 1 7 13h2a4.5 4.5 0 0 1 4.5 4.5V20M14 14.5a4 4 0 0 1 7.5 2V20H16" />
+      </>
+    ),
+  };
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      {paths[name]}
+    </svg>
+  );
 };
 
 function Profile() {
@@ -122,6 +174,13 @@ function Profile() {
           userData.image ||
           "",
         createdAt: userData.createdAt || "",
+        totalEarning: Number(userData.totalEarning || 0),
+        previousEarning: Number(
+          userData.previousEarning ||
+            userData.referralCommissionEarned ||
+            userData.referralCommission ||
+            0
+        ),
       };
 
       setProfile(normalizedProfile);
@@ -385,26 +444,23 @@ function Profile() {
     });
   };
 
-  const formatDate = (dateValue) => {
-    if (!dateValue) {
-      return "Not available";
-    }
-
-    const date = new Date(dateValue);
-
-    if (Number.isNaN(date.getTime())) {
-      return "Not available";
-    }
-
-    return new Intl.DateTimeFormat("en-BD", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    }).format(date);
-  };
-
   const profileInitial =
     profile.name?.charAt(0)?.toUpperCase() || "U";
+
+  const formatAmount = (value) =>
+    Number(value || 0).toLocaleString("en-BD", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+  const services = [
+    { label: "Invite", icon: "invite", to: "/team" },
+    { label: "Deposit", icon: "deposit", to: "/deposit" },
+    { label: "Card", icon: "card", to: "/wallet" },
+    { label: "Check in", icon: "checkin", to: "/checkin" },
+    { label: "History", icon: "history", to: "/transactions" },
+    { label: "Team", icon: "team", to: "/team" },
+  ];
 
   if (loading) {
     return (
@@ -421,31 +477,25 @@ function Profile() {
     <main className="profile-page">
       <div className="profile-container">
         <header className="profile-header">
-          <div>
-            <p className="profile-header-label">
-              Account settings
-            </p>
-
-            <h1>My Profile</h1>
-          </div>
+          <button
+            type="button"
+            className="profile-icon-button"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+          >
+            <Icon name="back" />
+          </button>
 
           <button
             type="button"
-            className="profile-refresh-button"
-            onClick={() => fetchProfile(true)}
-            disabled={refreshing}
+            className="profile-icon-button"
+            onClick={() => {
+              setEditMode((previous) => !previous);
+              setPasswordMode(false);
+            }}
+            aria-label="Profile settings"
           >
-            <span
-              className={
-                refreshing
-                  ? "profile-refresh-icon rotating"
-                  : "profile-refresh-icon"
-              }
-            >
-              ↻
-            </span>
-
-            {refreshing ? "Refreshing" : "Refresh"}
+            <Icon name="settings" />
           </button>
         </header>
 
@@ -475,7 +525,7 @@ function Profile() {
           </div>
         )}
 
-        <section className="profile-overview-card">
+        <section className="profile-overview">
           <div className="profile-avatar-wrapper">
             {profile.profilePicture ? (
               <img
@@ -489,83 +539,48 @@ function Profile() {
               </div>
             )}
 
-            <span
-              className={
-                profile.status === "active"
-                  ? "profile-online-indicator active"
-                  : "profile-online-indicator"
-              }
-            />
+            <span className="profile-vip-badge">
+              <span aria-hidden="true">♛</span>
+              VIP 1
+            </span>
           </div>
 
           <div className="profile-overview-content">
-            <div className="profile-name-row">
-              <h2>{profile.name || "User"}</h2>
-
-              <span
-                className={`profile-status status-${String(
-                  profile.status
-                ).toLowerCase()}`}
-              >
-                {profile.status}
-              </span>
-            </div>
-
+            <h1>{profile.name || "User Name"}</h1>
             <p>{profile.phone || "Phone not available"}</p>
-
-            <div className="profile-badges">
-              <span className="profile-role-badge">
-                {profile.role}
-              </span>
-
-              <span
-                className={
-                  profile.kycVerified
-                    ? "profile-kyc-badge verified"
-                    : "profile-kyc-badge"
-                }
-              >
-                {profile.kycVerified
-                  ? "KYC Verified"
-                  : "KYC Not Verified"}
-              </span>
-            </div>
           </div>
-
-          <button
-            type="button"
-            className="profile-edit-button"
-            onClick={() => {
-              setEditMode((previous) => !previous);
-              setPasswordMode(false);
-            }}
-          >
-            {editMode ? "Close Edit" : "Edit Profile"}
-          </button>
         </section>
 
-        <section className="profile-details-grid">
-          <article className="profile-detail-card">
-            <span>Name</span>
-            <strong>{profile.name || "Not available"}</strong>
-          </article>
+        <section className="profile-earnings" aria-label="Earning summary">
+          <div className="profile-earning-row">
+            <span>Total earn</span>
+            <strong>৳{formatAmount(profile.totalEarning)}</strong>
+          </div>
+          <div className="profile-earning-row">
+            <span>Previous earn</span>
+            <strong>৳{formatAmount(profile.previousEarning)}</strong>
+          </div>
+          <Link to="/withdraw" className="profile-withdraw-button">
+            Withdraw
+          </Link>
+        </section>
 
-          <article className="profile-detail-card">
-            <span>Phone Number</span>
-            <strong>{profile.phone || "Not available"}</strong>
-          </article>
-
-          <article className="profile-detail-card">
-            <span>Referral Code</span>
-            <strong>
-              {profile.referralCode || "Not available"}
-            </strong>
-          </article>
-
-          <article className="profile-detail-card">
-            <span>Member Since</span>
-            <strong>{formatDate(profile.createdAt)}</strong>
-          </article>
+        <section className="profile-services">
+          <h2>Services</h2>
+          <div className="profile-services-grid">
+            {services.map((service) => (
+              <Link
+                key={service.label}
+                to={service.to}
+                className="profile-service-item"
+              >
+                <span className="profile-service-icon">
+                  <Icon name={service.icon} />
+                </span>
+                <span>{service.label}</span>
+              </Link>
+            ))}
+          </div>
         </section>
 
         {editMode && (
@@ -722,94 +737,25 @@ function Profile() {
           </section>
         )}
 
-        <section className="profile-menu-section">
-          <div className="profile-section-heading">
-            <div>
-              <p>Quick access</p>
-              <h2>Account Menu</h2>
-            </div>
-          </div>
-
-          <div className="profile-menu-list">
-            <Link to="/wallet" className="profile-menu-item">
-              <div className="profile-menu-icon">৳</div>
-
-              <div>
-                <strong>My Wallet</strong>
-                <span>Balance and account summary</span>
-              </div>
-
-              <span className="profile-menu-arrow">›</span>
-            </Link>
-
-            <Link
-              to="/transactions"
-              className="profile-menu-item"
-            >
-              <div className="profile-menu-icon">↕</div>
-
-              <div>
-                <strong>Transactions</strong>
-                <span>View account activity</span>
-              </div>
-
-              <span className="profile-menu-arrow">›</span>
-            </Link>
-
-            <Link
-              to="/notifications"
-              className="profile-menu-item"
-            >
-              <div className="profile-menu-icon">🔔</div>
-
-              <div>
-                <strong>Notifications</strong>
-                <span>View latest updates</span>
-              </div>
-
-              <span className="profile-menu-arrow">›</span>
-            </Link>
-
-            <button
-              type="button"
-              className="profile-menu-item"
-              onClick={() => {
-                setPasswordMode((previous) => !previous);
-                setEditMode(false);
-              }}
-            >
-              <div className="profile-menu-icon">🔒</div>
-
-              <div>
-                <strong>Change Password</strong>
-                <span>Update account security</span>
-              </div>
-
-              <span className="profile-menu-arrow">›</span>
-            </button>
-          </div>
-        </section>
-
-        <section className="profile-security-card">
-          <div className="profile-security-icon">🛡️</div>
-
-          <div>
-            <h3>Keep Your Account Secure</h3>
-
-            <p>
-              Never share your password, login token or payment account
-              information with anyone.
-            </p>
-          </div>
-        </section>
-
-        <button
-          type="button"
-          className="profile-logout-button"
-          onClick={logout}
-        >
-          Logout
-        </button>
+        <div className="profile-account-actions">
+          <button
+            type="button"
+            className="profile-password-button"
+            onClick={() => {
+              setPasswordMode((previous) => !previous);
+              setEditMode(false);
+            }}
+          >
+            Change password
+          </button>
+          <button
+            type="button"
+            className="profile-logout-button"
+            onClick={logout}
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </main>
   );
