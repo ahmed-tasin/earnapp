@@ -124,7 +124,52 @@ body {
 
 
 
+.home-shortcuts {
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: -7px auto 20px;
+}
 
+.home-shortcuts button {
+  min-width: 0;
+  padding: 11px 3px;
+  border: 1px solid rgba(217, 173, 70, 0.35);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #163b2d;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(13, 69, 49, 0.07);
+}
+
+.home-shortcuts button span,
+.home-shortcuts button small {
+  display: block;
+}
+
+.home-shortcuts button span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 6px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #063d2d, #07583f);
+  color: #f1ce69;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.home-shortcuts button small {
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 
 
@@ -274,59 +319,9 @@ body {
   white-space: nowrap;
 }
 
-.daily-checkin-card {
-  margin-top: 17px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-radius: 18px;
-  background: linear-gradient(
-    110deg,
-    #fff6da,
-    #fffdf5
-  );
-  border: 1px solid #f2de9b;
-}
 
-.daily-checkin-card > div {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 
-.checkin-icon {
-  font-size: 31px;
-}
 
-.daily-checkin-card h3 {
-  margin: 0 0 4px;
-  font-size: 15px;
-}
-
-.daily-checkin-card p {
-  margin: 0;
-  color: #7d7150;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.daily-checkin-card button {
-  flex-shrink: 0;
-  padding: 9px 13px;
-  border: none;
-  border-radius: 10px;
-  background: #d1a133;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.daily-checkin-card button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
 
 .home-section {
   margin-top: 24px;

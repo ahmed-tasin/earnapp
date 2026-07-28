@@ -355,7 +355,7 @@ const siteRunningTime = {
 
 
   <section className="site-running-timer">
-  <h2>সাইট চলছে</h2>
+  <h2>সাইট নিরাপদে চলছে</h2>
 
   <div className="site-running-timer-grid">
     {[
@@ -376,6 +376,42 @@ const siteRunningTime = {
 </section>
 
 
+
+
+
+<div className="home-shortcuts">
+  <button
+    type="button"
+    onClick={() => navigate("/deposit")}
+  >
+    <span>＋</span>
+    <small>Deposit</small>
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate("/withdraw")}
+  >
+    <span>↗</span>
+    <small>Withdraw</small>
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate("/team")}
+  >
+    <span>🔗</span>
+    <small>Invite</small>
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate("/checkin")}
+  >
+    <span>✓</span>
+    <small>Check In</small>
+  </button>
+</div>
   
 
 
@@ -385,283 +421,14 @@ const siteRunningTime = {
         </div>
       )}
 
-      <section className="wallet-balance-card">
-        <div className="wallet-card-top">
-          <div>
-            <span>Available Balance</span>
 
-            <h2>
-              ৳
-              {formatMoney(
-                dashboard.wallet.balance
-              )}
-            </h2>
-          </div>
 
-          <div className="wallet-icon">
-            ৳
-          </div>
-        </div>
 
-        <div className="wallet-card-actions">
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/deposit")
-            }
-          >
-            <span>＋</span>
-            Deposit
-          </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/withdraw")
-            }
-          >
-            <span>↗</span>
-            Withdraw
-          </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/transactions")
-            }
-          >
-            <span>↔</span>
-            History
-          </button>
-        </div>
-      </section>
 
-      <section className="home-stat-grid">
-        <div className="home-stat-card">
-          <span className="stat-card-icon">
-            📥
-          </span>
 
-          <div>
-            <small>
-              Total Deposit
-            </small>
-
-            <strong>
-              ৳
-              {formatMoney(
-                dashboard.wallet
-                  .totalDeposit
-              )}
-            </strong>
-          </div>
-        </div>
-
-        <div className="home-stat-card">
-          <span className="stat-card-icon">
-            💰
-          </span>
-
-          <div>
-            <small>
-              Total Earning
-            </small>
-
-            <strong>
-              ৳
-              {formatMoney(
-                dashboard.wallet
-                  .totalEarning
-              )}
-            </strong>
-          </div>
-        </div>
-
-        <div className="home-stat-card">
-          <span className="stat-card-icon">
-            📤
-          </span>
-
-          <div>
-            <small>
-              Total Withdraw
-            </small>
-
-            <strong>
-              ৳
-              {formatMoney(
-                dashboard.wallet
-                  .totalWithdraw
-              )}
-            </strong>
-          </div>
-        </div>
-
-        <div
-          className="home-stat-card clickable"
-          onClick={() =>
-            navigate("/team")
-          }
-          role="button"
-          tabIndex={0}
-        >
-          <span className="stat-card-icon">
-            👥
-          </span>
-
-          <div>
-            <small>My Team</small>
-            <strong>View Team</strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="daily-checkin-card">
-        <div>
-          <span className="checkin-icon">
-            🎁
-          </span>
-
-          <div>
-            <h3>Daily Reward</h3>
-
-            <p>
-              Check in every day and
-              collect your reward.
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate("/checkin")}
-        >
-          Check In
-        </button>
-      </section>
-
-      <section className="home-section">
-        <div className="home-section-heading">
-          <div>
-            <h2>Active Investment</h2>
-
-            <p>
-              Your running investment
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/packages")
-            }
-          >
-            View all
-          </button>
-        </div>
-
-        {dashboard.activeInvestment ? (
-          <div className="active-investment-card">
-            <div className="investment-card-header">
-              <div>
-                <small>Package</small>
-
-                <h3>
-                  {dashboard
-                    .activeInvestment
-                    .packageId?.name ||
-                    dashboard
-                      .activeInvestment
-                      .package?.name ||
-                    dashboard
-                      .activeInvestment
-                      .packageName ||
-                    "Investment Package"}
-                </h3>
-              </div>
-
-              <span
-                className={`investment-status ${
-                  dashboard
-                    .activeInvestment
-                    .status || "active"
-                }`}
-              >
-                {dashboard
-                  .activeInvestment
-                  .status || "active"}
-              </span>
-            </div>
-
-            <div className="investment-details-grid">
-              <div>
-                <small>Invested</small>
-
-                <strong>
-                  ৳
-                  {formatMoney(
-                    dashboard
-                      .activeInvestment
-                      .investmentAmount ||
-                      dashboard
-                        .activeInvestment
-                        .amount
-                  )}
-                </strong>
-              </div>
-
-              <div>
-                <small>
-                  Daily Return
-                </small>
-
-                <strong>
-                  ৳
-                  {formatMoney(
-                    dashboard
-                      .activeInvestment
-                      .dailyReturn
-                  )}
-                </strong>
-              </div>
-
-              <div>
-                <small>
-                  Remaining Days
-                </small>
-
-                <strong>
-                  {dashboard
-                    .activeInvestment
-                    .remainingDays ?? 0}
-                </strong>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="no-investment-card">
-            <span>📦</span>
-
-            <h3>
-              No active investment
-            </h3>
-
-            <p>
-              Choose a package to start
-              earning.
-            </p>
-
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/packages")
-              }
-            >
-              View Packages
-            </button>
-          </div>
-        )}
-      </section>
+{/* 
 
       <section className="home-section quick-actions-section">
         <div className="home-section-heading">
@@ -715,7 +482,10 @@ const siteRunningTime = {
             <small>Profile</small>
           </button>
         </div>
-      </section>
+      </section> */}
+
+
+      
 
       {homePackages.length > 0 && (
         <section className="home-section">
