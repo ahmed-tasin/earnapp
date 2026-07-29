@@ -1,12 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 import "../styles/Team.css";
 
 const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
+const formatAmount = (amount) =>
+  new Intl.NumberFormat("en-BD", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(amount) || 0);
+
 function Team() {
+  const navigate = useNavigate();
   const [teamData, setTeamData] = useState({
     referralCode: "",
     referralLink: "",
@@ -14,77 +21,39 @@ function Team() {
     totalTeam: 0,
     totalCommission: 0,
   });
-
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
 
-  const fetchTeam = useCallback(async (isRefresh = false) => {
+  const fetchTeam = useCallback(async () => {
     try {
+      setLoading(true);
       setError("");
 
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-
       const token = localStorage.getItem("userToken");
-
-      if (!token) {
-        throw new Error("Please login to view your team");
-      }
+      if (!token) throw new Error("Please login to view your team");
 
       const response = await axios.get(`${API_URL}/referral/info`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      /*
-        Supported response formats:
-
-        {
-          success: true,
-          referralCode: "",
-          referralLink: "",
-          directReferrals: [],
-          totalTeam: 0,
-          totalCommission: 0
-        }
-
-        {
-          success: true,
-          data: {
-            referralCode: "",
-            referrals: []
-          }
-        }
-      */
-
       const data = response.data?.data || response.data || {};
-
       const referrals =
         data.directReferrals || data.referrals || data.team || [];
-
       const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
-
       const referralCode =
         data.referralCode ||
         data.user?.referralCode ||
         savedUser.referralCode ||
         "";
 
-      const referralLink = referralCode
-        ? `${window.location.origin}/register?ref=${encodeURIComponent(
-            referralCode,
-          )}`
-        : "";
-
       setTeamData({
         referralCode,
-        referralLink,
+        referralLink: referralCode
+          ? `${window.location.origin}/register?ref=${encodeURIComponent(
+              referralCode,
+            )}`
+          : "",
         directReferrals: Array.isArray(referrals) ? referrals : [],
         totalTeam:
           data.totalTeam ?? data.totalReferrals ?? referrals.length ?? 0,
@@ -94,17 +63,14 @@ function Team() {
           data.user?.referralCommissionEarned ??
           0,
       });
-    } catch (error) {
-      console.error("Team fetch error:", error.response?.data || error.message);
-
+    } catch (err) {
       setError(
-        error.response?.data?.message ||
-          error.message ||
+        err.response?.data?.message ||
+          err.message ||
           "Failed to load team information",
       );
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
@@ -112,84 +78,45 @@ function Team() {
     fetchTeam();
   }, [fetchTeam]);
 
-  const activeMembers = useMemo(() => {
-    return teamData.directReferrals.filter((member) => {
-      return String(member.status || "active").toLowerCase() === "active";
-    }).length;
-  }, [teamData.directReferrals]);
-
-  const formatAmount = (amount) => {
-    return new Intl.NumberFormat("en-BD", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(Number(amount) || 0);
-  };
-
-  const formatDate = (dateValue) => {
-    if (!dateValue) {
-      return "Unknown date";
-    }
-
-    const date = new Date(dateValue);
-
-    if (Number.isNaN(date.getTime())) {
-      return "Unknown date";
-    }
-
-    return new Intl.DateTimeFormat("en-BD", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }).format(date);
-  };
+  const activeMembers = useMemo(
+    () =>
+      teamData.directReferrals.filter(
+        (member) =>
+          String(member.status || "active").toLowerCase() === "active",
+      ).length,
+    [teamData.directReferrals],
+  );
 
   const copyText = async (text, label) => {
+    if (!text) return;
+
     try {
       await navigator.clipboard.writeText(text);
-
       setCopyMessage(`${label} copied`);
-
-      setTimeout(() => {
-        setCopyMessage("");
-      }, 1800);
     } catch {
       setCopyMessage("Could not copy");
-
-      setTimeout(() => {
-        setCopyMessage("");
-      }, 1800);
     }
+
+    window.setTimeout(() => setCopyMessage(""), 1800);
   };
 
-  const shareReferral = async () => {
-    const shareText = `Join using my referral code: ${teamData.referralCode}`;
-    const shareUrl = teamData.referralLink;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Join EarnApp",
-          text: shareText,
-          url: shareUrl,
-        });
-      } else {
-        await copyText(shareUrl, "Referral link");
-      }
-    } catch (error) {
-      if (error?.name !== "AbortError") {
-        setCopyMessage("Unable to share");
-      }
-    }
-  };
+  const levels = [
+    {
+      level: 1,
+      rate: "10%",
+      users: teamData.directReferrals.length,
+      commission: teamData.totalCommission,
+    },
+    { level: 2, rate: "5%", users: 0, commission: 0 },
+    { level: 3, rate: "3%", users: 0, commission: 0 },
+  ];
 
   if (loading) {
     return (
       <main className="team-page">
-        <div className="team-container">
-          <div className="team-loading">
-            <div className="team-spinner" />
-            <p>Loading your team...</p>
-          </div>
+        <div className="team-loading">
+          <div className="team-spinner" />
+          <p>Loading your team...</p>
         </div>
       </main>
     );
@@ -199,215 +126,147 @@ function Team() {
     <main className="team-page">
       <div className="team-container">
         <header className="team-header">
-          <div>
-            <p className="team-header-label">Referral network</p>
-            <h1>My Team</h1>
-          </div>
-
           <button
             type="button"
-            className="team-refresh-button"
-            onClick={() => fetchTeam(true)}
-            disabled={refreshing}
+            className="team-icon-button"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
           >
-            <span
-              className={
-                refreshing ? "team-refresh-icon rotating" : "team-refresh-icon"
-              }
-            >
-              ↻
-            </span>
-
-            <span>{refreshing ? "Refreshing" : "Refresh"}</span>
+            ←
+          </button>
+          <h1>My Team</h1>
+          <button
+            type="button"
+            className="team-icon-button team-help-button"
+            aria-label="Help"
+          >
+            ?
           </button>
         </header>
 
-        {copyMessage && <div className="team-copy-message">{copyMessage}</div>}
+        <div className="team-content">
+          {copyMessage && (
+            <div className="team-copy-message">{copyMessage}</div>
+          )}
 
-        {error && (
-          <div className="team-error" role="alert">
-            <div>
-              <strong>Could not load team</strong>
-              <p>{error}</p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => fetchTeam(true)}
-              disabled={refreshing}
-            >
-              Retry
-            </button>
-          </div>
-        )}
-
-        <section className="team-referral-card">
-          <div className="team-referral-content">
-            <p>Your Referral Code</p>
-
-            <div className="team-referral-code-row">
-              <h2>{teamData.referralCode || "Not available"}</h2>
-
-              <button
-                type="button"
-                onClick={() => copyText(teamData.referralCode, "Referral code")}
-                disabled={!teamData.referralCode}
-              >
-                Copy
+          {error && (
+            <div className="team-error" role="alert">
+              <div>
+                <strong>Could not load team</strong>
+                <p>{error}</p>
+              </div>
+              <button type="button" onClick={fetchTeam}>
+                Retry
               </button>
-            </div>
-
-            <div className="team-referral-link">
-              <span>{teamData.referralLink}</span>
-
-              <button
-                type="button"
-                onClick={() => copyText(teamData.referralLink, "Referral link")}
-                disabled={!teamData.referralLink}
-              >
-                Copy Link
-              </button>
-            </div>
-
-            <button
-              type="button"
-              className="team-share-button"
-              onClick={shareReferral}
-              disabled={!teamData.referralCode}
-            >
-              Share Referral Link
-            </button>
-          </div>
-
-          <div className="team-referral-icon">👥</div>
-        </section>
-
-        <section className="team-summary-grid">
-          <article className="team-summary-card">
-            <div className="team-summary-icon">👤</div>
-
-            <div>
-              <p>Direct Referrals</p>
-              <h3>{teamData.directReferrals.length}</h3>
-            </div>
-          </article>
-
-          <article className="team-summary-card">
-            <div className="team-summary-icon">🌐</div>
-
-            <div>
-              <p>Total Team</p>
-              <h3>{teamData.totalTeam}</h3>
-            </div>
-          </article>
-
-          <article className="team-summary-card">
-            <div className="team-summary-icon">✓</div>
-
-            <div>
-              <p>Active Members</p>
-              <h3>{activeMembers}</h3>
-            </div>
-          </article>
-
-          <article className="team-summary-card">
-            <div className="team-summary-icon">৳</div>
-
-            <div>
-              <p>Referral Income</p>
-              <h3>৳{formatAmount(teamData.totalCommission)}</h3>
-            </div>
-          </article>
-        </section>
-
-        <section className="team-members-section">
-          <div className="team-section-heading">
-            <div>
-              <p>Your network</p>
-              <h2>Direct Referrals</h2>
-            </div>
-
-            <span>{teamData.directReferrals.length} members</span>
-          </div>
-
-          {teamData.directReferrals.length === 0 ? (
-            <div className="team-empty-state">
-              <div className="team-empty-icon">👥</div>
-
-              <h3>No team members yet</h3>
-
-              <p>
-                Share your referral link and invite people to join your team.
-              </p>
-
-              <button
-                type="button"
-                onClick={shareReferral}
-                disabled={!teamData.referralCode}
-              >
-                Invite Members
-              </button>
-            </div>
-          ) : (
-            <div className="team-members-list">
-              {teamData.directReferrals.map((member, index) => {
-                const memberId = member._id || member.id || `member-${index}`;
-
-                const memberName = member.name || member.username || "User";
-
-                const memberStatus = String(
-                  member.status || "active",
-                ).toLowerCase();
-
-                return (
-                  <article key={memberId} className="team-member-card">
-                    <div className="team-member-avatar">
-                      {memberName.charAt(0).toUpperCase()}
-                    </div>
-
-                    <div className="team-member-info">
-                      <div className="team-member-title-row">
-                        <h3>{memberName}</h3>
-
-                        <span
-                          className={`team-member-status status-${memberStatus}`}
-                        >
-                          {memberStatus}
-                        </span>
-                      </div>
-
-                      <p>{member.phone || "Contact not available"}</p>
-
-                      <span>
-                        Joined {formatDate(member.createdAt || member.joinedAt)}
-                      </span>
-                    </div>
-
-                    <div className="team-member-earning">
-                      <span>Commission</span>
-
-                      <strong>
-                        ৳
-                        {formatAmount(
-                          member.commission || member.referralCommission || 0,
-                        )}
-                      </strong>
-                    </div>
-                  </article>
-                );
-              })}
             </div>
           )}
-        </section>
 
-        <section className="team-info-card">
-          <div>💡</div>
+          <section className="team-overview">
+            <article className="team-stat">
+              <div className="team-stat-icon">৳</div>
+              <p>Total Earn</p>
+              <strong>৳{formatAmount(teamData.totalCommission)}</strong>
+            </article>
+            <article className="team-stat">
+              <div className="team-stat-icon">♟</div>
+              <p>Total Members</p>
+              <strong>{String(teamData.totalTeam).padStart(2, "0")}</strong>
+            </article>
+            <article className="team-stat">
+              <div className="team-stat-icon">
+                <span className="active-dot" />
+                ♙
+              </div>
+              <p>Active Members</p>
+              <strong>{String(activeMembers).padStart(2, "0")}</strong>
+            </article>
+            <article className="team-stat">
+              <div className="team-stat-icon">↗</div>
+              <p>Direct Referrals</p>
+              <strong>
+                {String(teamData.directReferrals.length).padStart(2, "0")}
+              </strong>
+            </article>
+          </section>
 
-          <p>
-            Invite real users only. Referral rewards should be credited
-            according to your platform rules and approved transactions.
-          </p>
-        </section>
+          <section className="team-card referral-card">
+            <h2>Share Referral Link</h2>
+
+            <div className="referral-field">
+              <div className="referral-value">
+                <span>Referral Code</span>
+                <strong>{teamData.referralCode || "Not available"}</strong>
+              </div>
+              <button
+                type="button"
+                className="copy-button"
+                onClick={() =>
+                  copyText(teamData.referralCode, "Referral code")
+                }
+                disabled={!teamData.referralCode}
+              >
+                <span className="copy-symbol">▢</span> Copy
+              </button>
+            </div>
+
+            <div className="referral-field">
+              <div className="referral-value">
+                <span>Referral Link</span>
+                <a href={teamData.referralLink}>
+                  {teamData.referralLink || "Not available"}
+                </a>
+              </div>
+              <button
+                type="button"
+                className="copy-button"
+                onClick={() =>
+                  copyText(teamData.referralLink, "Referral link")
+                }
+                disabled={!teamData.referralLink}
+              >
+                <span className="copy-symbol">▢</span> Copy
+              </button>
+            </div>
+          </section>
+
+          {levels.map((item) => (
+            <section className="team-card level-card" key={item.level}>
+              <div className="level-header">
+                <div className={`level-badge level-${item.level}`}>
+                  <span>♙</span>
+                  <small>{item.level}</small>
+                </div>
+
+                <div className="level-title">
+                  <h3>Level {item.level}</h3>
+                  <span>{item.rate}</span>
+                </div>
+
+                <button type="button" className="directory-button">
+                  Directory <b>›</b>
+                </button>
+              </div>
+
+              <div className="level-details">
+                <div className="level-detail">
+                  <div className="detail-icon">♙</div>
+                  <div>
+                    <span>Users</span>
+                    <strong>{String(item.users).padStart(2, "0")}</strong>
+                  </div>
+                </div>
+
+                <div className="level-detail">
+                  <div className="detail-icon">৳</div>
+                  <div>
+                    <span>Commission</span>
+                    <strong>৳{formatAmount(item.commission)}</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
     </main>
   );
