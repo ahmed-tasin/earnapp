@@ -17,7 +17,6 @@ const API_URL =
 
 const initialForm = {
   accountName: "",
-  phone: "",
   paymentMethod: "bkash",
   accountNumber: "",
 };
@@ -34,11 +33,9 @@ function Card() {
   const [formData, setFormData] =
     useState(initialForm);
 
-  // Database থেকে পাওয়া সর্বশেষ saved card
   const [savedAccount, setSavedAccount] =
     useState(null);
 
-  // Card না থাকলে form প্রথম থেকেই দেখা যাবে
   const [isEditing, setIsEditing] =
     useState(true);
 
@@ -57,7 +54,7 @@ function Card() {
   const getToken = () =>
     localStorage.getItem("userToken");
 
-  // ================= LOAD CARD =================
+  // ================= LOAD SAVED CARD =================
 
   const loadAccount = useCallback(async () => {
     try {
@@ -89,46 +86,44 @@ function Card() {
         response.data ||
         {};
 
-      const accountFromDatabase =
+      const card =
         user.withdrawalAccount || {};
 
-      const normalizedAccount = {
+      const normalizedCard = {
         accountName:
-          accountFromDatabase.accountName ||
+          card.accountName ||
           user.name ||
           user.username ||
           "",
 
-        phone:
-          accountFromDatabase.phone ||
-          user.phone ||
-          "",
-
         paymentMethod:
-          accountFromDatabase.paymentMethod ||
+          card.paymentMethod ||
           "bkash",
 
         accountNumber:
-          accountFromDatabase.accountNumber ||
+          card.accountNumber ||
           "",
       };
 
       const hasSavedCard = Boolean(
-        accountFromDatabase.paymentMethod &&
-          accountFromDatabase.accountNumber
+        card.accountName &&
+          card.paymentMethod &&
+          card.accountNumber
       );
 
-      setFormData(normalizedAccount);
+      setFormData(normalizedCard);
 
       if (hasSavedCard) {
-        setSavedAccount(normalizedAccount);
+        setSavedAccount(
+          normalizedCard
+        );
 
-        // Saved Card থাকলে form hide থাকবে
+        // Card থাকলে form hide
         setIsEditing(false);
       } else {
         setSavedAccount(null);
 
-        // প্রথমবার Card না থাকলে form দেখা যাবে
+        // প্রথমবার form দেখা যাবে
         setIsEditing(true);
       }
     } catch (error) {
@@ -147,7 +142,7 @@ function Card() {
     loadAccount();
   }, [loadAccount]);
 
-  // ================= FORM CHANGE =================
+  // ================= INPUT CHANGE =================
 
   const handleChange = (event) => {
     const { name, value } =
@@ -168,10 +163,6 @@ function Card() {
     const accountName =
       formData.accountName.trim();
 
-    const phone = formData.phone
-      .trim()
-      .replace(/[\s-]/g, "");
-
     const accountNumber =
       formData.accountNumber
         .trim()
@@ -185,15 +176,9 @@ function Card() {
     }
 
     if (
-      !/^(?:\+?880|0)?1[3-9]\d{8}$/.test(
-        phone
-      )
-    ) {
-      return "Enter a valid phone number";
-    }
-
-    if (
-      !Object.keys(paymentMethods).includes(
+      !Object.keys(
+        paymentMethods
+      ).includes(
         formData.paymentMethod
       )
     ) {
@@ -215,7 +200,7 @@ function Card() {
     return "";
   };
 
-  // ================= SAVE CARD =================
+  // ================= SAVE OR UPDATE =================
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -249,14 +234,13 @@ function Card() {
         accountName:
           formData.accountName.trim(),
 
-        phone:
-          formData.phone.trim(),
-
         paymentMethod:
           formData.paymentMethod,
 
         accountNumber:
-          formData.accountNumber.trim(),
+          formData.accountNumber
+            .trim()
+            .replace(/[\s-]/g, ""),
       };
 
       const response = await axios.put(
@@ -269,36 +253,31 @@ function Card() {
         }
       );
 
-      const accountFromResponse =
+      const responseCard =
         response.data?.withdrawalAccount ||
         response.data?.data
           ?.withdrawalAccount ||
         payload;
 
-      const updatedAccount = {
+      // Phone field intentionally নেওয়া হচ্ছে না
+      const updatedCard = {
         accountName:
-          accountFromResponse.accountName ||
+          responseCard.accountName ||
           payload.accountName,
 
-        phone:
-          accountFromResponse.phone ||
-          payload.phone,
-
         paymentMethod:
-          accountFromResponse.paymentMethod ||
+          responseCard.paymentMethod ||
           payload.paymentMethod,
 
         accountNumber:
-          accountFromResponse.accountNumber ||
+          responseCard.accountNumber ||
           payload.accountNumber,
       };
 
-      setFormData(updatedAccount);
+      setFormData(updatedCard);
+      setSavedAccount(updatedCard);
 
-      // সর্বশেষ saved data রাখা হচ্ছে
-      setSavedAccount(updatedAccount);
-
-      // Save সফল হলে form hide হবে
+      // Save সফল হলে form hide
       setIsEditing(false);
 
       const storedUser = JSON.parse(
@@ -311,7 +290,7 @@ function Card() {
         JSON.stringify({
           ...storedUser,
           withdrawalAccount:
-            updatedAccount,
+            updatedCard,
         })
       );
 
@@ -333,9 +312,9 @@ function Card() {
     }
   };
 
-  // ================= EDIT CARD =================
+  // ================= OPEN EDIT FORM =================
 
-  const openEditForm = () => {
+  const handleEdit = () => {
     if (savedAccount) {
       setFormData(savedAccount);
     }
@@ -343,23 +322,23 @@ function Card() {
     setMessage("");
     setMessageType("");
 
-    // Edit button চাপলে form দেখা যাবে
+    // Edit করলে form দেখা যাবে
     setIsEditing(true);
   };
 
   // ================= CANCEL EDIT =================
 
-  const cancelEdit = () => {
+  const handleCancel = () => {
     if (savedAccount) {
-      // Unsaved পরিবর্তন বাদ দিয়ে
-      // আগের saved data ফিরিয়ে আনা হচ্ছে
+      // Unsaved change বাদ দিয়ে
+      // আগের saved data ফেরত
       setFormData(savedAccount);
     }
 
     setMessage("");
     setMessageType("");
 
-    // Cancel করলে form hide হবে
+    // Cancel করলে form hide
     setIsEditing(false);
   };
 
@@ -380,11 +359,15 @@ function Card() {
   return (
     <main className="card-page">
       <div className="card-container">
+        {/* ================= HEADER ================= */}
+
         <header className="card-header">
           <button
             type="button"
             className="card-back-button"
-            onClick={() => navigate(-1)}
+            onClick={() =>
+              navigate(-1)
+            }
             aria-label="Go back"
           >
             ←
@@ -392,6 +375,7 @@ function Card() {
 
           <div>
             <p>Payment details</p>
+
             <h1>Withdraw Card</h1>
           </div>
 
@@ -432,20 +416,13 @@ function Card() {
 
           <div className="withdrawal-card-bottom">
             <div>
-              <span>Account holder</span>
+              <span>
+                Account holder
+              </span>
 
               <strong>
                 {formData.accountName ||
                   "Your name"}
-              </strong>
-            </div>
-
-            <div>
-              <span>Contact</span>
-
-              <strong>
-                {formData.phone ||
-                  "01XXXXXXXXX"}
               </strong>
             </div>
           </div>
@@ -464,15 +441,16 @@ function Card() {
 
         {/* Saved Card থাকলে শুধু Edit button */}
 
-        {!isEditing && savedAccount && (
-          <button
-            type="button"
-            className="card-edit-button"
-            onClick={openEditForm}
-          >
-            Edit Withdraw Card
-          </button>
-        )}
+        {!isEditing &&
+          savedAccount && (
+            <button
+              type="button"
+              className="card-edit-button"
+              onClick={handleEdit}
+            >
+              Edit Withdraw Card
+            </button>
+          )}
 
         {/* ================= FORM ================= */}
 
@@ -494,6 +472,8 @@ function Card() {
               </h2>
             </div>
 
+            {/* Account Name */}
+
             <div className="card-form-group">
               <label htmlFor="accountName">
                 নাম
@@ -507,7 +487,7 @@ function Card() {
                   formData.accountName
                 }
                 onChange={handleChange}
-                placeholder="আপনার নাম লিখুন"
+                placeholder="অ্যাকাউন্টের নাম লিখুন"
                 minLength={2}
                 maxLength={50}
                 autoComplete="name"
@@ -515,24 +495,7 @@ function Card() {
               />
             </div>
 
-            <div className="card-form-group">
-              <label htmlFor="phone">
-                ফোন নাম্বার
-              </label>
-
-              <input
-                id="phone"
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="01XXXXXXXXX"
-                maxLength={14}
-                autoComplete="tel"
-                inputMode="numeric"
-                required
-              />
-            </div>
+            {/* Payment Method */}
 
             <div className="card-form-group">
               <label htmlFor="paymentMethod">
@@ -562,39 +525,38 @@ function Card() {
               </select>
             </div>
 
-            <div className="card-form-group">
-              <label htmlFor="accountNumber">
-                {
-                  paymentMethods[
-                    formData.paymentMethod
-                  ]
-                }{" "}
-                নাম্বার
-              </label>
+            {/* Payment Account Number */}
 
-              <input
-                id="accountNumber"
-                type="tel"
-                name="accountNumber"
-                value={
-                  formData.accountNumber
-                }
-                onChange={handleChange}
-                placeholder="01XXXXXXXXX"
-                maxLength={14}
-                inputMode="numeric"
-                required
-              />
-            </div>
+           <div className="card-form-group">
+  <label htmlFor="accountNumber">
+    {paymentMethods[formData.paymentMethod]} Number
+  </label>
+
+  <input
+    id="accountNumber"
+    type="tel"
+    name="accountNumber"
+    value={formData.accountNumber}
+    onChange={handleChange}
+    placeholder={`Enter ${
+      paymentMethods[formData.paymentMethod]
+    } number`}
+    maxLength={14}
+    inputMode="numeric"
+    required
+  />
+</div>
+
+            {/* Buttons */}
 
             <div className="card-form-actions">
-              {/* শুধু আগের Card থাকলে Cancel দেখাবে */}
-
               {savedAccount && (
                 <button
                   type="button"
                   className="card-cancel-button"
-                  onClick={cancelEdit}
+                  onClick={
+                    handleCancel
+                  }
                   disabled={saving}
                 >
                   Cancel

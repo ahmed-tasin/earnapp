@@ -319,3 +319,71 @@
     width: 100%;
   }
 }
+
+
+
+
+
+
+
+
+
+
+.card-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.card-save-button,
+.card-cancel-button,
+.card-edit-button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.card-save-button {
+  flex: 1;
+  background: #76b900;
+  color: #071000;
+}
+
+.card-cancel-button {
+  min-width: 105px;
+  border: 1px solid #343832;
+  background: #171917;
+  color: #ffffff;
+}
+
+.card-edit-button {
+  display: block;
+  width: min(100%, 260px);
+  margin: 22px auto 0;
+  background: #76b900;
+  color: #071000;
+}
+
+.card-save-button:hover,
+.card-edit-button:hover {
+  background: #9bea32;
+}
+
+.card-save-button:disabled,
+.card-cancel-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 600px) {
+  .card-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .card-cancel-button {
+    width: 100%;
+  }
+}

@@ -1,194 +1,306 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const normalizePhone = require("../utils/normalizePhone");
+
+const normalizePhone = require(
+  "../utils/normalizePhone"
+);
 
 // ================= GET PROFILE =================
 
 exports.getProfile = async (userId) => {
+  const user = await User.findById(
+    userId
+  ).select("-password -__v");
 
-    const user = await User.findById(userId)
-        .select("-password -__v");
+  if (!user) {
+    const error = new Error(
+      "User not found"
+    );
 
-    if (!user) {
-        throw new Error("User not found");
-    }
+    error.statusCode = 404;
+    throw error;
+  }
 
-    return user;
+  return user;
 };
 
 // ================= UPDATE PROFILE =================
 
-exports.updateProfile = async (userId, data) => {
+exports.updateProfile = async (
+  userId,
+  data
+) => {
+  const name = String(
+    data.name || ""
+  ).trim();
 
-    const { name } = data;
-    const phone = data.phone ? normalizePhone(data.phone) : "";
+  const phone = data.phone
+    ? normalizePhone(data.phone)
+    : "";
 
-    const user = await User.findById(userId);
+  const user = await User.findById(
+    userId
+  );
+
+  if (!user) {
+    const error = new Error(
+      "User not found"
+    );
+
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (name) {
+    if (
+      name.length < 2 ||
+      name.length > 50
+    ) {
+      const error = new Error(
+        "Name must be 2-50 characters"
+      );
+
+      error.statusCode = 400;
+      throw error;
+    }
+
+    user.name = name;
+  }
+
+  if (phone) {
+    if (
+      !/^01[3-9]\d{8}$/.test(phone)
+    ) {
+      const error = new Error(
+        "Enter a valid Bangladesh phone number"
+      );
+
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const existingUser =
+      await User.findOne({
+        _id: {
+          $ne: userId,
+        },
+
+        phone: {
+          $in: normalizePhone.variants(
+            phone
+          ),
+        },
+      });
+
+    if (existingUser) {
+      const error = new Error(
+        "Phone number already registered"
+      );
+
+      error.statusCode = 409;
+      throw error;
+    }
+
+    user.phone = phone;
+  }
+
+  await user.save();
+
+  return User.findById(
+    userId
+  ).select("-password -__v");
+};
+
+// ================= UPDATE WITHDRAWAL ACCOUNT =================
+
+exports.updateWithdrawalAccount =
+  async (userId, data) => {
+    const accountName = String(
+      data.accountName || ""
+    ).trim();
+
+    const paymentMethod = String(
+      data.paymentMethod || ""
+    )
+      .trim()
+      .toLowerCase();
+
+    const accountNumber =
+      normalizePhone(
+        data.accountNumber
+      );
+
+    if (
+      accountName.length < 2 ||
+      accountName.length > 50
+    ) {
+      const error = new Error(
+        "Name must be 2-50 characters"
+      );
+
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const allowedMethods = [
+      "bkash",
+      "nagad",
+      "rocket",
+    ];
+
+    if (
+      !allowedMethods.includes(
+        paymentMethod
+      )
+    ) {
+      const error = new Error(
+        "Select bKash, Nagad or Rocket"
+      );
+
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (
+      !/^01\d{9}$/.test(
+        accountNumber
+      )
+    ) {
+      const error = new Error(
+        "Enter a valid payment account number"
+      );
+
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const user = await User.findById(
+      userId
+    );
 
     if (!user) {
-        throw new Error("User not found");
+      const error = new Error(
+        "User not found"
+      );
+
+      error.statusCode = 404;
+      throw error;
     }
 
-    if (name) {
-        const normalizedName = name.trim();
+    user.withdrawalAccount = {
+      accountName,
 
-        if (normalizedName.length < 2 || normalizedName.length > 50) {
-            throw new Error("Name must be 2-50 characters");
-        }
+      // আলাদা phone input লাগবে না
+      // Registered phone নেওয়া হবে
+      phone: normalizePhone(
+        user.phone
+      ),
 
-        user.name = normalizedName;
-    }
-
-    if (phone) {
-        if (!/^01[3-9]\d{8}$/.test(phone)) {
-            throw new Error("Enter a valid Bangladesh phone number");
-        }
-
-        const existingUser = await User.findOne({
-            _id: { $ne: userId },
-            phone: { $in: normalizePhone.variants(phone) }
-        });
-
-        if (existingUser) {
-            throw new Error("Phone number already registered");
-        }
-
-        user.phone = phone;
-    }
+      paymentMethod,
+      accountNumber,
+    };
 
     await user.save();
 
-    return await User.findById(userId).select("-password -__v");
-};
+    return user.withdrawalAccount;
+  };
 
 // ================= CHANGE PASSWORD =================
 
-exports.changePassword = async (userId, data) => {
+exports.changePassword = async (
+  userId,
+  data
+) => {
+  const currentPassword =
+    data.currentPassword ||
+    data.oldPassword ||
+    "";
 
-    const { oldPassword, newPassword } = data;
+  const newPassword = String(
+    data.newPassword || ""
+  );
 
-    const user = await User.findById(userId)
-        .select("+password");
-
-    if (!user) {
-        throw new Error("User not found");
-    }
-
-    const match = await bcrypt.compare(
-        oldPassword,
-        user.password
+  if (!currentPassword) {
+    const error = new Error(
+      "Current password is required"
     );
 
-    if (!match) {
-        throw new Error("Old password is incorrect");
-    }
+    error.statusCode = 400;
+    throw error;
+  }
 
-    user.password = await bcrypt.hash(newPassword, 10);
+  if (newPassword.length < 6) {
+    const error = new Error(
+      "New password must be at least 6 characters"
+    );
 
-    await user.save();
+    error.statusCode = 400;
+    throw error;
+  }
 
-    return true;
+  const user = await User.findById(
+    userId
+  ).select("+password");
+
+  if (!user) {
+    const error = new Error(
+      "User not found"
+    );
+
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const passwordMatches =
+    await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+  if (!passwordMatches) {
+    const error = new Error(
+      "Current password is incorrect"
+    );
+
+    error.statusCode = 401;
+    throw error;
+  }
+
+  user.password = await bcrypt.hash(
+    newPassword,
+    10
+  );
+
+  await user.save();
+
+  return true;
 };
 
 // ================= DASHBOARD =================
 
-exports.getDashboard = async (userId) => {
-
-    const user = await User.findById(userId)
-        .select(
-            "balance totalDeposit totalWithdraw totalEarning referralCommissionEarned"
-        );
-
-    if (!user) {
-        throw new Error("User not found");
-    }
-
-    return user;
-};
-
-
-
-// ================= UPDATE WITHDRAWAL ACCOUNT =================
-
-exports.updateWithdrawalAccount = async (userId, data) => {
-  const accountName = String(data.accountName || "").trim();
-
-  const phone = normalizePhone(data.phone);
-
-  const paymentMethod = String(
-    data.paymentMethod || ""
-  )
-    .trim()
-    .toLowerCase();
-
-  const accountNumber = normalizePhone(
-    data.accountNumber
+exports.getDashboard = async (
+  userId
+) => {
+  const user = await User.findById(
+    userId
+  ).select(
+    [
+      "balance",
+      "totalDeposit",
+      "totalWithdraw",
+      "totalEarning",
+      "referralCommissionEarned",
+    ].join(" ")
   );
 
-  if (accountName.length < 2 || accountName.length > 50) {
+  if (!user) {
     const error = new Error(
-      "Name must be 2-50 characters"
+      "User not found"
     );
-    error.statusCode = 400;
+
+    error.statusCode = 404;
     throw error;
   }
 
-  if (!/^01[3-9]\d{8}$/.test(phone)) {
-    const error = new Error(
-      "Enter a valid phone number"
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const allowedMethods = [
-    "bkash",
-    "nagad",
-    "rocket",
-  ];
-
-  if (!allowedMethods.includes(paymentMethod)) {
-    const error = new Error(
-      "Select bKash, Nagad or Rocket"
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!/^01\d{9}$/.test(accountNumber)) {
-    const error = new Error(
-      "Enter a valid payment account number"
-    );
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const updatedUser = await User.findByIdAndUpdate(
-  userId,
-  {
-    $set: {
-      withdrawalAccount: {
-        accountName,
-        phone,
-        paymentMethod,
-        accountNumber,
-      },
-    },
-  },
-  {
-    new: true,
-    runValidators: true,
-  }
-).select("withdrawalAccount");
-
-if (!updatedUser) {
-  const error = new Error("User not found");
-  error.statusCode = 404;
-  throw error;
-}
-
-return updatedUser.withdrawalAccount;
+  return user;
 };
-
-
-
