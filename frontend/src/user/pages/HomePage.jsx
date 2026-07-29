@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 import "../styles/HomePage.css";
 
+import TransactionTicker from "../components/TransactionTicker";
+
 const API_URL =
   process.env.REACT_APP_API_URL ||
   "https://earnapp-n5b2.onrender.com/api";
@@ -424,13 +426,11 @@ const siteRunningTime = {
 
 
 
+<TransactionTicker />
 
 
 
-
-{/* 
-
-      <section className="home-section quick-actions-section">
+{/*  <section className="home-section quick-actions-section">
         <div className="home-section-heading">
           <div>
             <h2>Quick Actions</h2>
