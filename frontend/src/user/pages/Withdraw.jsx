@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,14 +9,15 @@ const API_URL =
 
 const initialForm = {
   amount: "",
-  method: "bkash",
-  accountNumber: "",
+  password: "",
 };
 
 function Withdraw() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState(initialForm);
+  const [savedAccount, setSavedAccount] = useState(null);
+  const [accountLoading, setAccountLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -26,6 +27,54 @@ function Withdraw() {
     nagad: "Nagad",
     rocket: "Rocket",
   };
+
+  useEffect(() => {
+    const loadSavedAccount = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+
+        if (!token) {
+          setAccountLoading(false);
+          return;
+        }
+
+        const response = await axios.get(`${API_URL}/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const user =
+          response.data?.user ||
+          response.data?.data?.user ||
+          response.data?.data ||
+          response.data ||
+          {};
+
+        const savedAccount = user.withdrawalAccount;
+
+        if (
+          !savedAccount?.paymentMethod ||
+          !savedAccount?.accountNumber
+        ) {
+          setSavedAccount(null);
+          return;
+        }
+
+        setSavedAccount(savedAccount);
+      } catch (error) {
+        setMessage(
+          error.response?.data?.message ||
+            "Failed to load saved withdrawal card"
+        );
+        setMessageType("error");
+      } finally {
+        setAccountLoading(false);
+      }
+    };
+
+    loadSavedAccount();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -50,8 +99,12 @@ function Withdraw() {
       return "Minimum withdraw amount is ৳100";
     }
 
-    if (!/^01\d{9}$/.test(formData.accountNumber.trim())) {
-      return "Enter a valid 11-digit account number";
+    if (!savedAccount) {
+      return "Set your withdrawal card before withdrawing";
+    }
+
+    if (!formData.password) {
+      return "Enter your login password";
     }
 
     return "";
@@ -83,10 +136,9 @@ function Withdraw() {
       }
 
       const withdrawData = {
-  amount: Number(formData.amount),
-  paymentMethod: formData.method,
-  accountNumber: formData.accountNumber.trim(),
-};
+        amount: Number(formData.amount),
+        password: formData.password,
+      };
 
       const response = await axios.post(
         `${API_URL}/wallet/withdraw`,
@@ -147,8 +199,8 @@ function Withdraw() {
             <h2>Submit Withdraw Request</h2>
 
             <p>
-              Select your payment method and enter the account where
-              you want to receive the money.
+              Enter the amount and your login password. Payment will
+              be sent to your saved withdrawal card.
             </p>
           </div>
         </section>
@@ -163,34 +215,35 @@ function Withdraw() {
         )}
 
         <form className="withdraw-form" onSubmit={handleSubmit}>
-          <div className="withdraw-form-group">
-            <label>Payment Method</label>
+          {accountLoading ? (
+            <section className="withdraw-saved-card loading">
+              Loading saved card...
+            </section>
+          ) : savedAccount ? (
+            <section className="withdraw-saved-card">
+              <div>
+                <span>Withdraw account</span>
+                <strong>
+                  {withdrawMethods[savedAccount.paymentMethod] ||
+                    savedAccount.paymentMethod}
+                </strong>
+              </div>
 
-            <div className="withdraw-method-grid">
-              {Object.entries(withdrawMethods).map(
-                ([key, methodName]) => (
-                  <label
-                    key={key}
-                    className={
-                      formData.method === key
-                        ? "withdraw-method active"
-                        : "withdraw-method"
-                    }
-                  >
-                    <input
-                      type="radio"
-                      name="method"
-                      value={key}
-                      checked={formData.method === key}
-                      onChange={handleChange}
-                    />
-
-                    <span>{methodName}</span>
-                  </label>
-                )
-              )}
-            </div>
-          </div>
+              <div>
+                <span>Account number</span>
+                <strong>
+                  {savedAccount.accountNumber.slice(0, 3)}
+                  {"****"}
+                  {savedAccount.accountNumber.slice(-4)}
+                </strong>
+              </div>
+            </section>
+          ) : (
+            <section className="withdraw-saved-card missing">
+              <p>No withdrawal card is saved.</p>
+              <Link to="/card">Set Withdraw Card →</Link>
+            </section>
+          )}
 
           <div className="withdraw-form-group">
             <label htmlFor="amount">Withdraw Amount</label>
@@ -213,19 +266,16 @@ function Withdraw() {
           </div>
 
           <div className="withdraw-form-group">
-            <label htmlFor="accountNumber">
-              {withdrawMethods[formData.method]} Account Number
-            </label>
+            <label htmlFor="password">Login Password</label>
 
             <input
-              id="accountNumber"
-              type="tel"
-              name="accountNumber"
-              placeholder="01XXXXXXXXX"
-              value={formData.accountNumber}
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Enter your login password"
+              value={formData.password}
               onChange={handleChange}
-              maxLength={11}
-              autoComplete="tel"
+              autoComplete="current-password"
               required
             />
           </div>
@@ -240,7 +290,11 @@ function Withdraw() {
 
             <div>
               <span>Payment Method</span>
-              <strong>{withdrawMethods[formData.method]}</strong>
+              <strong>
+                {savedAccount
+                  ? withdrawMethods[savedAccount.paymentMethod]
+                  : "Not set"}
+              </strong>
             </div>
           </section>
 
@@ -248,7 +302,7 @@ function Withdraw() {
             <span>⚠️</span>
 
             <p>
-              Check your account number carefully. Withdraw requests
+              Your saved Card account will be used. Withdraw requests
               may require admin approval before payment.
             </p>
           </div>
@@ -256,7 +310,7 @@ function Withdraw() {
           <button
             type="submit"
             className="withdraw-submit-button"
-            disabled={loading}
+            disabled={loading || accountLoading || !savedAccount}
           >
             {loading
               ? "Submitting request..."

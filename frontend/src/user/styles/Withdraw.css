@@ -154,6 +154,61 @@
   box-shadow: 0 12px 32px rgba(15, 60, 45, 0.08);
 }
 
+.withdraw-saved-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+  padding: 17px;
+  border: 1px solid rgba(13, 91, 67, 0.2);
+  border-radius: 15px;
+  background: #edf8f3;
+}
+
+.withdraw-saved-card div:last-child {
+  text-align: right;
+}
+
+.withdraw-saved-card span {
+  display: block;
+  margin-bottom: 5px;
+  color: #718079;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.withdraw-saved-card strong {
+  color: #0d5b43;
+  font-size: 15px;
+}
+
+.withdraw-saved-card.loading {
+  display: block;
+  color: #66716c;
+  text-align: center;
+}
+
+.withdraw-saved-card.missing {
+  display: block;
+  border-color: #efc7c7;
+  background: #fff3f3;
+  text-align: center;
+}
+
+.withdraw-saved-card.missing p {
+  margin: 0 0 8px;
+  color: #a83a3a;
+  font-size: 14px;
+}
+
+.withdraw-saved-card.missing a {
+  color: #0d5b43;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .withdraw-form-group {
   margin-bottom: 20px;
 }

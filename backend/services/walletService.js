@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
@@ -205,16 +206,7 @@ exports.approveDeposit = async (
 
 exports.withdraw = async (userId, data) => {
   const amount = Number(data.amount);
-
-  const paymentMethod = String(
-    data.paymentMethod || "",
-  )
-    .trim()
-    .toLowerCase();
-
-  const accountNumber = String(
-    data.accountNumber || "",
-  ).trim();
+  const password = String(data.password || "");
 
   const minimumWithdraw = Number(
     process.env.MIN_WITHDRAW_AMOUNT || 100,
@@ -240,41 +232,8 @@ exports.withdraw = async (userId, data) => {
     throw error;
   }
 
-  const allowedPaymentMethods = [
-    "bkash",
-    "nagad",
-    "rocket",
-    "bank",
-  ];
-
-  if (
-    !paymentMethod ||
-    !allowedPaymentMethods.includes(paymentMethod)
-  ) {
-    const error = new Error(
-      "Invalid payment method",
-    );
-
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!accountNumber) {
-    const error = new Error(
-      "Account number is required",
-    );
-
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (
-    paymentMethod !== "bank" &&
-    !/^01\d{9}$/.test(accountNumber)
-  ) {
-    const error = new Error(
-      "Invalid mobile account number",
-    );
+  if (!password) {
+    const error = new Error("Password is required");
 
     error.statusCode = 400;
     throw error;
@@ -282,12 +241,56 @@ exports.withdraw = async (userId, data) => {
 
   // ================= USER CHECK =================
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId)
+    .select("+password");
 
   if (!user) {
     const error = new Error("User not found");
 
     error.statusCode = 404;
+    throw error;
+  }
+
+  const passwordMatches = await bcrypt.compare(
+    password,
+    user.password,
+  );
+
+  if (!passwordMatches) {
+    const error = new Error("Incorrect password");
+
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const withdrawalAccount =
+    user.withdrawalAccount || {};
+
+  const paymentMethod = String(
+    withdrawalAccount.paymentMethod || "",
+  )
+    .trim()
+    .toLowerCase();
+
+  const accountNumber = String(
+    withdrawalAccount.accountNumber || "",
+  ).trim();
+
+  const allowedPaymentMethods = [
+    "bkash",
+    "nagad",
+    "rocket",
+  ];
+
+  if (
+    !allowedPaymentMethods.includes(paymentMethod) ||
+    !/^01\d{9}$/.test(accountNumber)
+  ) {
+    const error = new Error(
+      "Set a valid withdrawal card before withdrawing",
+    );
+
+    error.statusCode = 400;
     throw error;
   }
 
@@ -358,10 +361,15 @@ exports.withdraw = async (userId, data) => {
 
       paymentMethod,
 
-      /*
-       * আপনার existing Transaction model-এ
-       * accountNumber field নেই বলে note-এ রাখা হচ্ছে।
-       */
+      accountNumber,
+
+      accountName:
+        withdrawalAccount.accountName || user.name || user.username,
+
+      contactPhone:
+        withdrawalAccount.phone || user.phone,
+
+      // পুরোনো admin/history response-এর compatibility-এর জন্য
       note: accountNumber,
 
       trxId: "",
@@ -753,7 +761,7 @@ exports.getAdminWithdraws = async () => {
   })
     .populate(
       "userId",
-      "username email phone balance totalWithdraw",
+      "username email phone withdrawalAccount balance totalWithdraw",
     )
     .sort({ createdAt: -1 });
 

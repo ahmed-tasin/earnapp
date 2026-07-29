@@ -22,6 +22,7 @@ import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import CheckIn from "./pages/CheckIn";
 import Holdings from "./pages/Holdings";
+import Card from "./pages/card";
 
 function UserLayout() {
   return (
@@ -55,6 +56,7 @@ function UserApp() {
           <Route path="profile" element={<Profile />} />
           <Route path="checkin" element={<CheckIn />} />
           <Route path="holdings" element={<Holdings />} />
+          <Route path="card" element={<Card />} />
         </Route>
       </Route>
 

@@ -97,6 +97,37 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
+    withdrawalAccount: {
+  accountName: {
+    type: String,
+    trim: true,
+    maxlength: 50,
+    default: "",
+  },
+
+  phone: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  paymentMethod: {
+    type: String,
+    enum: ["", "bkash", "nagad", "rocket"],
+    default: "",
+  },
+
+  accountNumber: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+},
+
+lastLogin: Date,
+
+
+
     lastLogin: Date,
   },
   {

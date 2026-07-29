@@ -26,6 +26,24 @@ const transactionSchema = new mongoose.Schema(
       default: "",
     },
 
+    accountNumber: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    accountName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    contactPhone: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     trxId: {
       type: String,
       trim: true,

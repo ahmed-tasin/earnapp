@@ -456,7 +456,7 @@ function Profile() {
   const services = [
     { label: "Invite", icon: "invite", to: "/team" },
     { label: "Deposit", icon: "deposit", to: "/deposit" },
-    { label: "Card", icon: "card", to: "/wallet" },
+    { label: "Card", icon: "card", to: "/card" },
     { label: "Check in", icon: "checkin", to: "/checkin" },
     { label: "History", icon: "history", to: "/transactions" },
     { label: "Team", icon: "team", to: "/team" },

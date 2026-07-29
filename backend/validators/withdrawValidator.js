@@ -16,34 +16,15 @@ exports.validateWithdraw = [
       "Withdraw amount must be greater than zero",
     ),
 
-  body("paymentMethod")
+  body("password")
+    .isString()
+    .withMessage(
+      "Password is required",
+    )
     .trim()
     .notEmpty()
     .withMessage(
-      "Payment method is required",
-    )
-    .isIn([
-      "bkash",
-      "nagad",
-      "rocket",
-      "bank",
-    ])
-    .withMessage(
-      "Invalid payment method",
-    ),
-
-  body("accountNumber")
-    .trim()
-    .notEmpty()
-    .withMessage(
-      "Account number is required",
-    )
-    .isLength({
-      min: 5,
-      max: 50,
-    })
-    .withMessage(
-      "Invalid account number",
+      "Password is required",
     ),
 
   (req, res, next) => {

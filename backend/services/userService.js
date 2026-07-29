@@ -105,3 +105,90 @@ exports.getDashboard = async (userId) => {
 
     return user;
 };
+
+
+
+// ================= UPDATE WITHDRAWAL ACCOUNT =================
+
+exports.updateWithdrawalAccount = async (userId, data) => {
+  const accountName = String(data.accountName || "").trim();
+
+  const phone = normalizePhone(data.phone);
+
+  const paymentMethod = String(
+    data.paymentMethod || ""
+  )
+    .trim()
+    .toLowerCase();
+
+  const accountNumber = normalizePhone(
+    data.accountNumber
+  );
+
+  if (accountName.length < 2 || accountName.length > 50) {
+    const error = new Error(
+      "Name must be 2-50 characters"
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!/^01[3-9]\d{8}$/.test(phone)) {
+    const error = new Error(
+      "Enter a valid phone number"
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const allowedMethods = [
+    "bkash",
+    "nagad",
+    "rocket",
+  ];
+
+  if (!allowedMethods.includes(paymentMethod)) {
+    const error = new Error(
+      "Select bKash, Nagad or Rocket"
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!/^01\d{9}$/.test(accountNumber)) {
+    const error = new Error(
+      "Enter a valid payment account number"
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+  userId,
+  {
+    $set: {
+      withdrawalAccount: {
+        accountName,
+        phone,
+        paymentMethod,
+        accountNumber,
+      },
+    },
+  },
+  {
+    new: true,
+    runValidators: true,
+  }
+).select("withdrawalAccount");
+
+if (!updatedUser) {
+  const error = new Error("User not found");
+  error.statusCode = 404;
+  throw error;
+}
+
+return updatedUser.withdrawalAccount;
+};
+
+
+
