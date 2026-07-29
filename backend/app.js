@@ -13,6 +13,7 @@ const profitRoutes = require("./routes/profitRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const investmentRoutes = require("./routes/investmentRoutes");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -90,6 +91,7 @@ app.use("/api/profit", profitRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin", adminDashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/investments", investmentRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

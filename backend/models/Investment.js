@@ -18,20 +18,19 @@ const investmentSchema = new mongoose.Schema(
 
     totalDays: Number,
 
-    remainingDays: Number,
-
     startDate: Date,
 
     endDate: Date,
 
-    totalEarned: {
-      type: Number,
-      default: 0,
-    },
-
     lastProfitDate: {
       type: Date,
       default: null,
+    },
+
+    nextClaimAt: {
+      type: Date,
+      default: null,
+      index: true,
     },
 
     totalEarned: {
@@ -61,5 +60,11 @@ const investmentSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+investmentSchema.index({
+  userId: 1,
+  status: 1,
+  createdAt: -1,
+});
 
 module.exports = mongoose.model("Investment", investmentSchema);

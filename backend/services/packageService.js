@@ -119,6 +119,8 @@ exports.buyPackage = async (userId, packageId) => {
 
         await pkg.save({ session });
 
+        const purchasedAt = new Date();
+
         const investment = await Investment.create([{
 
             userId: user._id,
@@ -133,14 +135,19 @@ exports.buyPackage = async (userId, packageId) => {
 
             remainingDays: pkg.totalDays,
 
-            startDate: new Date(),
+            startDate: purchasedAt,
 
             endDate: new Date(
-                Date.now() +
+                purchasedAt.getTime() +
                 pkg.totalDays * 24 * 60 * 60 * 1000
             ),
 
             totalEarned: 0,
+
+            nextClaimAt: new Date(
+                purchasedAt.getTime() +
+                24 * 60 * 60 * 1000
+            ),
 
             status: "active"
 

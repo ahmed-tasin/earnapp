@@ -21,6 +21,7 @@ import Team from "./pages/Team";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import CheckIn from "./pages/CheckIn";
+import Holdings from "./pages/Holdings";
 
 function UserLayout() {
   return (
@@ -53,6 +54,7 @@ function UserApp() {
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
           <Route path="checkin" element={<CheckIn />} />
+          <Route path="holdings" element={<Holdings />} />
         </Route>
       </Route>
 

@@ -54,7 +54,12 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
-    }
+    },
+
+    claimSequence: {
+      type: Number,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -72,6 +77,26 @@ transactionSchema.index(
       trxId: {
         $type: "string",
         $ne: "",
+      },
+    },
+  },
+);
+
+transactionSchema.index(
+  {
+    investmentId: 1,
+    claimSequence: 1,
+    type: 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      type: "profit",
+      investmentId: {
+        $type: "objectId",
+      },
+      claimSequence: {
+        $type: "number",
       },
     },
   },
