@@ -1,194 +1,314 @@
+const mongoose = require("mongoose");
+
 const Package = require("../models/Package");
 const Investment = require("../models/Investment");
 const User = require("../models/User");
-const ReferralCommission = require("../models/ReferralCommission");
-const referralService = require("./referralService");
-const mongoose = require("mongoose");
-const notificationService = require("./notificationService");
 
-// ================= GET PACKAGES =================
+const referralService = require(
+  "./referralService"
+);
+
+const notificationService = require(
+  "./notificationService"
+);
+
+// ==============================
+// GET PACKAGES
+// ==============================
 
 exports.getPackages = async () => {
-
-    const packages = await Package.find({
-        status: "active"
+  const packages =
+    await Package.find({
+      status: "active",
     });
 
-    await Promise.all(
-        packages.map(async (pkg) => {
-            let shouldSave = false;
+  await Promise.all(
+    packages.map(async (pkg) => {
+      let shouldSave = false;
 
-            if (!pkg.saleEndsAt) {
-                pkg.saleEndsAt = new Date(
-                    Date.now() +
-                    (Number(pkg.totalDays) || 0) *
+      if (!pkg.saleEndsAt) {
+        pkg.saleEndsAt = new Date(
+          Date.now() +
+            (Number(
+              pkg.totalDays
+            ) || 0) *
+              24 *
+              60 *
+              60 *
+              1000
+        );
+
+        shouldSave = true;
+      }
+
+      if (
+        pkg.totalUnits ===
+        undefined
+      ) {
+        pkg.totalUnits = 100;
+
+        shouldSave = true;
+      }
+
+      if (
+        pkg.soldUnits ===
+        undefined
+      ) {
+        pkg.soldUnits = 0;
+
+        shouldSave = true;
+      }
+
+      if (shouldSave) {
+        await pkg.save();
+      }
+    })
+  );
+
+  return packages;
+};
+
+// ==============================
+// CREATE PACKAGE
+// ==============================
+
+exports.createPackage = async (
+  data
+) => {
+  const totalDays =
+    Number(data.totalDays) || 0;
+
+  return Package.create({
+    name:
+      data.name,
+
+    amount:
+      Number(data.amount),
+
+    dailyReturn:
+      Number(data.dailyReturn),
+
+    totalDays,
+
+    totalUnits:
+      Math.max(
+        1,
+        Number(
+          data.totalUnits
+        ) || 100
+      ),
+
+    soldUnits:
+      0,
+
+    saleEndsAt:
+      data.saleEndsAt ||
+      new Date(
+        Date.now() +
+          totalDays *
+            24 *
+            60 *
+            60 *
+            1000
+      ),
+
+    status:
+      "active",
+  });
+};
+
+// ==============================
+// BUY PACKAGE
+// ==============================
+
+exports.buyPackage = async (
+  userId,
+  packageId
+) => {
+  const session =
+    await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const user =
+      await User.findById(
+        userId
+      ).session(session);
+
+    if (!user) {
+      const error = new Error(
+        "User not found"
+      );
+
+      error.statusCode = 404;
+
+      throw error;
+    }
+
+    const pkg =
+      await Package.findById(
+        packageId
+      ).session(session);
+
+    if (
+      !pkg ||
+      pkg.status !== "active"
+    ) {
+      const error = new Error(
+        "Package not found"
+      );
+
+      error.statusCode = 404;
+
+      throw error;
+    }
+
+    if (
+      Number(pkg.soldUnits || 0) >=
+      Number(pkg.totalUnits || 0)
+    ) {
+      const error = new Error(
+        "Package is sold out"
+      );
+
+      error.statusCode = 400;
+
+      throw error;
+    }
+
+    if (
+      Number(user.balance || 0) <
+      Number(pkg.amount || 0)
+    ) {
+      const error = new Error(
+        "Insufficient balance"
+      );
+
+      error.statusCode = 400;
+
+      throw error;
+    }
+
+    user.balance =
+      Number(user.balance || 0) -
+      Number(pkg.amount || 0);
+
+    await user.save({
+      session,
+    });
+
+    pkg.soldUnits =
+      Number(pkg.soldUnits || 0) +
+      1;
+
+    await pkg.save({
+      session,
+    });
+
+    const purchasedAt =
+      new Date();
+
+    const investments =
+      await Investment.create(
+        [
+          {
+            userId:
+              user._id,
+
+            packageId:
+              pkg._id,
+
+            investmentAmount:
+              Number(pkg.amount),
+
+            dailyReturn:
+              Number(
+                pkg.dailyReturn
+              ),
+
+            totalDays:
+              Number(pkg.totalDays),
+
+            remainingDays:
+              Number(pkg.totalDays),
+
+            startDate:
+              purchasedAt,
+
+            endDate:
+              new Date(
+                purchasedAt.getTime() +
+                  Number(
+                    pkg.totalDays
+                  ) *
                     24 *
                     60 *
                     60 *
                     1000
-                );
-                shouldSave = true;
-            }
+              ),
 
-            if (pkg.totalUnits === undefined) {
-                pkg.totalUnits = 100;
-                shouldSave = true;
-            }
+            totalEarned:
+              0,
 
-            if (pkg.soldUnits === undefined) {
-                pkg.soldUnits = 0;
-                shouldSave = true;
-            }
+            /*
+             * Package কেনার দিনই
+             * প্রথম profit claim
+             * করা যাবে।
+             */
+            nextClaimAt:
+              purchasedAt,
 
-            if (shouldSave) {
-                await pkg.save();
-            }
-        })
-    );
+            status:
+              "active",
+          },
+        ],
+        {
+          session,
+        }
+      );
 
-    return packages;
-};
+    const investment =
+      investments[0];
 
-// ================= CREATE PACKAGE =================
+    await referralService
+      .payReferralCommission(
+        user._id,
+        Number(pkg.amount),
+        session
+      );
 
-exports.createPackage = async (data) => {
+    await notificationService
+      .createNotification(
+        user._id,
 
-    const totalDays = Number(data.totalDays) || 0;
+        "Package Purchased",
 
-    return await Package.create({
+        `You successfully purchased the ${pkg.name} package for ৳${pkg.amount}.`,
 
-        name: data.name,
+        "package",
 
-        amount: data.amount,
+        session
+      );
 
-        dailyReturn: data.dailyReturn,
+    await session.commitTransaction();
 
-        totalDays,
+    return {
+      investment,
 
-        totalUnits: Math.max(
-            1,
-            Number(data.totalUnits) || 100
-        ),
-
-        soldUnits: 0,
-
-        saleEndsAt:
-            data.saleEndsAt ||
-            new Date(
-                Date.now() +
-                totalDays * 24 * 60 * 60 * 1000
-            ),
-
-        status: "active"
-
-    });
-
-};
-
-// ================= BUY PACKAGE =================
-
-exports.buyPackage = async (userId, packageId) => {
-
-    const session = await mongoose.startSession();
-
-    session.startTransaction();
-
-    try {
-
-        const user = await User.findById(userId).session(session);
-
-        if (!user)
-            throw new Error("User not found");
-
-        const pkg = await Package.findById(packageId).session(session);
-
-        if (!pkg || pkg.status !== "active")
-            throw new Error("Package not found");
-
-        if (pkg.soldUnits >= pkg.totalUnits)
-            throw new Error("Package is sold out");
-
-        if (user.balance < pkg.amount)
-            throw new Error("Insufficient balance");
-
-        user.balance -= pkg.amount;
-
-        await user.save({ session });
-
-        pkg.soldUnits += 1;
-
-        await pkg.save({ session });
-
-        const purchasedAt = new Date();
-
-        const investment = await Investment.create([{
-
-            userId: user._id,
-
-            packageId: pkg._id,
-
-            investmentAmount: pkg.amount,
-
-            dailyReturn: pkg.dailyReturn,
-
-            totalDays: pkg.totalDays,
-
-            remainingDays: pkg.totalDays,
-
-            startDate: purchasedAt,
-
-            endDate: new Date(
-                purchasedAt.getTime() +
-                pkg.totalDays * 24 * 60 * 60 * 1000
-            ),
-
-            totalEarned: 0,
-
-            nextClaimAt: new Date(
-                purchasedAt.getTime() +
-                24 * 60 * 60 * 1000
-            ),
-
-            status: "active"
-
-        }], { session });
-
-      await referralService.payReferralCommission(
-    user._id,
-    pkg.amount,
-    session
-);
-
-// Create a notification for the user
-
-        await notificationService.createNotification(
-           user._id,
-            "Package Purchased",
-            `You successfully purchased the ${pkg.name} package for ৳${pkg.amount}.`,
-            "package"
-         );
-
-
-        await session.commitTransaction();
-
-        session.endSession();
-
-        return {
-
-            investment: investment[0],
-
-            balance: user.balance
-
-        };
-
-    } catch (err) {
-
-        await session.abortTransaction();
-
-        session.endSession();
-
-        throw err;
-
+      balance:
+        user.balance,
+    };
+  } catch (error) {
+    if (
+      session.inTransaction()
+    ) {
+      await session
+        .abortTransaction();
     }
 
+    throw error;
+  } finally {
+    await session.endSession();
+  }
 };
