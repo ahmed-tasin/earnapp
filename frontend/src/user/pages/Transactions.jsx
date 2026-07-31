@@ -231,14 +231,14 @@ function Transactions() {
       <div className="transactions-container">
         <header className="transactions-header">
           <div>
-            <p className="transactions-header-label">
+            {/* <p className="transactions-header-label">
               Account activity
-            </p>
+            </p> */}
 
             <h1>Transactions</h1>
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="transactions-refresh-button"
             onClick={() => fetchTransactions(true)}
@@ -257,10 +257,10 @@ function Transactions() {
             <span>
               {refreshing ? "Refreshing" : "Refresh"}
             </span>
-          </button>
+          </button> */}
         </header>
 
-        <section className="transactions-summary-card">
+        {/* <section className="transactions-summary-card">
           <div>
             <span>Total Records</span>
             <strong>{transactions.length}</strong>
@@ -274,7 +274,7 @@ function Transactions() {
           <Link to="/wallet">
             Back to Wallet
           </Link>
-        </section>
+        </section> */}
 
         {error && (
           <div className="transactions-error" role="alert">

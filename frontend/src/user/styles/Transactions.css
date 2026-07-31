@@ -500,3 +500,105 @@ font-size:22px;
 }
 
 }
+
+
+
+
+/* Mobile transaction single-row layout */
+@media (max-width: 768px) {
+  .transaction-card {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .transaction-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    font-size: 17px;
+  }
+
+  .transaction-details {
+    min-width: 0;
+  }
+
+  .transaction-title-row {
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .transaction-title-row h3 {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .transaction-status {
+    flex-shrink: 0;
+    padding: 3px 6px;
+    font-size: 7px;
+    white-space: nowrap;
+  }
+
+  .transaction-date,
+  .transaction-reference,
+  .transaction-method {
+    margin: 2px 0 0;
+    overflow: hidden;
+    font-size: 8px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .transaction-amount {
+    width: auto;
+    margin: 0;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .transaction-amount strong {
+    font-size: 12px;
+  }
+
+  .transaction-amount span {
+    font-size: 8px;
+  }
+
+  .transactions-list {
+    gap: 9px;
+  }
+}
+
+@media (max-width: 380px) {
+  .transaction-card {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 9px 8px;
+  }
+
+  .transaction-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .transaction-title-row h3 {
+    font-size: 10px;
+  }
+
+  .transaction-amount strong {
+    font-size: 11px;
+  }
+}
