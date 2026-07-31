@@ -25,7 +25,6 @@ function Withdraw() {
   const withdrawMethods = {
     bkash: "bKash",
     nagad: "Nagad",
-    rocket: "Rocket",
   };
 
   useEffect(() => {

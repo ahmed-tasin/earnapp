@@ -7,6 +7,19 @@ exports.getPackages = asyncHandler(async (req, res) => {
     res.json(packages);
 });
 
+// Get Single Package
+exports.getPackageDetails = asyncHandler(async (req, res) => {
+    const result = await packageService.getPackageDetails(
+        req.user.id,
+        req.params.packageId
+    );
+
+    res.json({
+        success: true,
+        ...result
+    });
+});
+
 // Create Package
 exports.createPackage = asyncHandler(async (req, res) => {
     const pkg = await packageService.createPackage(req.body);
@@ -20,13 +33,10 @@ exports.createPackage = asyncHandler(async (req, res) => {
 
 // Buy Package
 exports.buyPackage = asyncHandler(async (req, res) => {
-
-console.log("BODY:", req.body);
-    console.log("HEADERS:", req.headers);
-
     const result = await packageService.buyPackage(
         req.user.id,
-        req.body.packageId
+        req.body.packageId,
+        req.body.quantity
     );
 
     res.json({
@@ -37,7 +47,15 @@ console.log("BODY:", req.body);
 
         investment: result.investment,
 
-        balance: result.balance
+        investments: result.investments,
+
+        balance: result.balance,
+
+        quantity: result.quantity,
+
+        purchaseCount: result.purchaseCount,
+
+        remainingPurchaseLimit: result.remainingPurchaseLimit
 
     });
 });

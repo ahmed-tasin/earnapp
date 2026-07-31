@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const ReferralCommission = require("../models/ReferralCommission");
 const Transaction = require("../models/Transaction");
+const notificationService = require("./notificationService");
 
 const { REFERRAL_COMMISSION_PERCENT } = require("../config/constants");
 

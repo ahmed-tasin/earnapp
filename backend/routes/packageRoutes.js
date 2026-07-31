@@ -10,6 +10,8 @@ const {
 
     getPackages,
 
+    getPackageDetails,
+
     createPackage,
 
     buyPackage
@@ -17,6 +19,12 @@ const {
 } = require("../controllers/packageController");
 
 router.get("/", getPackages);
+
+router.get(
+    "/:packageId",
+    authMiddleware,
+    getPackageDetails
+);
 
 router.post(
     "/create",

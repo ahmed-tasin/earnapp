@@ -279,7 +279,6 @@ exports.withdraw = async (userId, data) => {
   const allowedPaymentMethods = [
     "bkash",
     "nagad",
-    "rocket",
   ];
 
   if (

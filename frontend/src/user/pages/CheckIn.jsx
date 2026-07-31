@@ -344,14 +344,11 @@ function CheckIn() {
 
         <section className="checkin-hero">
           <div className="checkin-hero-content">
-            <p className="checkin-hero-label">
-              Build your reward streak
-            </p>
+           
 
             <h2>
               Check in daily.
-              <br />
-              Earn more rewards.
+             
             </h2>
 
             <p className="checkin-hero-description">
@@ -402,25 +399,6 @@ function CheckIn() {
               </div>
             </div>
           </div>
-        </section>
-
-        <section className="checkin-stats-grid">
-          <article className="checkin-stat-card">
-            <span>Wallet Balance</span>
-            <strong>{formatMoney(walletBalance)} Tk</strong>
-          </article>
-
-          <article className="checkin-stat-card">
-            <span>Total Check-in Reward</span>
-            <strong>
-              {formatMoney(checkInData.totalReward)} Tk
-            </strong>
-          </article>
-
-          <article className="checkin-stat-card">
-            <span>Current Cycle</span>
-            <strong>{completedDays} / 7 Days</strong>
-          </article>
         </section>
 
         <section className="checkin-rewards-section">

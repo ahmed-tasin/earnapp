@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const User = require("../models/User");
+const Transaction = require("../models/Transaction");
 const bcrypt = require("bcryptjs");
 
 const normalizePhone = require(
@@ -7,10 +9,50 @@ const normalizePhone = require(
 
 // ================= GET PROFILE =================
 
+const DHAKA_OFFSET_MS = 6 * 60 * 60 * 1000;
+
+const getPreviousDhakaDate = () => {
+  const dhakaNow = new Date(
+    Date.now() + DHAKA_OFFSET_MS
+  );
+
+  dhakaNow.setUTCDate(
+    dhakaNow.getUTCDate() - 1
+  );
+
+  return dhakaNow
+    .toISOString()
+    .slice(0, 10);
+};
+
 exports.getProfile = async (userId) => {
-  const user = await User.findById(
-    userId
-  ).select("-password -__v");
+  const [user, previousDayResult] =
+    await Promise.all([
+      User.findById(userId)
+        .select("-password -__v")
+        .lean(),
+
+      Transaction.aggregate([
+        {
+          $match: {
+            userId:
+              new mongoose.Types.ObjectId(userId),
+            type: "profit",
+            status: "approved",
+            profitDate:
+              getPreviousDhakaDate(),
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: "$amount",
+            },
+          },
+        },
+      ]),
+    ]);
 
   if (!user) {
     const error = new Error(
@@ -21,7 +63,11 @@ exports.getProfile = async (userId) => {
     throw error;
   }
 
-  return user;
+  return {
+    ...user,
+    previousEarning:
+      previousDayResult[0]?.total || 0,
+  };
 };
 
 // ================= UPDATE PROFILE =================
@@ -145,7 +191,6 @@ exports.updateWithdrawalAccount =
     const allowedMethods = [
       "bkash",
       "nagad",
-      "rocket",
     ];
 
     if (

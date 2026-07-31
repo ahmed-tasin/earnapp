@@ -456,7 +456,9 @@ function HomePage() {
                   <button
                     type="button"
                     className="home-package-buy"
-                    onClick={() => navigate("/packages")}
+                    onClick={() =>
+                      navigate(`/packages/${packageId}`)
+                    }
                   >
                     Buy Now
                   </button>

@@ -25,19 +25,19 @@ function Deposit() {
   const paymentAccounts = {
     bkash: {
       name: "bKash",
-      number: "01XXXXXXXXX",
+      number: "01760940167",
       type: "Send Money",
     },
     nagad: {
       name: "Nagad",
-      number: "01XXXXXXXXX",
+      number: "01748905149",
       type: "Send Money",
     },
-    rocket: {
-      name: "Rocket",
-      number: "01XXXXXXXXX",
-      type: "Send Money",
-    },
+    // rocket: {
+    //   name: "Rocket",
+    //   number: "01XXXXXXXXX",
+    //   type: "Send Money",
+    // },
   };
 
   const selectedAccount = paymentAccounts[formData.method];

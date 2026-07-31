@@ -24,7 +24,6 @@ const initialForm = {
 const paymentMethods = {
   bkash: "bKash",
   nagad: "Nagad",
-  rocket: "Rocket",
 };
 
 function Card() {
@@ -519,9 +518,9 @@ function Card() {
                   নগদ
                 </option>
 
-                <option value="rocket">
+                {/* <option value="rocket">
                   রকেট
-                </option>
+                </option> */}
               </select>
             </div>
 

@@ -41,25 +41,12 @@ function Packages() {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [buyingPackageId, setBuyingPackageId] = useState("");
   const [currentTime, setCurrentTime] = useState(Date.now());
 
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
 
   const getToken = () =>
     localStorage.getItem("userToken") || localStorage.getItem("token");
-
-  const showMessage = (text, type = "success") => {
-    setMessage(text);
-    setMessageType(type);
-
-    window.setTimeout(() => {
-      setMessage("");
-      setMessageType("");
-    }, 3500);
-  };
 
   const normalizePackages = (responseData) => {
     if (Array.isArray(responseData)) {
@@ -240,102 +227,6 @@ function Packages() {
     };
   };
 
-  const handleBuyPackage = async (packageItem) => {
-    const packageId = packageItem._id || packageItem.id;
-    const packageAmount = Number(packageItem.amount) || 0;
-
-    if (!packageId) {
-      showMessage("Invalid package ID", "error");
-      return;
-    }
-
-    const token = getToken();
-
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    if (walletBalance < packageAmount) {
-      showMessage(
-        "Insufficient wallet balance. Please deposit first.",
-        "error",
-      );
-      return;
-    }
-
-    const confirmed = window.confirm(
-      `Buy ${packageItem.name || "this package"} for ৳${formatMoney(
-        packageAmount,
-      )}?`,
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      setBuyingPackageId(packageId);
-
-      const response = await axios.post(
-        `${API_URL}/packages/buy`,
-        {
-          packageId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      const updatedBalance =
-        response.data?.wallet?.balance ??
-        response.data?.data?.wallet?.balance ??
-        response.data?.balance;
-
-      if (updatedBalance !== undefined) {
-        setWalletBalance(Number(updatedBalance) || 0);
-      } else {
-        setWalletBalance((previousBalance) =>
-          Math.max(0, previousBalance - packageAmount),
-        );
-      }
-
-      setPackages((previousPackages) =>
-        previousPackages.map((item) => {
-          const itemId = item._id || item.id;
-
-          if (itemId !== packageId) {
-            return item;
-          }
-
-          return {
-            ...item,
-            soldUnits: (Number(item.soldUnits) || 0) + 1,
-          };
-        }),
-      );
-
-      showMessage(
-        response.data?.message || "Investment package purchased successfully",
-      );
-    } catch (err) {
-      console.error(
-        "Package purchase error:",
-        err.response?.data || err.message,
-      );
-
-      showMessage(
-        err.response?.data?.message || "Failed to purchase package",
-        "error",
-      );
-    } finally {
-      setBuyingPackageId("");
-    }
-  };
-
   if (loading) {
     return (
       <main className="packages-page">
@@ -370,18 +261,12 @@ function Packages() {
                   : "packages-refresh-icon"
               }
             >
-              
+              ↻
             </span>
 
             {refreshing ? "Refreshing" : "Refresh"}
           </button>
         </header>
-
-        {message && (
-          <div className={`packages-message ${messageType}`} role="alert">
-            {message}
-          </div>
-        )}
 
         {error && (
           <div className="packages-error" role="alert">
@@ -458,7 +343,6 @@ function Packages() {
               const totalReturn = calculateTotalReturn(packageItem);
 
               const canAfford = walletBalance >= amount;
-              const isBuying = buyingPackageId === packageId;
               const countdown = getCountdown(packageItem);
               const purchaseProgress = getPurchaseProgress(packageItem);
               const isSoldOut =
@@ -476,10 +360,10 @@ function Packages() {
                   )}
 
                   <div className="package-card-header">
-                    {/* <div className="package-icon">৳</div> */}
+                    <div className="package-icon">৳</div>
 
                     <div>
-                      {/* <p>Investment package</p> */}
+                      <p>Investment package</p>
                       <h3>{name}</h3>
                     </div>
                   </div>
@@ -579,16 +463,14 @@ function Packages() {
                         ? "package-buy-button"
                         : "package-buy-button insufficient"
                     }
-                    onClick={() => handleBuyPackage(packageItem)}
-                    disabled={isBuying || isSoldOut}
+                    onClick={() =>
+                      navigate(`/packages/${packageId}`)
+                    }
+                    disabled={isSoldOut}
                   >
                     {isSoldOut
                       ? "Sold Out"
-                      : isBuying
-                        ? "Processing..."
-                        : canAfford
-                          ? "Buy Package"
-                          : "Insufficient Balance"}
+                      : "View & Buy"}
                   </button>
 
                   {!canAfford && (

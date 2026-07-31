@@ -15,20 +15,44 @@ const defaultWallet = {
   referralCommissionEarned: 0,
 };
 
+const walletActions = [
+  {
+    label: "Deposit",
+    icon: "＋",
+    to: "/deposit",
+    tone: "deposit",
+  },
+  {
+    label: "Withdraw",
+    icon: "↗",
+    to: "/withdraw",
+    tone: "withdraw",
+  },
+  {
+    label: "History",
+    icon: "↕",
+    to: "/transactions",
+    tone: "history",
+  },
+  {
+    label: "Packages",
+    icon: "◇",
+    to: "/packages",
+    tone: "package",
+  },
+];
+
 function Wallet() {
   const [wallet, setWallet] = useState(defaultWallet);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
-  const formatAmount = (amount) => {
-    const numericAmount = Number(amount) || 0;
-
-    return new Intl.NumberFormat("en-BD", {
+  const formatAmount = (amount) =>
+    new Intl.NumberFormat("en-BD", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-    }).format(numericAmount);
-  };
+    }).format(Number(amount) || 0);
 
   const fetchWallet = useCallback(async (isRefresh = false) => {
     try {
@@ -40,7 +64,9 @@ function Wallet() {
         setLoading(true);
       }
 
-      const token = localStorage.getItem("userToken");
+      const token =
+        localStorage.getItem("userToken") ||
+        localStorage.getItem("token");
 
       if (!token) {
         throw new Error("Please login to view your wallet");
@@ -52,54 +78,35 @@ function Wallet() {
         },
       });
 
-      /*
-        Supported response formats:
+      const dashboardData =
+        response.data?.dashboard ||
+        response.data?.data?.dashboard ||
+        response.data?.wallet ||
+        response.data?.data?.wallet ||
+        response.data?.data ||
+        {};
 
-        {
-          success: true,
-          wallet: {}
-        }
-
-        {
-          success: true,
-          data: {}
-        }
-
-        {
-          success: true,
-          data: {
-            wallet: {}
-          }
-        }
-      */
-
-      const walletData =
-  response.data?.dashboard ||
-  response.data?.data?.dashboard ||
-  response.data?.wallet ||
-  response.data?.data?.wallet ||
-  {};
+      const walletData = dashboardData.wallet || dashboardData;
 
       setWallet({
-  balance: walletData.balance ?? 0,
-  totalDeposit: walletData.totalDeposit ?? 0,
-  totalWithdraw: walletData.totalWithdraw ?? 0,
-  totalEarning: walletData.totalEarning ?? 0,
-
-  referralCommissionEarned:
-    walletData.referralCommissionEarned ??
-    walletData.referralCommission ??
-    0,
-});
-    } catch (error) {
+        balance: walletData.balance ?? 0,
+        totalDeposit: walletData.totalDeposit ?? 0,
+        totalWithdraw: walletData.totalWithdraw ?? 0,
+        totalEarning: walletData.totalEarning ?? 0,
+        referralCommissionEarned:
+          walletData.referralCommissionEarned ??
+          walletData.referralCommission ??
+          0,
+      });
+    } catch (requestError) {
       console.error(
         "Wallet fetch error:",
-        error.response?.data || error.message
+        requestError.response?.data || requestError.message
       );
 
       setError(
-        error.response?.data?.message ||
-          error.message ||
+        requestError.response?.data?.message ||
+          requestError.message ||
           "Failed to load wallet information"
       );
     } finally {
@@ -111,6 +118,33 @@ function Wallet() {
   useEffect(() => {
     fetchWallet();
   }, [fetchWallet]);
+
+  const walletSummary = [
+    {
+      label: "Total deposit",
+      value: wallet.totalDeposit,
+      icon: "↓",
+      tone: "deposit",
+    },
+    {
+      label: "Total withdraw",
+      value: wallet.totalWithdraw,
+      icon: "↑",
+      tone: "withdraw",
+    },
+    {
+      label: "Total earning",
+      value: wallet.totalEarning,
+      icon: "＋",
+      tone: "earning",
+    },
+    {
+      label: "Referral income",
+      value: wallet.referralCommissionEarned,
+      icon: "↗",
+      tone: "referral",
+    },
+  ];
 
   if (loading) {
     return (
@@ -141,18 +175,22 @@ function Wallet() {
             disabled={refreshing}
             aria-label="Refresh wallet"
           >
-            <span className={refreshing ? "refresh-icon rotating" : "refresh-icon"}>
+            <span
+              className={
+                refreshing
+                  ? "wallet-refresh-icon rotating"
+                  : "wallet-refresh-icon"
+              }
+              aria-hidden="true"
+            >
               ↻
             </span>
-
             <span>{refreshing ? "Refreshing" : "Refresh"}</span>
           </button>
         </header>
 
         {error && (
           <div className="wallet-error-message" role="alert">
-            <span>⚠️</span>
-
             <div>
               <strong>Unable to load wallet</strong>
               <p>{error}</p>
@@ -169,107 +207,88 @@ function Wallet() {
         )}
 
         <section className="wallet-balance-card">
-          <div className="wallet-balance-top">
-            <div>
-              <p>Available Balance</p>
+          <div className="wallet-card-brand">
+            <span className="wallet-card-logo">NF</span>
+            <span>Digital wallet</span>
+          </div>
 
-              <h2>
-                <span>৳</span>
-                {formatAmount(wallet.balance)}
-              </h2>
-            </div>
-
-            <div className="wallet-balance-icon">💳</div>
+          <div className="wallet-balance-copy">
+            <p>Available balance</p>
+            <h2>
+              <span>৳</span>
+              {formatAmount(wallet.balance)}
+            </h2>
           </div>
 
           <div className="wallet-balance-footer">
-            <span>Secure wallet</span>
+            <span>Ready to use</span>
             <span className="wallet-status">
-              <span className="wallet-status-dot" />
+              <i aria-hidden="true" />
               Active
             </span>
           </div>
         </section>
 
-        <section className="wallet-actions">
-          <Link to="/deposit" className="wallet-action-item">
-            <span className="wallet-action-icon deposit-icon">＋</span>
-            <span>Deposit</span>
-          </Link>
-
-          <Link to="/withdraw" className="wallet-action-item">
-            <span className="wallet-action-icon withdraw-icon">−</span>
-            <span>Withdraw</span>
-          </Link>
-
-          <Link to="/transactions" className="wallet-action-item">
-            <span className="wallet-action-icon history-icon">↕</span>
-            <span>History</span>
-          </Link>
-
-          <Link to="/packages" className="wallet-action-item">
-            <span className="wallet-action-icon package-icon">▣</span>
-            <span>Packages</span>
-          </Link>
-        </section>
+        <nav className="wallet-actions" aria-label="Wallet actions">
+          {walletActions.map((action) => (
+            <Link
+              key={action.label}
+              to={action.to}
+              className="wallet-action-item"
+            >
+              <span
+                className={`wallet-action-icon ${action.tone}`}
+                aria-hidden="true"
+              >
+                {action.icon}
+              </span>
+              <span>{action.label}</span>
+            </Link>
+          ))}
+        </nav>
 
         <section className="wallet-summary-section">
           <div className="wallet-section-heading">
             <div>
-              <p>Account overview</p>
-              <h2>Wallet Summary</h2>
+              <p>Overview</p>
+              <h2>Account summary</h2>
             </div>
+
+            <Link to="/transactions">View history</Link>
           </div>
 
           <div className="wallet-summary-grid">
-            <article className="wallet-summary-card">
-              <div className="wallet-summary-icon">↓</div>
+            {walletSummary.map((item) => (
+              <article
+                key={item.label}
+                className={`wallet-summary-card ${item.tone}`}
+              >
+                <span
+                  className="wallet-summary-icon"
+                  aria-hidden="true"
+                >
+                  {item.icon}
+                </span>
 
-              <div>
-                <p>Total Deposit</p>
-                <h3>৳{formatAmount(wallet.totalDeposit)}</h3>
-              </div>
-            </article>
-
-            <article className="wallet-summary-card">
-              <div className="wallet-summary-icon">↑</div>
-
-              <div>
-                <p>Total Withdraw</p>
-                <h3>৳{formatAmount(wallet.totalWithdraw)}</h3>
-              </div>
-            </article>
-
-            <article className="wallet-summary-card">
-              <div className="wallet-summary-icon">★</div>
-
-              <div>
-                <p>Total Earning</p>
-                <h3>৳{formatAmount(wallet.totalEarning)}</h3>
-              </div>
-            </article>
-
-            <article className="wallet-summary-card">
-              <div className="wallet-summary-icon">♟</div>
-
-              <div>
-                <p>Referral Income</p>
-                <h3>
-                  ৳{formatAmount(wallet.referralCommissionEarned)}
-                </h3>
-              </div>
-            </article>
+                <div>
+                  <p>{item.label}</p>
+                  <h3>৳{formatAmount(item.value)}</h3>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
         <section className="wallet-info-card">
-          <div className="wallet-info-icon">🔐</div>
+          <span className="wallet-info-icon" aria-hidden="true">
+            ✓
+          </span>
 
           <div>
-            <h3>Your wallet is protected</h3>
+            <h3>Secure wallet</h3>
             <p>
-              Never share your password, login token or verification code
-              with anyone.
+              Never share your password, login token or verification
+              code.
             </p>
           </div>
         </section>

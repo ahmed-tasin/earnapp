@@ -67,4 +67,9 @@ investmentSchema.index({
   createdAt: -1,
 });
 
+investmentSchema.index({
+  userId: 1,
+  packageId: 1,
+});
+
 module.exports = mongoose.model("Investment", investmentSchema);

@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import HomePage from "./pages/HomePage";
 import Wallet from "./pages/Wallet";
 import Packages from "./pages/Packages";
+import PackageDetails from "./pages/PackageDetails";
 import Deposit from "./pages/Deposit";
 import Withdraw from "./pages/Withdraw";
 import Transactions from "./pages/Transactions";
@@ -47,6 +48,10 @@ function UserApp() {
           <Route index element={<HomePage />} />
           <Route path="home" element={<HomePage />} />
           <Route path="packages" element={<Packages />} />
+          <Route
+            path="packages/:packageId"
+            element={<PackageDetails />}
+          />
           <Route path="wallet" element={<Wallet />} />
           <Route path="deposit" element={<Deposit />} />
           <Route path="withdraw" element={<Withdraw />} />

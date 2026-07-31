@@ -18,7 +18,7 @@ const demoTransactions = [
   {
     id: 3,
     phone: "019****2698",
-    method: "Rocket",
+    method: "Nagad",
     amount: 2100,
   },
   {
@@ -36,7 +36,7 @@ const demoTransactions = [
   {
     id: 6,
     phone: "014****3276",
-    method: "Rocket",
+    method: "Nagad",
     amount: 950,
   },
   {
@@ -54,7 +54,7 @@ const demoTransactions = [
   {
     id: 9,
     phone: "018****1925",
-    method: "Rocket",
+    method: "Nagad",
     amount: 2800,
   },
   {

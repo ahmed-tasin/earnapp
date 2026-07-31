@@ -113,7 +113,7 @@ const userSchema = new mongoose.Schema(
 
   paymentMethod: {
     type: String,
-    enum: ["", "bkash", "nagad", "rocket"],
+    enum: ["", "bkash", "nagad"],
     default: "",
   },
 
