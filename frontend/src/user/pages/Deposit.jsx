@@ -1,11 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 import "../styles/Deposit.css";
 
 const API_URL =
-  process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
+  process.env.REACT_APP_API_URL ||
+  "https://earnapp-n5b2.onrender.com/api";
+
+const PRESET_AMOUNTS = [
+  500,
+  1000,
+  1500,
+  2000,
+  3000,
+  4000,
+  5000,
+  10000,
+  20000,
+  50000,
+];
+
+const PAYMENT_ACCOUNTS = {
+  bkash: {
+    name: "bKash",
+    number: "01760940167",
+    type: "Send Money",
+  },
+  nagad: {
+    name: "Nagad",
+    number: "01748905149",
+    type: "Send Money",
+  },
+};
 
 const initialForm = {
   amount: "",
@@ -17,30 +44,42 @@ const initialForm = {
 function Deposit() {
   const navigate = useNavigate();
 
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(initialForm);
+  const [secondsLeft, setSecondsLeft] = useState(600);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  const paymentAccounts = {
-    bkash: {
-      name: "bKash",
-      number: "01760940167",
-      type: "Send Money",
-    },
-    nagad: {
-      name: "Nagad",
-      number: "01748905149",
-      type: "Send Money",
-    },
-    // rocket: {
-    //   name: "Rocket",
-    //   number: "01XXXXXXXXX",
-    //   type: "Send Money",
-    // },
-  };
+  const selectedAccount = PAYMENT_ACCOUNTS[formData.method];
+  const selectedAmount = Number(formData.amount);
+  const timerExpired = secondsLeft <= 0;
 
-  const selectedAccount = paymentAccounts[formData.method];
+  useEffect(() => {
+    if (step !== 2 || timerExpired) {
+      return undefined;
+    }
+
+    const timerId = window.setInterval(() => {
+      setSecondsLeft((previous) => Math.max(0, previous - 1));
+    }, 1000);
+
+    return () => window.clearInterval(timerId);
+  }, [step, timerExpired]);
+
+  useEffect(() => {
+    if (step === 2 && timerExpired) {
+      setMessage(
+        "Payment time expired. Please go back and start again."
+      );
+      setMessageType("error");
+    }
+  }, [step, timerExpired]);
+
+  const clearMessage = () => {
+    setMessage("");
+    setMessageType("");
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -50,19 +89,46 @@ function Deposit() {
       [name]: value,
     }));
 
-    setMessage("");
-    setMessageType("");
+    clearMessage();
   };
 
-  const validateForm = () => {
-    const amount = Number(formData.amount);
+  const selectMethod = (method) => {
+    setFormData((previous) => ({
+      ...previous,
+      method,
+    }));
+    clearMessage();
+  };
 
-    if (!amount || amount <= 0) {
-      return "Enter a valid deposit amount";
+  const selectAmount = (amount) => {
+    setFormData((previous) => ({
+      ...previous,
+      amount: String(amount),
+    }));
+    clearMessage();
+  };
+
+  const continueToPayment = () => {
+    if (!selectedAmount || selectedAmount < 500) {
+      setMessage("Minimum deposit amount is ৳500");
+      setMessageType("error");
+      return;
     }
 
-    if (amount < 100) {
-      return "Minimum deposit amount is ৳100";
+    setSecondsLeft(600);
+    clearMessage();
+    setStep(2);
+  };
+
+  const backToSelection = () => {
+    setStep(1);
+    setSecondsLeft(600);
+    clearMessage();
+  };
+
+  const validatePayment = () => {
+    if (timerExpired) {
+      return "Payment time expired. Please start again.";
     }
 
     if (!/^01\d{9}$/.test(formData.senderNumber.trim())) {
@@ -79,10 +145,9 @@ function Deposit() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setMessage("");
-    setMessageType("");
+    clearMessage();
 
-    const validationError = validateForm();
+    const validationError = validatePayment();
 
     if (validationError) {
       setMessage(validationError);
@@ -93,7 +158,9 @@ function Deposit() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("userToken");
+      const token =
+        localStorage.getItem("userToken") ||
+        localStorage.getItem("token");
 
       if (!token) {
         setMessage("Please login before making a deposit");
@@ -101,16 +168,14 @@ function Deposit() {
         return;
       }
 
-      const depositData = {
-  amount: Number(formData.amount),
-  paymentMethod: formData.method,
-  senderNumber: formData.senderNumber.trim(),
-  trxId: formData.transactionId.trim(),
-};
-
       const response = await axios.post(
         `${API_URL}/wallet/deposit`,
-        depositData,
+        {
+          amount: selectedAmount,
+          paymentMethod: formData.method,
+          senderNumber: formData.senderNumber.trim(),
+          trxId: formData.transactionId.trim(),
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -122,11 +187,9 @@ function Deposit() {
         response.data?.message ||
           "Deposit request submitted successfully"
       );
-
       setMessageType("success");
-      setFormData(initialForm);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         navigate("/transactions");
       }, 1500);
     } catch (error) {
@@ -139,7 +202,6 @@ function Deposit() {
         error.response?.data?.message ||
           "Failed to submit deposit request"
       );
-
       setMessageType("error");
     } finally {
       setLoading(false);
@@ -149,7 +211,6 @@ function Deposit() {
   const copyAccountNumber = async () => {
     try {
       await navigator.clipboard.writeText(selectedAccount.number);
-
       setMessage("Payment number copied");
       setMessageType("success");
     } catch {
@@ -158,31 +219,36 @@ function Deposit() {
     }
   };
 
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
+  const formattedTimer = `${String(minutes).padStart(
+    2,
+    "0"
+  )}:${String(seconds).padStart(2, "0")}`;
+
   return (
     <main className="deposit-page">
       <div className="deposit-container">
         <header className="deposit-header">
           <div>
-            <p className="deposit-header-label">Add funds</p>
+            <p>{step === 1 ? "Add funds" : "Complete payment"}</p>
             <h1>Deposit</h1>
           </div>
 
-          <Link to="/wallet" className="deposit-back-link">
-            ← Wallet
-          </Link>
+          {step === 1 ? (
+            <Link to="/wallet">← Wallet</Link>
+          ) : (
+            <button type="button" onClick={backToSelection}>
+              ← Back
+            </button>
+          )}
         </header>
 
-        <section className="deposit-info-card">
-          <div className="deposit-info-icon">💳</div>
-
-          <div>
-            <h2>Submit Deposit Request</h2>
-            <p>
-              Send money to the account below, then submit your
-              transaction information.
-            </p>
-          </div>
-        </section>
+        <div className="deposit-steps" aria-label="Deposit progress">
+          <span className="active">1</span>
+          <i className={step === 2 ? "active" : ""} />
+          <span className={step === 2 ? "active" : ""}>2</span>
+        </div>
 
         {message && (
           <div
@@ -193,133 +259,169 @@ function Deposit() {
           </div>
         )}
 
-        <form className="deposit-form" onSubmit={handleSubmit}>
-          <div className="deposit-form-group">
-            <label htmlFor="method">Payment Method</label>
+        {step === 1 ? (
+          <section className="deposit-panel">
+            <div className="deposit-section-heading">
+              <span>1</span>
+              <div>
+                <h2>Select payment method</h2>
+                <p>Choose bKash or Nagad</p>
+              </div>
+            </div>
 
             <div className="deposit-method-grid">
-              {Object.entries(paymentAccounts).map(
+              {Object.entries(PAYMENT_ACCOUNTS).map(
                 ([key, account]) => (
-                  <label
+                  <button
+                    type="button"
                     key={key}
                     className={
                       formData.method === key
-                        ? "deposit-method active"
-                        : "deposit-method"
+                        ? `deposit-method ${key} active`
+                        : `deposit-method ${key}`
                     }
+                    onClick={() => selectMethod(key)}
                   >
-                    <input
-                      type="radio"
-                      name="method"
-                      value={key}
-                      checked={formData.method === key}
-                      onChange={handleChange}
-                    />
-
-                    <span className="deposit-method-name">
-                      {account.name}
-                    </span>
-                  </label>
+                    <span>{account.name.charAt(0)}</span>
+                    <strong>{account.name}</strong>
+                    <small>Send Money</small>
+                  </button>
                 )
               )}
             </div>
-          </div>
 
-          <section className="deposit-account-card">
-            <div>
-              <p>Send money to</p>
-              <h3>{selectedAccount.number}</h3>
-              <span>
-                {selectedAccount.name} · {selectedAccount.type}
-              </span>
+            <div className="deposit-section-heading amount-heading">
+              <span>2</span>
+              <div>
+                <h2>Select amount</h2>
+                <p>Choose an amount or enter your own</p>
+              </div>
             </div>
+
+            <div className="deposit-amount-grid">
+              {PRESET_AMOUNTS.map((amount) => (
+                <button
+                  type="button"
+                  key={amount}
+                  className={
+                    selectedAmount === amount ? "active" : ""
+                  }
+                  onClick={() => selectAmount(amount)}
+                >
+                  ৳{amount.toLocaleString("en-BD")}
+                </button>
+              ))}
+            </div>
+
+            <label
+              className="deposit-custom-amount"
+              htmlFor="depositAmount"
+            >
+              <span>Custom amount</span>
+
+              <div>
+                <strong>৳</strong>
+                <input
+                  id="depositAmount"
+                  type="number"
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  min="500"
+                  step="1"
+                  placeholder="Enter amount"
+                  inputMode="numeric"
+                />
+              </div>
+            </label>
 
             <button
               type="button"
-              onClick={copyAccountNumber}
-              className="deposit-copy-button"
+              className="deposit-primary-button"
+              onClick={continueToPayment}
+              disabled={!selectedAmount}
             >
-              Copy
+              Continue with {selectedAccount.name}
             </button>
           </section>
+        ) : (
+          <form className="deposit-panel" onSubmit={handleSubmit}>
+            <div
+              className={
+                timerExpired
+                  ? "deposit-payment-timer expired"
+                  : "deposit-payment-timer"
+              }
+            >
+              <span>Complete payment within</span>
+              <strong>{formattedTimer}</strong>
+            </div>
 
-          <div className="deposit-form-group">
-            <label htmlFor="amount">Deposit Amount</label>
+            <section className="deposit-payment-summary">
+              <div className={`deposit-brand ${formData.method}`}>
+                {selectedAccount.name.charAt(0)}
+              </div>
 
-            <div className="deposit-input-wrapper">
-              <span>৳</span>
+              <p>Send Money to this {selectedAccount.name} number</p>
 
+              <div className="deposit-number-row">
+                <strong>{selectedAccount.number}</strong>
+                <button type="button" onClick={copyAccountNumber}>
+                  Copy
+                </button>
+              </div>
+
+              <span className="deposit-send-label">SEND EXACTLY</span>
+              <h2>৳{selectedAmount.toLocaleString("en-BD")}</h2>
+            </section>
+
+            <div className="deposit-instruction">
+              Open {selectedAccount.name}, select{" "}
+              <strong>Send Money</strong>, send the exact amount and
+              submit the sender number and transaction ID below.
+            </div>
+
+            <div className="deposit-form-group">
+              <label htmlFor="senderNumber">Sender number</label>
               <input
-                id="amount"
-                type="number"
-                name="amount"
-                placeholder="Minimum 100"
-                value={formData.amount}
+                id="senderNumber"
+                type="tel"
+                name="senderNumber"
+                placeholder="01XXXXXXXXX"
+                value={formData.senderNumber}
                 onChange={handleChange}
-                min="100"
-                step="1"
+                maxLength={11}
+                autoComplete="tel"
                 required
               />
             </div>
-          </div>
 
-          <div className="deposit-form-group">
-            <label htmlFor="senderNumber">Sender Number</label>
+            <div className="deposit-form-group">
+              <label htmlFor="transactionId">Transaction ID</label>
+              <input
+                id="transactionId"
+                type="text"
+                name="transactionId"
+                placeholder="Example: 9AB12CD34E"
+                value={formData.transactionId}
+                onChange={handleChange}
+                autoComplete="off"
+                required
+              />
+            </div>
 
-            <input
-              id="senderNumber"
-              type="tel"
-              name="senderNumber"
-              placeholder="01XXXXXXXXX"
-              value={formData.senderNumber}
-              onChange={handleChange}
-              maxLength={11}
-              autoComplete="tel"
-              required
-            />
-          </div>
-
-          <div className="deposit-form-group">
-            <label htmlFor="transactionId">
-              Transaction ID
-            </label>
-
-            <input
-              id="transactionId"
-              type="text"
-              name="transactionId"
-              placeholder="Example: 9AB12CD34E"
-              value={formData.transactionId}
-              onChange={handleChange}
-              autoComplete="off"
-              required
-            />
-          </div>
-
-          <div className="deposit-notice">
-            <span>⚠️</span>
-
-            <p>
-              Make sure the amount, sender number and transaction ID
-              are correct before submitting.
-            </p>
-          </div>
-
-          <button
-            type="submit"
-            className="deposit-submit-button"
-            disabled={loading}
-          >
-            {loading
-              ? "Submitting request..."
-              : "Submit Deposit"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="deposit-primary-button"
+              disabled={loading || timerExpired}
+            >
+              {loading ? "Submitting..." : "Submit Deposit"}
+            </button>
+          </form>
+        )}
 
         <div className="deposit-history-link">
-          <Link to="/transactions">
-            View transaction history →
-          </Link>
+          <Link to="/transactions">View transaction history →</Link>
         </div>
       </div>
     </main>
