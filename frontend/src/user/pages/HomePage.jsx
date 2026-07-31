@@ -182,7 +182,7 @@ function HomePage() {
               (item) =>
                 String(item.status || "active").toLowerCase() === "active",
             )
-            .slice(0, 5),
+            .slice(0, 10),
         );
       } catch (error) {
         console.error(
