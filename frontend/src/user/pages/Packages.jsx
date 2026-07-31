@@ -370,7 +370,7 @@ function Packages() {
                   : "packages-refresh-icon"
               }
             >
-              ↻
+              
             </span>
 
             {refreshing ? "Refreshing" : "Refresh"}
@@ -476,10 +476,10 @@ function Packages() {
                   )}
 
                   <div className="package-card-header">
-                    <div className="package-icon">৳</div>
+                    {/* <div className="package-icon">৳</div> */}
 
                     <div>
-                      <p>Investment package</p>
+                      {/* <p>Investment package</p> */}
                       <h3>{name}</h3>
                     </div>
                   </div>
