@@ -7,12 +7,18 @@ import "../styles/Packages.css";
 const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
+
 const PACKAGE_IMAGES = {
-  platinum: "/images/packages/platinum-package.png",
-  bronze: "/images/packages/bronze-package.png",
-  silver: "/images/packages/silver-package.png",
-  gold: "/images/packages/gold-package.png",
-  diamond: "/images/packages/diamond-package.png",
+  starter: "/images/packages/gtx1650.png",
+  basic: "/images/packages/gtx1660.png",
+  essential: "/images/packages/rtx3050.png",
+  standard: "/images/packages/rtx3060.png",
+  premium: "/images/packages/rtx3060ti.png",
+  advanced: "/images/packages/rtx4060ti.png",
+  sapphire: "/images/packages/rtx4070.png",
+  titanium: "/images/packages/rtx4070ti.png",
+  elite: "/images/packages/rtx4080.png",
+  crown: "/images/packages/rtx4090.png",
 };
 
 const getPackageImage = (packageName = "") => {
