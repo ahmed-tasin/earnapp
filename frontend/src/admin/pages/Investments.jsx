@@ -284,7 +284,7 @@ const loadInvestments = useCallback(async () => {
           </strong>
         </span>
 
-        <button
+        {/* <button
           type="button"
           className="admin-refresh-button"
           onClick={loadInvestments}
@@ -293,7 +293,7 @@ const loadInvestments = useCallback(async () => {
           {loading
             ? "Loading..."
             : "Refresh"}
-        </button>
+        </button> */}
       </div>
 
       {loading ? (

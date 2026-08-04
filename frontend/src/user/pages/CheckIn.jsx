@@ -303,7 +303,7 @@ function CheckIn() {
             <h1>7-Day Check-in</h1>
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="checkin-refresh-button"
             onClick={() => fetchCheckInData(true)}
@@ -314,7 +314,7 @@ function CheckIn() {
             </span>
 
             {refreshing ? "Refreshing" : "Refresh"}
-          </button>
+          </button> */}
         </header>
 
         {message && (

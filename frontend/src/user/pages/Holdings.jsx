@@ -238,7 +238,7 @@ function Holdings() {
             <h1>Holdings</h1>
           </div>
 
-          <button
+          {/* <button
             type="button"
             onClick={() =>
               fetchHoldings(true)
@@ -248,7 +248,7 @@ function Holdings() {
             {refreshing
               ? "Refreshing..."
               : "Refresh"}
-          </button>
+          </button> */}
         </header>
 
         {message && (

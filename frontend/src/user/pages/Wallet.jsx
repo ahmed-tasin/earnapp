@@ -168,7 +168,7 @@ function Wallet() {
             <h1>Wallet</h1>
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="wallet-refresh-button"
             onClick={() => fetchWallet(true)}
@@ -186,7 +186,7 @@ function Wallet() {
               ↻
             </span>
             <span>{refreshing ? "Refreshing" : "Refresh"}</span>
-          </button>
+          </button> */}
         </header>
 
         {error && (
