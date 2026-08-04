@@ -18,6 +18,8 @@ const initialProfile = {
   createdAt: "",
   totalEarning: 0,
   previousEarning: 0,
+  balance: 0,
+  todayEarning: 0,
 };
 
 const Icon = ({ name }) => {
@@ -122,6 +124,13 @@ function Profile() {
         previousEarning: Number(
           userData.previousEarning ?? userData.previousDayEarning ?? 0
         ),
+        balance: Number(userData.balance || 0),
+
+todayEarning: Number(
+  userData.todayEarning ??
+  userData.todayEarn ??
+  0
+),
       };
 
       setProfile(normalizedProfile);
@@ -253,22 +262,26 @@ function Profile() {
             </div>
           </div>
         </section>
+<section className="profile-earnings" aria-label="Earning summary">
+  <div className="profile-earning-row profile-balance-row">
+    <span>মোট ব্যালেন্স</span>
+    <strong>৳{formatAmount(profile.balance)}</strong>
+  </div>
 
-        <section className="profile-earnings" aria-label="Earning summary">
-          <div className="profile-earning-row">
-            <span>Total earn</span>
-            <strong>৳{formatAmount(profile.totalEarning)}</strong>
-          </div>
+  <div className="profile-earning-row">
+    <span>আজকের আয়</span>
+    <strong>৳{formatAmount(profile.todayEarning)}</strong>
+  </div>
 
-          <div className="profile-earning-row">
-            <span>Previous earn</span>
-            <strong>৳{formatAmount(profile.previousEarning)}</strong>
-          </div>
+  <div className="profile-earning-row">
+    <span>গতকালের আয়</span>
+    <strong>৳{formatAmount(profile.previousEarning)}</strong>
+  </div>
 
-          <Link to="/withdraw" className="profile-withdraw-button">
-            Withdraw
-          </Link>
-        </section>
+  <Link to="/withdraw" className="profile-withdraw-button">
+    উত্তোলন
+  </Link>
+</section>
 
         <section className="profile-services">
           <div className="profile-services-heading">

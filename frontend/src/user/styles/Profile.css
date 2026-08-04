@@ -173,6 +173,7 @@
 }
 
 .profile-earning-row {
+  
   min-width: 0;
   padding: 12px;
   border-radius: 11px;
@@ -375,4 +376,29 @@
   .profile-earning-row strong {
     font-size: 13px;
   }
+}
+
+
+.profile-balance-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.profile-balance-row {
+  
+  grid-column: 1 / -1;
+  border: 1px solid #d5efdf;
+  background: linear-gradient(135deg, #edf9f1, #e3f6eb);
+}
+
+.profile-balance-row span {
+  color: #4f8066;
+}
+
+.profile-balance-row strong {
+  color: #167449;
+  font-size: 19px;
 }

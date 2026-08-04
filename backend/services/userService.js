@@ -11,64 +11,65 @@ const normalizePhone = require(
 
 const DHAKA_OFFSET_MS = 6 * 60 * 60 * 1000;
 
-const getPreviousDhakaDate = () => {
-  const dhakaNow = new Date(
-    Date.now() + DHAKA_OFFSET_MS
-  );
+const getDhakaDate = (daysAgo = 0) => {
+  const dhakaNow = new Date(Date.now() + DHAKA_OFFSET_MS);
 
   dhakaNow.setUTCDate(
-    dhakaNow.getUTCDate() - 1
+    dhakaNow.getUTCDate() - daysAgo
   );
 
-  return dhakaNow
-    .toISOString()
-    .slice(0, 10);
+  return dhakaNow.toISOString().slice(0, 10);
+};
+
+const getEarningByDay = async (userId, daysAgo = 0) => {
+  const profitDate = getDhakaDate(daysAgo);
+
+  const result = await Transaction.aggregate([
+    {
+      $match: {
+        userId: new mongoose.Types.ObjectId(userId),
+        type: "profit",
+        status: "approved",
+        profitDate,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: {
+          $sum: "$amount",
+        },
+      },
+    },
+  ]);
+
+  return result[0]?.total || 0;
 };
 
 exports.getProfile = async (userId) => {
-  const [user, previousDayResult] =
-    await Promise.all([
-      User.findById(userId)
-        .select("-password -__v")
-        .lean(),
+  const [user, todayEarning, previousEarning] = await Promise.all([
+    User.findById(userId)
+      .select("-password -__v")
+      .lean(),
 
-      Transaction.aggregate([
-        {
-          $match: {
-            userId:
-              new mongoose.Types.ObjectId(userId),
-            type: "profit",
-            status: "approved",
-            profitDate:
-              getPreviousDhakaDate(),
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            total: {
-              $sum: "$amount",
-            },
-          },
-        },
-      ]),
-    ]);
+    getEarningByDay(userId, 0),
+
+    getEarningByDay(userId, 1),
+  ]);
 
   if (!user) {
-    const error = new Error(
-      "User not found"
-    );
-
+    const error = new Error("User not found");
     error.statusCode = 404;
     throw error;
   }
 
   return {
     ...user,
-    previousEarning:
-      previousDayResult[0]?.total || 0,
+    todayEarning,
+    previousEarning,
   };
 };
+
 
 // ================= UPDATE PROFILE =================
 
