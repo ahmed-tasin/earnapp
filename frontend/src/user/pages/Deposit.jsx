@@ -231,7 +231,7 @@ function Deposit() {
       <div className="deposit-container">
         <header className="deposit-header">
           <div>
-            <p>{step === 1 ? "Add funds" : "Complete payment"}</p>
+            {/* <p>{step === 1 ? "Add funds" : "Complete payment"}</p> */}
             <h1>Deposit</h1>
           </div>
 
@@ -419,6 +419,50 @@ function Deposit() {
             </button>
           </form>
         )}
+
+<section className="deposit-rules" aria-labelledby="deposit-rules-title">
+  <div className="deposit-rules-heading">
+    <span aria-hidden="true">i</span>
+
+    <div>
+      <p>Important information</p>
+      <h2 id="deposit-rules-title">রিচার্জ-সংক্রান্ত নিয়মাবলি</h2>
+    </div>
+  </div>
+
+  <ol>
+    <li>
+      সর্বনিম্ন রিচার্জের পরিমাণ <strong>৳৫০০</strong>।
+    </li>
+
+    <li>
+      সর্বনিম্ন নির্ধারিত পরিমাণের চেয়ে কম টাকা ডিপোজিট করলে তা
+      আপনার অ্যাকাউন্টের ব্যালেন্সে যোগ হবে না।
+    </li>
+
+    <li>
+      রিচার্জের টাকা শুধুমাত্র{" "}
+      <strong>Send Money (সেন্ড মানি)</strong> অপশনের মাধ্যমে পাঠাতে হবে।
+    </li>
+
+    <li>
+      পাঠানো টাকার পরিমাণ অবশ্যই আপনার ডিপোজিট অর্ডারে উল্লেখ করা
+      টাকার পরিমাণের সঙ্গে মিলতে হবে। অন্যথায় টাকা সফলভাবে জমা হবে না।
+    </li>
+
+    <li>
+      প্রতিবার পেমেন্ট করার আগে একটি নতুন ডিপোজিট অর্ডার তৈরি করুন এবং
+      অর্ডারে প্রদর্শিত নির্দিষ্ট রিচার্জ অ্যাকাউন্টে টাকা পাঠান।
+    </li>
+
+    <li>
+      টাকা পাঠানোর পর অনুগ্রহ করে <strong>১০–২০ মিনিট</strong> অপেক্ষা
+      করুন। নির্ধারিত সময়ের মধ্যে ব্যালেন্স যোগ না হলে আমাদের কাস্টমার
+      সার্ভিস টিমের সঙ্গে যোগাযোগ করুন।
+    </li>
+  </ol>
+</section>
+
 
         <div className="deposit-history-link">
           <Link to="/transactions">View transaction history →</Link>

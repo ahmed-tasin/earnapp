@@ -182,7 +182,7 @@ function Withdraw() {
       <div className="withdraw-container">
         <header className="withdraw-header">
           <div>
-            <p className="withdraw-header-label">Cash out funds</p>
+            {/* <p className="withdraw-header-label">Cash out funds</p> */}
             <h1>Withdraw</h1>
           </div>
 
@@ -191,7 +191,7 @@ function Withdraw() {
           </Link>
         </header>
 
-        <section className="withdraw-info-card">
+        {/* <section className="withdraw-info-card">
           <div className="withdraw-info-icon">💸</div>
 
           <div>
@@ -202,7 +202,7 @@ function Withdraw() {
               be sent to your saved withdrawal card.
             </p>
           </div>
-        </section>
+        </section> */}
 
         {message && (
           <div
@@ -298,11 +298,10 @@ function Withdraw() {
           </section>
 
           <div className="withdraw-notice">
-            <span>⚠️</span>
+            <span>ℹ️</span>
 
             <p>
-              Your saved Card account will be used. Withdraw requests
-              may require admin approval before payment.
+              টাকা উত্তোলনের সময়সীমা সোমবার থেকে শুক্রবার, সকাল ৯টা থেকে সন্ধ্যা ৬টা পর্যন্ত। উত্তোলনের আবেদন করার পর ১ থেকে ২৪ ঘণ্টার মধ্যে টাকা আপনার নির্ধারিত অ্যাকাউন্টে পৌঁছে যাবে।
             </p>
           </div>
 

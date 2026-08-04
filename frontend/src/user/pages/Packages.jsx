@@ -243,7 +243,7 @@ function Packages() {
       <div className="packages-container">
         <header className="packages-header">
           <div>
-            <p className="packages-header-label">Investment plans</p>
+     
 
             <h1>Packages</h1>
           </div>
@@ -291,7 +291,7 @@ function Packages() {
 
             <h2>৳{formatMoney(walletBalance)}</h2>
 
-            <p>Your package amount will be deducted from this balance.</p>
+            {/* <p>Your package amount will be deducted from this balance.</p> */}
           </div>
 
           <Link to="/deposit" className="packages-deposit-link">
@@ -301,7 +301,7 @@ function Packages() {
 
         <section className="packages-intro">
           <div>
-            <p>Choose your plan</p>
+            {/* <p>Choose your plan</p> */}
             <h2>Available Investment Packages</h2>
           </div>
 
@@ -360,10 +360,10 @@ function Packages() {
                   )}
 
                   <div className="package-card-header">
-                    <div className="package-icon">৳</div>
+                    {/* <div className="package-icon">৳</div> */}
 
                     <div>
-                      <p>Investment package</p>
+                      {/* <p>Investment package</p> */}
                       <h3>{name}</h3>
                     </div>
                   </div>

@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 .transaction-ticker-window,
 .transaction-ticker-track,
 .transaction-ticker-group,
@@ -85,7 +78,7 @@
 .transaction-ticker-track {
   display: flex;
   width: max-content;
-  animation: transaction-scroll 55s linear infinite;
+  animation: transaction-scroll 155s linear infinite;
   will-change: transform;
 }
 

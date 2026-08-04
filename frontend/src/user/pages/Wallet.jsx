@@ -164,7 +164,7 @@ function Wallet() {
       <div className="wallet-container">
         <header className="wallet-header">
           <div>
-            <p className="wallet-header-label">My account</p>
+            {/* <p className="wallet-header-label">My account</p> */}
             <h1>Wallet</h1>
           </div>
 

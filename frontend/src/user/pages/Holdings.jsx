@@ -234,7 +234,7 @@ function Holdings() {
       <div className="holdings-container">
         <header className="holdings-header">
           <div>
-            <p>MY INVESTMENTS</p>
+            {/* <p>MY INVESTMENTS</p> */}
             <h1>Holdings</h1>
           </div>
 

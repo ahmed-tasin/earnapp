@@ -199,7 +199,7 @@ function Profile() {
           </button>
 
           <div className="profile-header-copy">
-            <p>My account</p>
+            {/* <p>My account</p> */}
             <h1>Profile</h1>
           </div>
 
@@ -272,7 +272,7 @@ function Profile() {
 
         <section className="profile-services">
           <div className="profile-services-heading">
-            <p>Quick access</p>
+            {/* <p>Quick access</p> */}
             <h2>Services</h2>
           </div>
 

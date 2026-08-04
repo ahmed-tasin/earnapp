@@ -445,12 +445,12 @@ function HomePage() {
                       <span>Total Profit</span>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <strong>
                         {Math.max(0, progress.totalUnits - progress.soldUnits)}
                       </strong>
                       <span>Units Left</span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <button
