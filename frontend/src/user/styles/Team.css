@@ -2,7 +2,6 @@
   --team-green: #25bd6a;
   --team-deep: #075136;
   --team-ink: #203028;
-  --team-muted: #78867e;
   --team-line: #e0e9e4;
   min-height: 100vh;
   padding: 18px 12px 98px;
@@ -117,11 +116,11 @@
 
 .team-error button {
   flex: 0 0 auto;
+  padding: 7px 10px;
   border: 0;
   border-radius: 8px;
   background: #b85049;
   color: #fff;
-  padding: 7px 10px;
   font: inherit;
   font-size: 10px;
   font-weight: 800;
@@ -134,16 +133,8 @@
   padding: 22px;
   border-radius: 21px;
   background:
-    radial-gradient(
-      circle at 94% 10%,
-      rgba(107, 239, 155, 0.24),
-      transparent 23%
-    ),
-    radial-gradient(
-      circle at 4% 100%,
-      rgba(107, 239, 155, 0.14),
-      transparent 32%
-    ),
+    radial-gradient(circle at 94% 10%, rgba(107, 239, 155, 0.24), transparent 23%),
+    radial-gradient(circle at 4% 100%, rgba(107, 239, 155, 0.14), transparent 32%),
     linear-gradient(145deg, #0a6744, var(--team-deep));
   color: #fff;
 }
@@ -189,28 +180,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   max-width: 430px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(1, 48, 29, 0.27);
 }
 
 .team-code-box {
+  gap: 12px;
   margin-top: 19px;
   padding: 11px 11px 11px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 13px;
-}
-
-.team-link-box {
-  margin-top: 8px;
-  padding: 9px 9px 9px 13px;
-  border-radius: 11px;
-  background: rgba(1, 48, 29, 0.19);
-}
-
-.team-code-box > div,
-.team-link-box > div {
-  min-width: 0;
+  background: rgba(1, 48, 29, 0.27);
 }
 
 .team-code-box small,
@@ -236,6 +215,33 @@
   white-space: nowrap;
 }
 
+.team-code-box button {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: #fff;
+  color: #147044;
+  cursor: pointer;
+}
+
+.team-link-box {
+  gap: 10px;
+  margin-top: 8px;
+  padding: 9px 9px 9px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 11px;
+  background: rgba(1, 48, 29, 0.19);
+}
+
+.team-link-box > div {
+  min-width: 0;
+}
+
 .team-link-box span {
   overflow: hidden;
   color: #edfff4;
@@ -244,31 +250,18 @@
   white-space: nowrap;
 }
 
-.team-code-box button,
 .team-link-box button {
   display: grid;
+  width: 31px;
+  height: 31px;
   flex: 0 0 auto;
   padding: 0;
   place-items: center;
-  cursor: pointer;
-}
-
-.team-code-box button {
-  width: 35px;
-  height: 35px;
-  border: 0;
-  border-radius: 9px;
-  background: #fff;
-  color: #147044;
-}
-
-.team-link-box button {
-  width: 31px;
-  height: 31px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+  cursor: pointer;
 }
 
 .team-link-box button svg {
@@ -414,6 +407,7 @@
 
 .level-card {
   display: grid;
+  width: 100%;
   grid-template-columns: 30px minmax(0, 1fr) auto 17px;
   align-items: center;
   gap: 9px;
@@ -421,6 +415,19 @@
   border: 1px solid #e5ece8;
   border-radius: 12px;
   background: #fbfdfc;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.level-card:active {
+  transform: scale(0.99);
+}
+
+.level-card:focus-visible {
+  outline: 2px solid #37b86b;
+  outline-offset: 2px;
 }
 
 .level-badge {
@@ -487,6 +494,151 @@
   width: 15px;
   height: 15px;
   color: #91a097;
+}
+
+.team-member-modal-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px 12px max(16px, env(safe-area-inset-bottom));
+  background: rgba(16, 37, 27, 0.48);
+}
+
+.team-member-modal {
+  width: min(100%, 520px);
+  max-height: min(72vh, 590px);
+  overflow: auto;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 55px rgba(11, 43, 27, 0.25);
+}
+
+.team-member-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 17px 17px 14px;
+  border-bottom: 1px solid #e8efeb;
+}
+
+.team-member-modal-header p {
+  margin: 0 0 3px;
+  color: #849087;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.team-member-modal-header h2 {
+  margin: 0;
+  color: #26372e;
+  font-size: 17px;
+}
+
+.team-member-modal-header button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 1px solid #e0e9e4;
+  border-radius: 9px;
+  background: #f8fbf9;
+  color: #527064;
+  cursor: pointer;
+}
+
+.team-member-modal-header svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.team-member-list {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.team-member-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #e7eeea;
+  border-radius: 12px;
+  background: #fbfdfc;
+}
+
+.team-member-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #e2f5e9;
+  color: #187747;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.team-member-item > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.team-member-item strong,
+.team-member-item span {
+  display: block;
+}
+
+.team-member-item strong {
+  overflow: hidden;
+  color: #304138;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-item > div span {
+  margin-top: 2px;
+  overflow: hidden;
+  color: #89968e;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-item small {
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: #f0f2f1;
+  color: #7a8580;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.team-member-item small.is-active {
+  background: #e0f7e8;
+  color: #17864d;
+}
+
+.team-member-empty {
+  padding: 23px 12px;
+  color: #87948c;
+  font-size: 12px;
+  text-align: center;
 }
 
 .team-loading {

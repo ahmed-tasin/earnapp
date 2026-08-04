@@ -24,6 +24,7 @@ import Profile from "./pages/Profile";
 import CheckIn from "./pages/CheckIn";
 import Holdings from "./pages/Holdings";
 import Card from "./pages/card";
+import ReferralList from "./pages/ReferralList";
 
 function UserLayout() {
   return (
@@ -62,6 +63,7 @@ function UserApp() {
           <Route path="checkin" element={<CheckIn />} />
           <Route path="holdings" element={<Holdings />} />
           <Route path="card" element={<Card />} />
+          <Route path="team/level/:level" element={<ReferralList />} />
         </Route>
       </Route>
 

@@ -19,7 +19,7 @@ function Icon({ name }) {
     copy: (
       <>
         <rect x="9" y="9" width="11" height="11" rx="2" />
-        <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3" />
+        <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0 2 2h3" />
       </>
     ),
     share: (
@@ -50,6 +50,7 @@ function Icon({ name }) {
       </>
     ),
     arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
+    close: <path d="m7 7 10 10M17 7 7 17" />,
   };
 
   return (
@@ -66,6 +67,7 @@ function Team() {
     referralCode: "",
     referralLink: "",
     directReferrals: [],
+    referralLevels: { 1: [], 2: [], 3: [] },
     totalTeam: 0,
     totalCommission: 0,
   });
@@ -73,6 +75,7 @@ function Team() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
+
 
   const getToken = () =>
     localStorage.getItem("userToken") || localStorage.getItem("token");
@@ -89,14 +92,20 @@ function Team() {
       }
 
       const response = await axios.get(`${API_URL}/referral/info`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = response.data?.data || response.data || {};
       const referrals =
         data.directReferrals || data.referrals || data.team || [];
+
+      const referralLevels = data.referralLevels || {};
+
+      const levelOne = Array.isArray(referralLevels.level1)
+        ? referralLevels.level1
+        : Array.isArray(referrals)
+          ? referrals
+          : [];
 
       const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -110,12 +119,21 @@ function Team() {
         referralCode,
         referralLink: referralCode
           ? `${window.location.origin}/register?ref=${encodeURIComponent(
-              referralCode
+              referralCode,
             )}`
           : "",
-        directReferrals: Array.isArray(referrals) ? referrals : [],
+        directReferrals: levelOne,
+        referralLevels: {
+          1: levelOne,
+          2: Array.isArray(referralLevels.level2)
+            ? referralLevels.level2
+            : [],
+          3: Array.isArray(referralLevels.level3)
+            ? referralLevels.level3
+            : [],
+        },
         totalTeam:
-          data.totalTeam ?? data.totalReferrals ?? referrals.length ?? 0,
+          data.totalTeam ?? data.totalReferrals ?? levelOne.length ?? 0,
         totalCommission:
           data.totalCommission ??
           data.referralCommissionEarned ??
@@ -126,7 +144,7 @@ function Team() {
       setError(
         err.response?.data?.message ||
           err.message ||
-          "Failed to load team information"
+          "Failed to load team information",
       );
     } finally {
       setLoading(false);
@@ -141,17 +159,14 @@ function Team() {
     () =>
       teamData.directReferrals.filter(
         (member) =>
-          String(member.status || "active").toLowerCase() === "active"
+          String(member.status || "active").toLowerCase() === "active",
       ).length,
-    [teamData.directReferrals]
+    [teamData.directReferrals],
   );
 
   const showCopyMessage = (text) => {
     setCopyMessage(text);
-
-    window.setTimeout(() => {
-      setCopyMessage("");
-    }, 1800);
+    window.setTimeout(() => setCopyMessage(""), 1800);
   };
 
   const copyText = async (text, label) => {
@@ -189,11 +204,21 @@ function Team() {
     {
       level: 1,
       rate: "10%",
-      users: teamData.directReferrals.length,
+      users: teamData.referralLevels[1].length,
       commission: teamData.totalCommission,
     },
-    { level: 2, rate: "5%", users: 0, commission: 0 },
-    { level: 3, rate: "3%", users: 0, commission: 0 },
+    {
+      level: 2,
+      rate: "5%",
+      users: teamData.referralLevels[2].length,
+      commission: 0,
+    },
+    {
+      level: 3,
+      rate: "3%",
+      users: teamData.referralLevels[3].length,
+      commission: 0,
+    },
   ];
 
   const stats = [
@@ -363,7 +388,13 @@ function Team() {
 
           <div className="team-level-list">
             {levels.map((item) => (
-              <article className="level-card" key={item.level}>
+              <button
+                type="button"
+                className="level-card"
+                key={item.level}
+                onClick={() => navigate(`/team/level/${item.level}`)}
+                aria-label={`Show Level ${item.level} referral list`}
+              >
                 <span className={`level-badge level-${item.level}`}>
                   {item.level}
                 </span>
@@ -379,10 +410,12 @@ function Team() {
                 </div>
 
                 <Icon name="arrow" />
-              </article>
+              </button>
             ))}
           </div>
         </section>
+
+
       </div>
     </main>
   );
