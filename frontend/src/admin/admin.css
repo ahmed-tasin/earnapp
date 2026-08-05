@@ -1132,3 +1132,339 @@ body {
     min-height: 164px;
   }
 }
+
+
+/* ==========================================
+   Mobile Admin Controls + Transaction Search
+========================================== */
+
+.admin-transaction-search {
+  display: grid;
+  max-width: 1440px;
+  grid-template-columns: auto minmax(170px, 0.8fr) minmax(220px, 1.7fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 14px;
+  padding: 13px;
+  border: 1px solid rgba(118, 185, 0, 0.26);
+  border-radius: 15px;
+  background: #111310;
+}
+
+.admin-transaction-search-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(118, 185, 0, 0.14);
+  color: #a0e43e;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.admin-transaction-search small,
+.admin-transaction-search label {
+  display: block;
+}
+
+.admin-transaction-search small {
+  margin-bottom: 2px;
+  color: #a0e43e;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-transaction-search label {
+  color: #edf0eb;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-transaction-search input,
+.admin-deposit-search input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #343830;
+  border-radius: 10px;
+  outline: none;
+  background: #080908;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+}
+
+.admin-transaction-search input:focus {
+  border-color: #76b900;
+}
+
+.admin-transaction-search button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #76b900;
+  color: #091000;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+/* Deposit page */
+
+.admin-deposit-page {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.admin-page-kicker {
+  display: block;
+  margin-bottom: 4px;
+  color: #258652;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-deposit-search {
+  display: flex;
+  align-items: end;
+  gap: 9px;
+  margin-bottom: 14px;
+  padding: 13px;
+  border: 1px solid #dce8e0;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.admin-deposit-search > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-deposit-search label {
+  display: block;
+  margin: 0 0 6px;
+  color: #5b6c64;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.admin-deposit-search input {
+  border-color: #d6e3da;
+  background: #fbfdfc;
+  color: #203028;
+}
+
+.admin-deposit-search input:focus {
+  border-color: #1b9c58;
+}
+
+.admin-deposit-search button {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #116c42;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-deposit-search .admin-clear-search {
+  background: #eff4f1;
+  color: #496056;
+}
+
+.admin-list-summary {
+  padding: 11px 13px;
+  border: 1px solid #dce8e0;
+  border-radius: 11px;
+  background: #fff;
+  color: #64756c;
+  font-size: 12px;
+}
+
+.admin-list-summary strong {
+  color: #1f7c4a;
+  font-size: 11px;
+}
+
+.admin-mobile-request-list {
+  display: none;
+}
+
+.admin-no-action {
+  color: #829087;
+  font-size: 11px;
+}
+
+/* Mobile layout */
+
+@media (max-width: 700px) {
+  .admin-dashboard .admin-dashboard-grid,
+  .admin-dashboard .admin-dashboard-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-dashboard .admin-dashboard-card {
+    min-height: 145px;
+    padding: 14px;
+  }
+
+  .admin-dashboard-card-icon {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 13px;
+    font-size: 15px;
+  }
+
+  .admin-dashboard .admin-dashboard-card strong {
+    font-size: 24px;
+  }
+
+  .admin-dashboard .admin-dashboard-actions button {
+    min-height: 72px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .admin-dashboard .admin-dashboard-actions button > span {
+    width: 31px;
+    height: 31px;
+    border-radius: 9px;
+    font-size: 14px;
+  }
+
+  .admin-transaction-search {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .admin-transaction-search input,
+  .admin-transaction-search button {
+    grid-column: 1 / -1;
+  }
+
+  .admin-transaction-search button {
+    width: 100%;
+  }
+
+  .admin-deposit-page {
+    padding: 16px 12px 92px;
+  }
+
+  .admin-page-header {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .admin-page-header h1 {
+    font-size: 23px;
+  }
+
+  .admin-page-header p {
+    font-size: 12px;
+  }
+
+  .admin-back-button {
+    padding: 9px 10px;
+    font-size: 11px;
+  }
+
+  .admin-deposit-search {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .admin-deposit-search > div {
+    grid-column: 1 / -1;
+  }
+
+  .admin-mobile-request-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .admin-desktop-table {
+    display: none;
+  }
+
+  .admin-mobile-request-card {
+    padding: 13px;
+    border: 1px solid #dde9e1;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 7px 18px rgba(21, 54, 39, 0.05);
+  }
+
+  .admin-mobile-request-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .admin-mobile-request-top small,
+  .admin-mobile-request-top strong {
+    display: block;
+  }
+
+  .admin-mobile-request-top small {
+    margin-bottom: 3px;
+    color: #849087;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .admin-mobile-request-top strong {
+    color: #204534;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+  }
+
+  .admin-mobile-request-amount {
+    margin: 15px 0 10px;
+    color: #163b2b;
+    font-size: 22px;
+    font-weight: 850;
+  }
+
+  .admin-mobile-request-amount span {
+    margin-left: 6px;
+    color: #79887f;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .admin-mobile-request-info {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 13px;
+    color: #6c7d74;
+    font-size: 11px;
+  }
+
+  .admin-mobile-request-card .admin-action-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .admin-mobile-request-card .admin-action-group button {
+    min-height: 39px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+}

@@ -97,8 +97,9 @@ router.get(
   authMiddleware,
   adminMiddleware,
   asyncHandler(async (req, res) => {
-    const deposits =
-      await walletService.getAdminDeposits();
+    const deposits = await walletService.getAdminDeposits({
+      trxId: req.query.trxId,
+    });
 
     res.status(200).json({
       success: true,

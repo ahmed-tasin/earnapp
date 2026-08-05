@@ -11,6 +11,10 @@ const Investment = require("../models/Investment");
 exports.deposit = async (userId, data) => {
   const amount = Number(data.amount);
 
+  const senderNumber = String(
+    data.senderNumber || "",
+  ).trim();
+
   const paymentMethod = String(
     data.paymentMethod || "",
   )
@@ -23,9 +27,9 @@ exports.deposit = async (userId, data) => {
 
   const note = String(data.note || "").trim();
 
-  if (!Number.isFinite(amount) || amount <= 0) {
+  if (!Number.isFinite(amount) || amount < 500) {
     const error = new Error(
-      "Deposit amount must be greater than zero",
+      "Minimum deposit amount is ৳500",
     );
 
     error.statusCode = 400;
@@ -35,6 +39,30 @@ exports.deposit = async (userId, data) => {
   if (!paymentMethod) {
     const error = new Error(
       "Payment method is required",
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const allowedPaymentMethods = [
+    "bkash",
+    "nagad",
+    "rocket",
+  ];
+
+  if (!allowedPaymentMethods.includes(paymentMethod)) {
+    const error = new Error(
+      "Select a valid payment method",
+    );
+
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!/^01\d{9}$/.test(senderNumber)) {
+    const error = new Error(
+      "Enter a valid 11-digit sender number",
     );
 
     error.statusCode = 400;
@@ -72,6 +100,7 @@ exports.deposit = async (userId, data) => {
         type: "deposit",
         amount,
         paymentMethod,
+        contactPhone: senderNumber,
         trxId,
         note,
         status: "pending",
@@ -279,6 +308,7 @@ exports.withdraw = async (userId, data) => {
   const allowedPaymentMethods = [
     "bkash",
     "nagad",
+    "rocket",
   ];
 
   if (
@@ -739,14 +769,27 @@ exports.getAllTransactions = async (page = 1, limit = 20, type, status) => {
 
 // ================= ADMIN GET DEPOSITS =================
 
-exports.getAdminDeposits = async () => {
-  const deposits = await Transaction.find({
+exports.getAdminDeposits = async ({ trxId = "" } = {}) => {
+  const cleanTrxId = String(trxId).trim();
+
+  const filter = {
     type: "deposit",
-  })
-    .populate(
-      "userId",
-      "username email phone balance",
-    )
+  };
+
+  if (cleanTrxId) {
+    const escapedTrxId = cleanTrxId.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&",
+    );
+
+    filter.trxId = {
+      $regex: escapedTrxId,
+      $options: "i",
+    };
+  }
+
+  const deposits = await Transaction.find(filter)
+    .populate("userId", "username email phone balance")
     .sort({ createdAt: -1 });
 
   return deposits;

@@ -44,6 +44,7 @@ function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [trxSearch, setTrxSearch] = useState("");
 
   const loadDashboard = useCallback(
     async (isRefresh = false) => {
@@ -54,9 +55,7 @@ function Dashboard() {
         const token = localStorage.getItem("adminToken");
 
         if (!token) {
-          navigate("/admin/login", {
-            replace: true,
-          });
+          navigate("/admin/login", { replace: true });
           return;
         }
 
@@ -88,11 +87,6 @@ function Dashboard() {
 
         setLastUpdated(new Date());
       } catch (error) {
-        console.error(
-          "Dashboard load error:",
-          error.response?.data || error.message,
-        );
-
         setMessage(
           error.response?.data?.message ||
             "Dashboard data load failed",
@@ -104,10 +98,7 @@ function Dashboard() {
         ) {
           localStorage.removeItem("adminToken");
           localStorage.removeItem("adminUser");
-
-          navigate("/admin/login", {
-            replace: true,
-          });
+          navigate("/admin/login", { replace: true });
         }
       } finally {
         setLoading(false);
@@ -128,15 +119,12 @@ function Dashboard() {
     stats.activeInvestments + stats.completedInvestments;
 
   const activeUserRate = stats.totalUsers
-    ? Math.round(
-        (stats.activeUsers / stats.totalUsers) * 100,
-      )
+    ? Math.round((stats.activeUsers / stats.totalUsers) * 100)
     : 0;
 
   const investmentCompletionRate = totalInvestments
     ? Math.round(
-        (stats.completedInvestments / totalInvestments) *
-          100,
+        (stats.completedInvestments / totalInvestments) * 100,
       )
     : 0;
 
@@ -145,9 +133,7 @@ function Dashboard() {
       {
         label: "Total Users",
         value: formatNumber(stats.totalUsers),
-        detail: `${formatNumber(
-          stats.activeUsers,
-        )} active users`,
+        detail: `${formatNumber(stats.activeUsers)} active users`,
         icon: "👥",
         tone: "green",
         route: "/admin/users",
@@ -155,9 +141,7 @@ function Dashboard() {
       {
         label: "Active Investments",
         value: formatNumber(stats.activeInvestments),
-        detail: `${formatNumber(
-          stats.completedInvestments,
-        )} completed`,
+        detail: `${formatNumber(stats.completedInvestments)} completed`,
         icon: "📈",
         tone: "blue",
         route: "/admin/investments",
@@ -165,9 +149,7 @@ function Dashboard() {
       {
         label: "Pending Deposits",
         value: formatNumber(stats.pendingDeposits),
-        detail: `${formatNumber(
-          stats.approvedDeposits,
-        )} approved`,
+        detail: `${formatNumber(stats.approvedDeposits)} approved`,
         icon: "↓",
         tone: "amber",
         route: "/admin/deposits",
@@ -175,9 +157,7 @@ function Dashboard() {
       {
         label: "Pending Withdraws",
         value: formatNumber(stats.pendingWithdraws),
-        detail: `${formatNumber(
-          stats.approvedWithdraws,
-        )} approved`,
+        detail: `${formatNumber(stats.approvedWithdraws)} approved`,
         icon: "↑",
         tone: "red",
         route: "/admin/withdraws",
@@ -216,10 +196,22 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminUser");
+    navigate("/admin/login", { replace: true });
+  };
 
-    navigate("/admin/login", {
-      replace: true,
-    });
+  const handleTransactionSearch = (event) => {
+    event.preventDefault();
+
+    const transactionId = trxSearch.trim();
+
+    if (!transactionId) {
+      setMessage("Enter a transaction ID to search");
+      return;
+    }
+
+    navigate(
+      `/admin/deposits?trxId=${encodeURIComponent(transactionId)}`,
+    );
   };
 
   return (
@@ -229,11 +221,9 @@ function Dashboard() {
           <span className="admin-dashboard-eyebrow">
             NVIDIA FINANCE
           </span>
+
           <h1>Admin Dashboard</h1>
-          <p>
-            Monitor platform activity and manage daily
-            operations.
-          </p>
+          <p>Monitor platform activity and manage daily operations.</p>
         </div>
 
         <div className="admin-dashboard-header-actions">
@@ -243,9 +233,7 @@ function Dashboard() {
             onClick={() => loadDashboard(true)}
             disabled={refreshing}
           >
-            <span className={refreshing ? "rotating" : ""}>
-              ↻
-            </span>
+            <span className={refreshing ? "rotating" : ""}>↻</span>
             {refreshing ? "Refreshing" : "Refresh"}
           </button>
 
@@ -281,18 +269,41 @@ function Dashboard() {
                   : "Everything is up to date"}
               </strong>
             </div>
+
             <small>
               {lastUpdated
-                ? `Updated ${lastUpdated.toLocaleTimeString(
-                    "en-BD",
-                    {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    },
-                  )}`
+                ? `Updated ${lastUpdated.toLocaleTimeString("en-BD", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}`
                 : "Latest platform data"}
             </small>
           </section>
+
+          <form
+            className="admin-transaction-search"
+            onSubmit={handleTransactionSearch}
+          >
+            <div className="admin-transaction-search-icon">⌕</div>
+
+            <div>
+              <small>Quick verification</small>
+              <label htmlFor="admin-transaction-id">
+                Search bKash / Nagad Transaction ID
+              </label>
+            </div>
+
+            <input
+              id="admin-transaction-id"
+              type="search"
+              value={trxSearch}
+              onChange={(event) => setTrxSearch(event.target.value)}
+              placeholder="Example: 9KJ7P3D8"
+              autoComplete="off"
+            />
+
+            <button type="submit">Search</button>
+          </form>
 
           <section
             className="admin-dashboard-grid"
@@ -308,14 +319,15 @@ function Dashboard() {
                 <span className="admin-dashboard-card-icon">
                   {card.icon}
                 </span>
+
                 <span className="admin-dashboard-card-label">
                   {card.label}
                 </span>
+
                 <strong>{card.value}</strong>
                 <small>{card.detail}</small>
-                <span className="admin-dashboard-card-arrow">
-                  →
-                </span>
+
+                <span className="admin-dashboard-card-arrow">→</span>
               </button>
             ))}
           </section>
@@ -327,16 +339,13 @@ function Dashboard() {
                   <span>Financial summary</span>
                   <h2>Platform Funds</h2>
                 </div>
-                <span className="admin-dashboard-live">
-                  Live totals
-                </span>
+
+                <span className="admin-dashboard-live">Live totals</span>
               </div>
 
               <div className="admin-finance-list">
                 <div>
-                  <span className="admin-finance-icon deposit">
-                    ↓
-                  </span>
+                  <span className="admin-finance-icon deposit">↓</span>
                   <div>
                     <small>Total Deposits</small>
                     <strong>
@@ -346,28 +355,20 @@ function Dashboard() {
                 </div>
 
                 <div>
-                  <span className="admin-finance-icon withdraw">
-                    ↑
-                  </span>
+                  <span className="admin-finance-icon withdraw">↑</span>
                   <div>
                     <small>Total Withdrawals</small>
                     <strong>
-                      {formatMoney(
-                        stats.totalWithdrawAmount,
-                      )}
+                      {formatMoney(stats.totalWithdrawAmount)}
                     </strong>
                   </div>
                 </div>
 
                 <div>
-                  <span className="admin-finance-icon profit">
-                    ৳
-                  </span>
+                  <span className="admin-finance-icon profit">৳</span>
                   <div>
                     <small>Total Profit Paid</small>
-                    <strong>
-                      {formatMoney(stats.totalProfitPaid)}
-                    </strong>
+                    <strong>{formatMoney(stats.totalProfitPaid)}</strong>
                   </div>
                 </div>
               </div>
@@ -386,13 +387,11 @@ function Dashboard() {
                   <span>Active users</span>
                   <strong>{activeUserRate}%</strong>
                 </div>
+
                 <div className="admin-health-track">
-                  <span
-                    style={{
-                      width: `${activeUserRate}%`,
-                    }}
-                  />
+                  <span style={{ width: `${activeUserRate}%` }} />
                 </div>
+
                 <small>
                   {formatNumber(stats.activeUsers)} active ·{" "}
                   {formatNumber(stats.suspendedUsers)} suspended
@@ -402,30 +401,26 @@ function Dashboard() {
               <div className="admin-health-item">
                 <div>
                   <span>Investment completion</span>
-                  <strong>
-                    {investmentCompletionRate}%
-                  </strong>
+                  <strong>{investmentCompletionRate}%</strong>
                 </div>
+
                 <div className="admin-health-track blue">
                   <span
-                    style={{
-                      width: `${investmentCompletionRate}%`,
-                    }}
+                    style={{ width: `${investmentCompletionRate}%` }}
                   />
                 </div>
+
                 <small>
-                  {formatNumber(totalInvestments)} total
-                  investments
+                  {formatNumber(totalInvestments)} total investments
                 </small>
               </div>
 
               <div className="admin-dashboard-mini-stats">
                 <div>
                   <span>Packages</span>
-                  <strong>
-                    {formatNumber(stats.totalPackages)}
-                  </strong>
+                  <strong>{formatNumber(stats.totalPackages)}</strong>
                 </div>
+
                 <div>
                   <span>Pending</span>
                   <strong>{pendingRequests}</strong>
@@ -450,10 +445,12 @@ function Dashboard() {
                   key={action.label}
                 >
                   <span>{action.icon}</span>
+
                   <div>
                     <strong>{action.label}</strong>
                     <small>{action.detail}</small>
                   </div>
+
                   <b>→</b>
                 </button>
               ))}
