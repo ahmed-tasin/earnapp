@@ -122,15 +122,11 @@ function Profile() {
         createdAt: userData.createdAt || "",
         totalEarning: Number(userData.totalEarning || 0),
         previousEarning: Number(
-          userData.previousEarning ?? userData.previousDayEarning ?? 0
+          userData.previousEarning ?? userData.previousDayEarning ?? 0,
         ),
         balance: Number(userData.balance || 0),
 
-todayEarning: Number(
-  userData.todayEarning ??
-  userData.todayEarn ??
-  0
-),
+        todayEarning: Number(userData.todayEarning ?? userData.todayEarn ?? 0),
       };
 
       setProfile(normalizedProfile);
@@ -140,13 +136,13 @@ todayEarning: Number(
         JSON.stringify({
           ...userData,
           ...normalizedProfile,
-        })
+        }),
       );
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
           requestError.message ||
-          "Failed to load profile"
+          "Failed to load profile",
       );
     } finally {
       setLoading(false);
@@ -250,10 +246,10 @@ todayEarning: Number(
             <p>{profile.phone || "Phone not available"}</p>
 
             <div className="profile-overview-meta">
-              <span className="profile-vip-badge">
-                <span aria-hidden="true">♛</span>
-                VIP 1
-              </span>
+              <Link to="/vip" className="profile-vip-badge">
+  <span aria-hidden="true">♛</span>
+  VIP 1
+</Link>
 
               <span className="profile-active-badge">
                 <i aria-hidden="true" />
@@ -262,26 +258,26 @@ todayEarning: Number(
             </div>
           </div>
         </section>
-<section className="profile-earnings" aria-label="Earning summary">
-  <div className="profile-earning-row profile-balance-row">
-    <span>মোট ব্যালেন্স</span>
-    <strong>৳{formatAmount(profile.balance)}</strong>
-  </div>
+        <section className="profile-earnings" aria-label="Earning summary">
+          <div className="profile-earning-row profile-balance-row">
+            <span>মোট ব্যালেন্স</span>
+            <strong>৳{formatAmount(profile.balance)}</strong>
+          </div>
 
-  <div className="profile-earning-row">
-    <span>আজকের আয়</span>
-    <strong>৳{formatAmount(profile.todayEarning)}</strong>
-  </div>
+          <div className="profile-earning-row">
+            <span>আজকের আয়</span>
+            <strong>৳{formatAmount(profile.todayEarning)}</strong>
+          </div>
 
-  <div className="profile-earning-row">
-    <span>গতকালের আয়</span>
-    <strong>৳{formatAmount(profile.previousEarning)}</strong>
-  </div>
+          <div className="profile-earning-row">
+            <span>গতকালের আয়</span>
+            <strong>৳{formatAmount(profile.previousEarning)}</strong>
+          </div>
 
-  <Link to="/withdraw" className="profile-withdraw-button">
-    উত্তোলন
-  </Link>
-</section>
+          <Link to="/withdraw" className="profile-withdraw-button">
+            উত্তোলন
+          </Link>
+        </section>
 
         <section className="profile-services">
           <div className="profile-services-heading">
