@@ -20,55 +20,37 @@ const MAX_PACKAGE_PURCHASES = 3;
 // ==============================
 
 exports.getPackages = async () => {
-  const packages =
-    await Package.find({
-      status: "active",
-    });
+  const packages = await Package.find({
+    status: "active",
+  })
+    .sort({ createdAt: -1 })
+    .lean();
 
-  await Promise.all(
-    packages.map(async (pkg) => {
-      let shouldSave = false;
+  return packages.map((pkg) => {
+    const totalDays = Number(pkg.totalDays) || 0;
 
-      if (!pkg.saleEndsAt) {
-        pkg.saleEndsAt = new Date(
-          Date.now() +
-            (Number(
-              pkg.totalDays
-            ) || 0) *
-              24 *
-              60 *
-              60 *
-              1000
-        );
+    const createdAt = pkg.createdAt
+      ? new Date(pkg.createdAt).getTime()
+      : Date.now();
 
-        shouldSave = true;
-      }
+    return {
+      ...pkg,
 
-      if (
-        pkg.totalUnits ===
-        undefined
-      ) {
-        pkg.totalUnits = 100;
+      totalUnits:
+        pkg.totalUnits === undefined || pkg.totalUnits === null
+          ? 100
+          : pkg.totalUnits,
 
-        shouldSave = true;
-      }
+      soldUnits:
+        pkg.soldUnits === undefined || pkg.soldUnits === null
+          ? 0
+          : pkg.soldUnits,
 
-      if (
-        pkg.soldUnits ===
-        undefined
-      ) {
-        pkg.soldUnits = 0;
-
-        shouldSave = true;
-      }
-
-      if (shouldSave) {
-        await pkg.save();
-      }
-    })
-  );
-
-  return packages;
+      saleEndsAt:
+        pkg.saleEndsAt ||
+        new Date(createdAt + totalDays * 24 * 60 * 60 * 1000),
+    };
+  });
 };
 
 // ==============================
