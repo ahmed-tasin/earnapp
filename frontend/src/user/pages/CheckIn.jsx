@@ -376,12 +376,7 @@ function CheckIn() {
                     : `Check In +${currentReward} Tk`}
               </button>
 
-              <Link
-                to="/wallet"
-                className="checkin-wallet-link"
-              >
-                View Wallet
-              </Link>
+            
             </div>
           </div>
 

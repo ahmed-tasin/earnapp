@@ -250,7 +250,7 @@ function Wallet() {
         <section className="wallet-summary-section">
           <div className="wallet-section-heading">
             <div>
-              <p>Overview</p>
+
               <h2>Account summary</h2>
             </div>
 

@@ -49,6 +49,39 @@ const defaultDashboard = {
   notifications: [],
 };
 
+
+const getPackageStock = (amount, realSoldUnits = 0) => {
+  const totalUnits = 200;
+
+  const reservedByAmount = {
+    50000: 4,  // 2%
+    20000: 10, // 5%
+    10000: 16, // 8%
+    5000: 20,  // 10%
+    4000: 30,  // 15%
+    3000: 36,  // 18%
+    2000: 40,  // 20%
+    1500: 44,  // 22%
+    1000: 50,  // 25%
+    500: 54,   // 27%
+  };
+
+  const reservedUnits = reservedByAmount[Number(amount)] || 0;
+  const soldUnits = Math.min(
+    reservedUnits + Number(realSoldUnits || 0),
+    totalUnits
+  );
+
+  return {
+    totalUnits,
+    reservedUnits,
+    soldUnits,
+    availableUnits: totalUnits - soldUnits,
+    progress: (soldUnits / totalUnits) * 100,
+  };
+};
+
+
 function HomePage() {
   const navigate = useNavigate();
 
@@ -224,19 +257,34 @@ function HomePage() {
     };
   };
 
-  const getPackageProgress = (packageItem) => {
-    const totalUnits = Math.max(1, Number(packageItem.totalUnits) || 100);
-    const soldUnits = Math.min(
-      totalUnits,
-      Math.max(0, Number(packageItem.soldUnits) || 0),
-    );
+const getPackageProgress = (packageItem) => {
+  const totalUnits = 200;
 
-    return {
-      totalUnits,
-      soldUnits,
-      percentage: Math.round((soldUnits / totalUnits) * 100),
-    };
+  const reservedByAmount = {
+    50000: 4,
+    20000: 10,
+    10000: 16,
+    5000: 20,
+    4000: 30,
+    3000: 36,
+    2000: 40,
+    1500: 44,
+    1000: 50,
+    500: 54,
   };
+
+  const reservedUnits = reservedByAmount[Number(packageItem.amount)] || 0;
+  const realSoldUnits = Math.max(0, Number(packageItem.soldUnits) || 0);
+
+  const soldUnits = Math.min(reservedUnits + realSoldUnits, totalUnits);
+
+  return {
+    totalUnits,
+    soldUnits,
+    reservedUnits,
+    percentage: Math.round((soldUnits / totalUnits) * 100),
+  };
+};
 
   if (loading) {
     return (
@@ -393,6 +441,7 @@ function HomePage() {
               const totalReturn = amount + totalProfit;
               const countdown = getPackageCountdown(packageItem);
               const progress = getPackageProgress(packageItem);
+              
 
               return (
                 <article key={packageId} className="home-package-card">
@@ -417,10 +466,10 @@ function HomePage() {
                   </div>
 
                   <div className="home-package-progress-copy">
-                    <span>{progress.percentage}% purchased</span>
-                    <strong>
+<span>{progress.percentage}% sold</span>
+                    {/* <strong>
                       {progress.soldUnits}/{progress.totalUnits} units
-                    </strong>
+                    </strong> */}
                   </div>
 
                   <div className="home-package-progress">
