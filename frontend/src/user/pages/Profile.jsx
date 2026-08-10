@@ -7,6 +7,9 @@ import "../styles/Profile.css";
 const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
+const TELEGRAM_CHANNEL_URL = "https://t.me/NvidiaFinance";
+const TELEGRAM_GROUP_URL = "https://t.me/Nvidia_Finance";
+
 const initialProfile = {
   name: "",
   phone: "",
@@ -300,6 +303,47 @@ function Profile() {
             ))}
           </div>
         </section>
+
+<section className="profile-telegram">
+  <div className="profile-telegram-heading">
+ 
+    <h2>Official community</h2>
+  </div>
+
+  <div className="profile-telegram-actions">
+    <a
+      href={TELEGRAM_CHANNEL_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="profile-telegram-button channel"
+    >
+   <img src="/images/tg.png" alt="" className="telegram-logo" />
+
+      <div>
+        <strong>Telegram Channel</strong>
+        <small>Latest updates and notices</small>
+      </div>
+
+  
+    </a>
+
+    <a
+      href={TELEGRAM_GROUP_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="profile-telegram-button group"
+    >
+<img src="/images/tg.png" alt="" className="telegram-logo" />
+
+      <div>
+        <strong>Telegram Group</strong>
+        <small>Get support from group</small>
+      </div>
+
+  
+    </a>
+  </div>
+</section>
 
         <div className="profile-account-actions">
           <button

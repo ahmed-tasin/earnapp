@@ -182,6 +182,7 @@ function HomePage() {
               (item) =>
                 String(item.status || "active").toLowerCase() === "active",
             )
+            .sort((a, b) => Number(a.amount || 0) - Number(b.amount || 0))
             .slice(0, 10),
         );
       } catch (error) {
@@ -389,6 +390,7 @@ function HomePage() {
               const dailyReturn = Number(packageItem.dailyReturn) || 0;
               const totalDays = Number(packageItem.totalDays) || 0;
               const totalProfit = dailyReturn * totalDays;
+              const totalReturn = amount + totalProfit;
               const countdown = getPackageCountdown(packageItem);
               const progress = getPackageProgress(packageItem);
 
@@ -441,8 +443,8 @@ function HomePage() {
                     </div>
 
                     <div>
-                      <strong>৳{formatMoney(totalProfit)}</strong>
-                      <span>Total Profit</span>
+                      <strong>৳{formatMoney(totalReturn)}</strong>
+                      <span>Total Return</span>
                     </div>
 
                     {/* <div>
@@ -456,9 +458,7 @@ function HomePage() {
                   <button
                     type="button"
                     className="home-package-buy"
-                    onClick={() =>
-                      navigate(`/packages/${packageId}`)
-                    }
+                    onClick={() => navigate(`/packages/${packageId}`)}
                   >
                     Buy Now
                   </button>

@@ -402,3 +402,127 @@
   color: #167449;
   font-size: 19px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+.profile-telegram {
+  margin-top: 20px;
+}
+
+.profile-telegram-heading {
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.profile-telegram-heading p {
+  margin: 0 0 2px;
+  color: #8a9490;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-telegram-heading h2 {
+  margin: 0;
+  color: #26332e;
+  font-size: 17px;
+}
+
+.profile-telegram-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-telegram-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #dce8f2;
+  border-radius: 13px;
+  background: #fff;
+  color: #203040;
+  text-decoration: none;
+}
+
+.profile-telegram-button > span {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: #e5f5ff;
+  color: #229ed9;
+  font-size: 17px;
+}
+
+.profile-telegram-button > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-telegram-button strong,
+.profile-telegram-button small {
+  display: block;
+}
+
+.profile-telegram-button strong {
+  color: #29465a;
+  font-size: 12px;
+}
+
+.profile-telegram-button small {
+  margin-top: 3px;
+  color: #80909a;
+  font-size: 10px;
+}
+
+.profile-telegram-button b {
+  color: #229ed9;
+  font-size: 17px;
+}
+
+.profile-telegram-button.group > span {
+  background: #eaf7ef;
+  color: #278a55;
+}
+
+.profile-telegram-button.group b {
+  color: #278a55;
+}
+
+
+.profile-telegram-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.profile-telegram-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+
+.telegram-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
