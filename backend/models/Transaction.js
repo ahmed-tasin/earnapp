@@ -20,6 +20,18 @@ const transactionSchema = new mongoose.Schema(
       min: 1,
     },
 
+    feeAmount: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+
+netAmount: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+
     paymentMethod: {
       type: String,
       trim: true,

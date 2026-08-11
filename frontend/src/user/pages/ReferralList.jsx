@@ -21,6 +21,17 @@ function BackIcon() {
   );
 }
 
+const maskMemberInfo = (value) => {
+  const rawValue = String(value || "").trim();
+  const digits = rawValue.replace(/\D/g, "");
+
+  if (digits.length === 11 && digits.startsWith("01")) {
+    return `${digits.slice(0, 3)}****${digits.slice(-4)}`;
+  }
+
+  return rawValue ? `@${rawValue}` : "@user";
+};
+
 function ReferralList() {
   const navigate = useNavigate();
   const { level: levelParam } = useParams();
@@ -126,7 +137,7 @@ function ReferralList() {
 
                 <div>
                   <strong>{member.name || member.username || "Member"}</strong>
-                  <span>@{member.username || "user"}</span>
+                  <span>{maskMemberInfo(member.phone || member.username)}</span>
                 </div>
 
                 <small

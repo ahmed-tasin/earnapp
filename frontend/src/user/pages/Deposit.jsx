@@ -24,12 +24,12 @@ const PRESET_AMOUNTS = [
 const PAYMENT_ACCOUNTS = {
   bkash: {
     name: "bKash",
-    number: "01760940167",
+    number: "01624666556",
     type: "Send Money",
   },
   nagad: {
     name: "Nagad",
-    number: "01748905149",
+    number: "01907522074",
     type: "Send Money",
   },
 };

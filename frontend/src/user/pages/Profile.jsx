@@ -73,6 +73,15 @@ const Icon = ({ name }) => {
   );
 };
 
+
+const maskPhoneNumber = (phone) => {
+  const value = String(phone || "").trim();
+
+  if (value.length <= 7) return value || "Phone not available";
+
+  return `${value.slice(0, 3)}****${value.slice(-4)}`;
+};
+
 function Profile() {
   const navigate = useNavigate();
 
@@ -246,7 +255,7 @@ function Profile() {
 
           <div className="profile-overview-content">
             <h1>{profile.name || "User Name"}</h1>
-            <p>{profile.phone || "Phone not available"}</p>
+            <p>{maskPhoneNumber(profile.phone)}</p>
 
             <div className="profile-overview-meta">
               <Link to="/vip" className="profile-vip-badge">

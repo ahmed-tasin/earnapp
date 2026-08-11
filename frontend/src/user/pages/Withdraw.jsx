@@ -27,6 +27,16 @@ function Withdraw() {
     nagad: "Nagad",
   };
 
+
+const MINIMUM_WITHDRAW = 500;
+const WITHDRAW_FEE_PERCENT = 10;
+
+const withdrawAmount = Number(formData.amount || 0);
+const withdrawFee = Number(
+  ((withdrawAmount * WITHDRAW_FEE_PERCENT) / 100).toFixed(2),
+);
+const receiveAmount = Math.max(0, withdrawAmount - withdrawFee);
+
   useEffect(() => {
     const loadSavedAccount = async () => {
       try {
@@ -94,9 +104,9 @@ function Withdraw() {
       return "Enter a valid withdraw amount";
     }
 
-    if (amount < 100) {
-      return "Minimum withdraw amount is ৳100";
-    }
+   if (amount < MINIMUM_WITHDRAW) {
+  return "Minimum withdraw amount is ৳500";
+}
 
     if (!savedAccount) {
       return "Set your withdrawal card before withdrawing";
@@ -254,10 +264,10 @@ function Withdraw() {
                 id="amount"
                 type="number"
                 name="amount"
-                placeholder="Minimum 100"
+                placeholder="Minimum 500"
                 value={formData.amount}
                 onChange={handleChange}
-                min="100"
+                min="500"
                 step="1"
                 required
               />
@@ -286,6 +296,15 @@ function Withdraw() {
                 ৳{Number(formData.amount || 0).toLocaleString("en-BD")}
               </strong>
             </div>
+            <div>
+  <span>Withdraw Fee (10%)</span>
+  <strong>৳{withdrawFee.toLocaleString("en-BD")}</strong>
+</div>
+
+<div>
+  <span>You Will Receive</span>
+  <strong>৳{receiveAmount.toLocaleString("en-BD")}</strong>
+</div>
 
             <div>
               <span>Payment Method</span>

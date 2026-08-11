@@ -99,6 +99,8 @@ exports.deposit = async (userId, data) => {
         userId,
         type: "deposit",
         amount,
+        feeAmount,
+        netAmount,
         paymentMethod,
         contactPhone: senderNumber,
         trxId,
@@ -237,9 +239,13 @@ exports.withdraw = async (userId, data) => {
   const amount = Number(data.amount);
   const password = String(data.password || "");
 
-  const minimumWithdraw = Number(
-    process.env.MIN_WITHDRAW_AMOUNT || 100,
-  );
+ const minimumWithdraw = Number(
+  process.env.MIN_WITHDRAW_AMOUNT || 500,
+);
+
+const withdrawFeePercent = Number(
+  process.env.WITHDRAW_FEE_PERCENT || 10,
+);
 
   // ================= VALIDATION =================
 
@@ -260,6 +266,14 @@ exports.withdraw = async (userId, data) => {
     error.statusCode = 400;
     throw error;
   }
+
+  const feeAmount = Number(
+  ((amount * withdrawFeePercent) / 100).toFixed(2),
+);
+
+const netAmount = Number(
+  (amount - feeAmount).toFixed(2),
+);
 
   if (!password) {
     const error = new Error("Password is required");
