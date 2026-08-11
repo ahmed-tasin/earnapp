@@ -129,11 +129,12 @@ function ReferralList() {
           <section className="referral-members">
             {members.map((member) => (
               <article className="referral-member" key={member._id}>
-                <span className="referral-member-avatar">
-                  {(member.name || member.username || "U")
-                    .charAt(0)
-                    .toUpperCase()}
-                </span>
+                <span className="referral-member-avatar" aria-hidden="true">
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="3.5" />
+    <path d="M4.5 20c.7-3.8 3.3-5.8 7.5-5.8s6.8 2 7.5 5.8" />
+  </svg>
+</span>
 
                 <div>
                   <strong>{member.name || member.username || "Member"}</strong>

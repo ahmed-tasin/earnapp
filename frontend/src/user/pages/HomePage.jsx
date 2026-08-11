@@ -10,6 +10,16 @@ import TransactionTicker from "../components/TransactionTicker";
 const API_URL =
   process.env.REACT_APP_API_URL || "https://earnapp-n5b2.onrender.com/api";
 
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+const PACKAGE_COUNTDOWN_START = new Date(
+  "2026-08-12T00:00:00+06:00",
+).getTime();
+
+
+
+
 const PACKAGE_IMAGES = {
   starter: "/images/packages/gtx1650.png",
   basic: "/images/packages/gtx1660.png",
@@ -242,10 +252,9 @@ function HomePage() {
   };
 
   const getPackageCountdown = (packageItem) => {
-    const endTime = packageItem.saleEndsAt
-      ? new Date(packageItem.saleEndsAt).getTime()
-      : new Date(packageItem.createdAt).getTime() +
-        (Number(packageItem.totalDays) || 0) * 86400000;
+   const endTime =
+  PACKAGE_COUNTDOWN_START +
+  (Number(packageItem.totalDays) || 30) * DAY_IN_MS;
 
     const totalSeconds = Math.floor(Math.max(0, endTime - currentTime) / 1000);
 
@@ -296,7 +305,7 @@ const getPackageProgress = (packageItem) => {
     );
   }
 
-  const siteStartTime = new Date("2026-07-27T00:00:00+06:00").getTime();
+  const siteStartTime = new Date("2026-05-01T00:00:00+06:00").getTime();
 
   const totalSeconds = Math.floor(
     Math.max(0, currentTime - siteStartTime) / 1000,

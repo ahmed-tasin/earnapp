@@ -205,3 +205,29 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+
+
+
+.referral-member-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: flex;
+  padding-top: 7px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e7f7ee;
+}
+
+.referral-member-avatar svg {
+  display: block;
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: #16834c;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
