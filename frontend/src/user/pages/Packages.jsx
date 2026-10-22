@@ -175,7 +175,7 @@ function Packages() {
       Total return = 1000 + 1500 = 2500
     */
 
-    return amount + dailyReturn * totalDays;
+    return dailyReturn * totalDays;
   };
 
   const calculateTotalProfit = (packageItem) => {
