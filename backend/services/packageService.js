@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const Package = require("../models/Package");
@@ -14,6 +15,23 @@ const notificationService = require(
 );
 
 const MAX_PACKAGE_PURCHASES = 3;
+
+// ==============================
+// NEW: CALCULATE TOTAL PROFIT
+// ==============================
+
+const calculateTotalProfit = (pkg) => {
+  const dailyReturn = Number(pkg.dailyReturn) || 0;
+  const totalDays = Number(pkg.totalDays) || 0;
+
+  return dailyReturn * totalDays;
+};
+
+// NEW: ATTACH TOTAL PROFIT TO PACKAGE
+const withPackageProfit = (pkg) => ({
+  ...pkg,
+  totalProfit: calculateTotalProfit(pkg),
+});
 
 // ==============================
 // GET PACKAGES
@@ -34,7 +52,7 @@ exports.getPackages = async () => {
       : Date.now();
 
     return {
-      ...pkg,
+      ...withPackageProfit(pkg), // NEW: INCLUDE TOTAL PROFIT
 
       totalUnits:
         pkg.totalUnits === undefined || pkg.totalUnits === null
@@ -97,7 +115,7 @@ exports.getPackageDetails = async (
   }
 
   return {
-    package: pkg,
+    package: withPackageProfit(pkg), // NEW: INCLUDE TOTAL PROFIT
     purchaseCount,
     maxPurchases:
       MAX_PACKAGE_PURCHASES,

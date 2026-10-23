@@ -447,7 +447,7 @@ const getPackageProgress = (packageItem) => {
               const dailyReturn = Number(packageItem.dailyReturn) || 0;
               const totalDays = Number(packageItem.totalDays) || 0;
               const totalProfit = dailyReturn * totalDays;
-              const totalReturn = amount + totalProfit;
+              const totalReturn =  totalProfit;
               const countdown = getPackageCountdown(packageItem);
               const progress = getPackageProgress(packageItem);
               

@@ -158,32 +158,19 @@ function Packages() {
     }).format(numericAmount);
   };
 
-  const calculateTotalReturn = (packageItem) => {
-    const amount = Number(packageItem.amount) || 0;
-    const dailyReturn = Number(packageItem.dailyReturn) || 0;
-    const totalDays = Number(packageItem.totalDays) || 0;
+const calculateTotalProfit = (packageItem) => {
+  const dailyReturn = Number(packageItem.dailyReturn) || 0;
+  const totalDays = Number(packageItem.totalDays) || 0;
 
-    /*
-      This assumes dailyReturn is a fixed money amount.
+  return dailyReturn * totalDays;
+};
 
-      Example:
-      amount = 1000
-      dailyReturn = 50
-      totalDays = 30
+// const calculateTotalReturn = (packageItem) => {
+//   const amount = Number(packageItem.amount) || 0;
+//   const totalProfit = calculateTotalProfit(packageItem);
 
-      Total profit = 50 × 30 = 1500
-      Total return = 1000 + 1500 = 2500
-    */
-
-    return dailyReturn * totalDays;
-  };
-
-  const calculateTotalProfit = (packageItem) => {
-    const dailyReturn = Number(packageItem.dailyReturn) || 0;
-    const totalDays = Number(packageItem.totalDays) || 0;
-
-    return dailyReturn * totalDays;
-  };
+//   return amount + totalProfit;
+// };
 
   const getCountdown = (packageItem) => {
     const explicitEndDate = packageItem.saleEndsAt || packageItem.expiresAt;
@@ -340,7 +327,7 @@ function Packages() {
 
               const totalProfit = calculateTotalProfit(packageItem);
 
-              const totalReturn = calculateTotalReturn(packageItem);
+              const totalReturn = calculateTotalProfit(packageItem);
 
               const canAfford = walletBalance >= amount;
               const countdown = getCountdown(packageItem);
