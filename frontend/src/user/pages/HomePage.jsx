@@ -305,7 +305,7 @@ const getPackageProgress = (packageItem) => {
     );
   }
 
-  const siteStartTime = new Date("2026-05-01T00:00:00+06:00").getTime();
+  const siteStartTime = new Date("2026-08-01T00:00:00+06:00").getTime();
 
   const totalSeconds = Math.floor(
     Math.max(0, currentTime - siteStartTime) / 1000,
