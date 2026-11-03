@@ -81,7 +81,7 @@ exports.register = async (data) => {
 
         referredBy,
 
-        balance: 200
+        balance: 0
 
     });
 
