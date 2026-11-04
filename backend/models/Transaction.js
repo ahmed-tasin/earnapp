@@ -69,6 +69,34 @@ netAmount: {
       default: "",
     },
 
+
+
+    paymentGateway: {
+      type: String,
+      enum: ["", "uddoktapay"],
+      default: "",
+    },
+
+    gatewayInvoiceId: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    gatewayTransactionId: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    gatewayPaymentMethod: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+
+
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
