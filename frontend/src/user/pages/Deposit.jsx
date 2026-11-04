@@ -9,7 +9,7 @@ const API_URL =
   "https://earnapp-n5b2.onrender.com/api";
 
 const PRESET_AMOUNTS = [
-  500,
+  400,
   1000,
   1500,
   2000,
@@ -42,9 +42,9 @@ function Deposit() {
 
     if (
       !Number.isInteger(depositAmount) ||
-      depositAmount < 500
+      depositAmount < 400
     ) {
-      setMessage("Minimum deposit amount is ৳500");
+      setMessage("Minimum deposit amount is ৳400");
       return;
     }
 
@@ -151,7 +151,7 @@ function Deposit() {
             <div>
               <h2>Select deposit amount</h2>
               <p>
-                Minimum deposit amount ৳500
+                Minimum deposit amount ৳400
               </p>
             </div>
           </div>

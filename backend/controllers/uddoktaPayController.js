@@ -30,12 +30,12 @@ exports.createCheckout = async (req, res) => {
 
     if (
       !Number.isFinite(amount) ||
-      amount < 500 ||
+      amount < 400 ||
       !Number.isInteger(amount)
     ) {
       return res.status(400).json({
         success: false,
-        message: "Minimum deposit amount is ৳500",
+        message: "Minimum deposit amount is ৳400",
       });
     }
 

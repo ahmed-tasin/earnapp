@@ -9,7 +9,7 @@ const demoTransactions = [
   { id: 1, phone: "017****4521", method: "bKash", amount: 1250 },
   { id: 2, phone: "018****7834", method: "Nagad", amount: 850 },
   { id: 3, phone: "019****2698", method: "Nagad", amount: 2100 },
-  { id: 4, phone: "016****9157", method: "bKash", amount: 500 },
+  { id: 4, phone: "016****9157", method: "bKash", amount: 400 },
   { id: 5, phone: "013****6482", method: "Nagad", amount: 1750 },
   { id: 6, phone: "014****3276", method: "Nagad", amount: 950 },
   { id: 7, phone: "015****8043", method: "bKash", amount: 3200 },
